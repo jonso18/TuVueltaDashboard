@@ -17,7 +17,8 @@ import { SolicitudListComponent } from '../solicitudes/solicitud-list/solicitud-
         RouterModule.forChild(DashboardRoutes),
         FormsModule,
         MdModule,
-        MaterialModule
+        MaterialModule,
+        ReactiveFormsModule
     ],
     declarations: [DashboardComponent, SolicitudComponent, SolicitudFormComponent, SolicitudListComponent]
 })
