@@ -1,5 +1,5 @@
 <div>
-  <mat-table #table [dataSource]="dataSource" *ngIf="dataSource" matSort (matSortChange)="sortData($event)">
+  <mat-table #table [dataSource]="dataSource" *ngIf="dataSource && Mensajeros" matSort (matSortChange)="sortData($event)">
     <!-- ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'Telefono', 'PagoConTarjeta', 'Distancia', 'Punto Inicio', 'Punto Final', 'Estado']; -->
     <!-- Position Column -->
     <!-- Fecha -->
@@ -38,6 +38,12 @@
       <mat-cell *matCellDef="let element"> {{element.payload.val().esPagoConTarjeta ? 'Si':'No' }} </mat-cell>
     </ng-container>
 
+    <!-- TotalAPagar -->
+    <ng-container matColumnDef="TotalAPagar">
+      <mat-header-cell *matHeaderCellDef> Total A Pagar </mat-header-cell>
+      <mat-cell *matCellDef="let element"> $ {{element.payload.val().TotalAPagar | number }} </mat-cell>
+    </ng-container>
+
     <!-- DistanciaTotal -->
     <ng-container matColumnDef="Distancia">
       <mat-header-cell *matHeaderCellDef>Distancia</mat-header-cell>
@@ -62,6 +68,23 @@
       <mat-cell *matCellDef="let element"> {{element.payload.val().Estado}} </mat-cell>
     </ng-container>
 
+    <!-- Mensajero -->
+    <ng-container matColumnDef="Mensajero">
+      <mat-header-cell *matHeaderCellDef> Mensajero </mat-header-cell>
+      <mat-cell *matCellDef="let element"><span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Nombres }}</span>  </mat-cell>
+    </ng-container>
+
+    <!-- PlacaVehiculo -->
+    <ng-container matColumnDef="PlacaVehiculo">
+      <mat-header-cell *matHeaderCellDef> Placa Vehiculo </mat-header-cell>
+      <mat-cell *matCellDef="let element"><span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].PlacaVehiculo }}</span>  </mat-cell>
+    </ng-container>
+
+    <!-- MensajeroCelular -->
+    <ng-container matColumnDef="MensajeroCelular">
+      <mat-header-cell *matHeaderCellDef> Mensajero Celular </mat-header-cell>
+      <mat-cell *matCellDef="let element"><span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Celular }}</span>  </mat-cell>
+    </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>

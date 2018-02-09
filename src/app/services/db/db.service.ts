@@ -33,4 +33,7 @@ export class DbService {
     return this.db.list("/Operativo/Solicitud/", ref => ref.orderByChild('user_id').equalTo(id)).snapshotChanges();
   }
   
+  public listMensajeros(){
+    return this.db.list("/Administrativo/Usuarios", ref => ref.orderByChild('Rol').equalTo('Mensajero'));
+  }
 }

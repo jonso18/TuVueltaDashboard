@@ -11,14 +11,14 @@ import { Solicitud } from '../../interfaces/solicitud.interface';
 })
 export class SolicitudListComponent implements OnInit {
 
-  displayedColumns = ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado'];
+  displayedColumns = ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'TotalAPagar', 'Telefono', 'PagoConTarjeta',  'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'PlacaVehiculo', 'MensajeroCelular'];
   
   public dataSource: MatTableDataSource<any>;
   
   resultsLength = 0;
   
   public solicitudes;
-  
+  public Mensajeros;
   @ViewChild('paginator') paginator: MatPaginator;
   
   constructor(
@@ -30,6 +30,15 @@ export class SolicitudListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.dbService.listMensajeros().snapshotChanges().subscribe(res => {
+      
+      this.Mensajeros = res.reduce((o,val) => {
+        o[val.key] = val.payload.val();
+        return o;
+      }, {});
+      
+    })
+    console.log(this.Mensajeros)
     this.dbService.listSolicitudes().subscribe(res => {
       this.solicitudes = res;
       this.instanceTable();
