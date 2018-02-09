@@ -1,3 +1,71 @@
-<p>
-  solicitud-form works!
-</p>
+<form [formGroup]="form" >
+  <input formControlName="puntoInicio" placeholder="puntoInicio" type="text">
+  <div *ngIf="puntoInicio.invalid && (puntoInicio.dirty || puntoInicio.touched)">
+    <div *ngIf="puntoInicio.errors.required">
+      Campo Obligatorio
+    </div>
+  </div>
+  <input formControlName="puntoFinal" placeholder="puntoFinal" type="text">
+  <div *ngIf="puntoFinal.invalid && (puntoFinal.dirty || puntoFinal.touched)">
+    <div *ngIf="puntoFinal.errors.required">
+      Campo Obligatorio
+    </div>
+  </div>
+  <input formControlName="esPagoConTarjeta" placeholder="esPagoConTarjeta" type="checkbox">
+  <div *ngIf="esPagoConTarjeta.invalid && (esPagoConTarjeta.dirty || esPagoConTarjeta.touched)">
+    <div *ngIf="esPagoConTarjeta.errors.required">
+      Campo Obligatorio
+    </div>
+  </div>
+  <input formControlName="Nombres" placeholder="Nombres" type="text">
+  <div *ngIf="Nombres.invalid && (Nombres.dirty || Nombres.touched)">
+    <div *ngIf="Nombres.errors.required">
+      Campo Obligatorio
+    </div>
+  </div>
+  <input formControlName="Apellidos" placeholder="Apellidos" type="text">
+  <div *ngIf="Apellidos.invalid && (Apellidos.dirty || Apellidos.touched)">
+    <div *ngIf="Apellidos.errors.required">
+      Campo Obligatorio
+    </div>
+  </div>
+  <input formControlName="Telefono" placeholder="Telefono" type="text">
+  <div *ngIf="Telefono.invalid && (Telefono.dirty || Telefono.touched)">
+    <div *ngIf="Telefono.errors.required">
+      Campo Obligatorio
+    </div>
+  </div>
+  <input formControlName="Celular" placeholder="Celular" type="text">
+  <div *ngIf="Celular.invalid && (Celular.dirty || Celular.touched)">
+    <div *ngIf="Celular.errors.required">
+      Campo Obligatorio
+    </div>
+  </div>
+  <input formControlName="ValorDomicilio" placeholder="ValorDomicilio" type="text">
+  <div *ngIf="ValorDomicilio.invalid && (ValorDomicilio.dirty || ValorDomicilio.touched)">
+    <div *ngIf="ValorDomicilio.errors.required">
+      Campo Obligatorio
+    </div>
+  </div>
+  <input formControlName="codigoCiudad" placeholder="codigoCiudad" type="text">
+  <div *ngIf="codigoCiudad.invalid && (codigoCiudad.dirty || codigoCiudad.touched)">
+    <div *ngIf="codigoCiudad.errors.required">
+      Campo Obligatorio
+    </div>
+  </div>
+  <input formControlName="Descripcion" placeholder="Descripcion" type="text">
+  <div *ngIf="Descripcion.invalid && (Descripcion.dirty || Descripcion.touched)">
+    <div *ngIf="Descripcion.errors.required">
+      Campo Obligatorio
+    </div>
+  </div>
+  <input formControlName="DescripcionDomicilio" placeholder="DescripcionDomicilio" type="text">
+  <div *ngIf="DescripcionDomicilio.invalid && (DescripcionDomicilio.dirty || DescripcionDomicilio.touched)">
+    <div *ngIf="DescripcionDomicilio.errors.required">
+      Campo Obligatorio
+    </div>
+  </div>
+  <button (click)="onSubmit()">Enviar</button>
+</form>
+
+<pre>{{ form.value | json }}</pre>

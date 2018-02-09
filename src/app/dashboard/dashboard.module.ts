@@ -10,6 +10,9 @@ import { DashboardRoutes } from './dashboard.routing';
 import { SolicitudComponent } from '../solicitudes/solicitud/solicitud.component';
 import { SolicitudFormComponent } from '../solicitudes/solicitud-form/solicitud-form.component';
 import { SolicitudListComponent } from '../solicitudes/solicitud-list/solicitud-list.component';
+import { HttpClientModule } from '@angular/common/http';
+import { DbService } from '../services/db/db.service';
+
 
 @NgModule({
     imports: [
@@ -18,8 +21,10 @@ import { SolicitudListComponent } from '../solicitudes/solicitud-list/solicitud-
         FormsModule,
         MdModule,
         MaterialModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        HttpClientModule
     ],
+    
     declarations: [DashboardComponent, SolicitudComponent, SolicitudFormComponent, SolicitudListComponent]
 })
 

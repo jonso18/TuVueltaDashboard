@@ -10,12 +10,18 @@ export class AuthService {
     private authService: AngularFireAuth
   ) { }
 
-  
-  public authState(){
+
+  public authState() {
     return this.authService.authState;
   }
 
-  public logout(){
+  public logout() {
     return this.authService.auth.signOut()
+  }
+  /**
+   * test
+   */
+  public test() {
+    return this.authService.idToken
   }
 }
