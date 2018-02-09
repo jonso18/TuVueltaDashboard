@@ -1,71 +1,150 @@
-<form [formGroup]="form" >
-  <input formControlName="puntoInicio" placeholder="puntoInicio" type="text">
-  <div *ngIf="puntoInicio.invalid && (puntoInicio.dirty || puntoInicio.touched)">
-    <div *ngIf="puntoInicio.errors.required">
-      Campo Obligatorio
-    </div>
-  </div>
-  <input formControlName="puntoFinal" placeholder="puntoFinal" type="text">
-  <div *ngIf="puntoFinal.invalid && (puntoFinal.dirty || puntoFinal.touched)">
-    <div *ngIf="puntoFinal.errors.required">
-      Campo Obligatorio
-    </div>
-  </div>
-  <input formControlName="esPagoConTarjeta" placeholder="esPagoConTarjeta" type="checkbox">
-  <div *ngIf="esPagoConTarjeta.invalid && (esPagoConTarjeta.dirty || esPagoConTarjeta.touched)">
-    <div *ngIf="esPagoConTarjeta.errors.required">
-      Campo Obligatorio
-    </div>
-  </div>
-  <input formControlName="Nombres" placeholder="Nombres" type="text">
-  <div *ngIf="Nombres.invalid && (Nombres.dirty || Nombres.touched)">
-    <div *ngIf="Nombres.errors.required">
-      Campo Obligatorio
-    </div>
-  </div>
-  <input formControlName="Apellidos" placeholder="Apellidos" type="text">
-  <div *ngIf="Apellidos.invalid && (Apellidos.dirty || Apellidos.touched)">
-    <div *ngIf="Apellidos.errors.required">
-      Campo Obligatorio
-    </div>
-  </div>
-  <input formControlName="Telefono" placeholder="Telefono" type="text">
-  <div *ngIf="Telefono.invalid && (Telefono.dirty || Telefono.touched)">
-    <div *ngIf="Telefono.errors.required">
-      Campo Obligatorio
-    </div>
-  </div>
-  <input formControlName="Celular" placeholder="Celular" type="text">
-  <div *ngIf="Celular.invalid && (Celular.dirty || Celular.touched)">
-    <div *ngIf="Celular.errors.required">
-      Campo Obligatorio
-    </div>
-  </div>
-  <input formControlName="ValorDomicilio" placeholder="ValorDomicilio" type="text">
-  <div *ngIf="ValorDomicilio.invalid && (ValorDomicilio.dirty || ValorDomicilio.touched)">
-    <div *ngIf="ValorDomicilio.errors.required">
-      Campo Obligatorio
-    </div>
-  </div>
-  <input formControlName="codigoCiudad" placeholder="codigoCiudad" type="text">
-  <div *ngIf="codigoCiudad.invalid && (codigoCiudad.dirty || codigoCiudad.touched)">
-    <div *ngIf="codigoCiudad.errors.required">
-      Campo Obligatorio
-    </div>
-  </div>
-  <input formControlName="Descripcion" placeholder="Descripcion" type="text">
-  <div *ngIf="Descripcion.invalid && (Descripcion.dirty || Descripcion.touched)">
-    <div *ngIf="Descripcion.errors.required">
-      Campo Obligatorio
-    </div>
-  </div>
-  <input formControlName="DescripcionDomicilio" placeholder="DescripcionDomicilio" type="text">
-  <div *ngIf="DescripcionDomicilio.invalid && (DescripcionDomicilio.dirty || DescripcionDomicilio.touched)">
-    <div *ngIf="DescripcionDomicilio.errors.required">
-      Campo Obligatorio
-    </div>
-  </div>
-  <button (click)="onSubmit()">Enviar</button>
-</form>
 
-<pre>{{ form.value | json }}</pre>
+  <div class="container-fluid">
+    <div class="col-md-12">
+      <div class="card">
+          <form [formGroup]="form"  class="form-horizontal">
+              <div class="card-header card-header-text" data-background-color="blue">
+                  <h4 class="card-title">Nuevo Domicilio</h4>
+              </div>
+              <div class="card-content">
+
+                  <div class="row">
+                      <label class="col-sm-2 label-on-left">Punto de Inicio</label>
+                      <div class="col-sm-7" >
+                        <div class="form-group label-floating">
+                          <label class="control-label">Punto de inicio</label>
+                          <input id="puntoInicio" class="form-control" formControlName="puntoInicio"  type="text">
+                          <div class="error-msg" *ngIf="puntoInicio.invalid && (puntoInicio.dirty || puntoInicio.touched)">
+                              <div *ngIf="puntoInicio.errors.required" >
+                                Campo Obligatorio
+                              </div>
+                            </div>
+                        </div>
+                      </div>
+                      <label class="col-sm-3 label-on-right">
+                          <code>requerido</code>
+                      </label>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-sm-2 label-on-left">Punto Final</label>
+                        <div class="col-sm-7" >
+                          <div class="form-group label-floating">
+                            <label class="control-label">Punto Final</label>
+                            <input id="puntoFinal" class="form-control" formControlName="puntoFinal"  type="text">
+                            <div  class="error-msg" *ngIf="puntoInicio.invalid && (puntoInicio.dirty || puntoInicio.touched)">
+                                <div *ngIf="puntoInicio.errors.required">
+                                  Campo Obligatorio
+                                </div>
+                              </div>
+                          </div>
+                        </div>
+                        <label class="col-sm-3 label-on-right">
+                            <code>requerido</code>
+                        </label>
+                      </div>
+
+                      <div class="row">
+                          <label class="col-sm-2 label-on-left">Pago con tarjeta</label>
+                          <div class="col-sm-7" >
+                            <div class="form-group label-floating ">
+                              <label class="control-label">Pago con tarjeta</label>
+                              <input id="esPagoConTarjeta" formControlName="esPagoConTarjeta" class="form-control"  checked="" type="checkbox">
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="row">
+                            <label class="col-sm-2 label-on-left">Nombres</label>
+                            <div class="col-sm-3" >
+                              <div class="form-group label-floating ">
+                                <label class="control-label">Nombres</label>
+                                <input id="Nombres" class="form-control" formControlName="Nombres"  type="text">
+                              </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-1 label-on-right">Apellidos</label>
+                                <div class="col-sm-3" >
+                                  <div class="form-group label-floating ">
+                                    <label class="control-label">Apellidos</label>
+                                    <input id="Apellidos" class="form-control" formControlName="Apellidos"  type="text">
+                                  </div>
+                                </div>
+                              </div>
+
+                          </div>
+                          
+                          <div class="row">
+                              <label class="col-sm-2 label-on-left">Telefono</label>
+                              <div class="col-sm-3" >
+                                <div class="form-group label-floating ">
+                                  <label class="control-label">Telefono</label>
+                                  <input id="Telefono" formControlName="Telefono" class="form-control"  checked="" type="text">
+                                </div>
+                              </div>
+                              
+                              <div class="row">
+                                  <label class="col-sm-1 label-on-right">Celular</label>
+                                  <div class="col-sm-3" >
+                                    <div class="form-group label-floating ">
+                                      <label class="control-label">Celular</label>
+                                      <input id="Celular" class="form-control" formControlName="Celular"  type="text">
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-2 label-on-left">ValorDomicilio</label>
+                                <div class="col-sm-3" >
+                                  <div class="form-group label-floating ">
+                                    <label class="control-label">ValorDomicilio</label>
+                                    <input id="ValorDomicilio" formControlName="ValorDomicilio" class="form-control"  checked="" type="text">
+                                  </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <label class="col-sm-1 label-on-right">codigoCiudad</label>
+                                    <div class="col-sm-3" >
+                                      <div class="form-group label-floating ">
+                                        <label class="control-label">codigoCiudad</label>
+                                        <input id="codigoCiudad" class="form-control" formControlName="codigoCiudad"  type="text">
+                                      </div>
+                                    </div>
+                                  </div>
+                              </div>
+                  
+                              <div class="row">
+                                  <label class="col-sm-2 label-on-left">Descripcion</label>
+                                  <div class="col-sm-7" >
+                                    <div class="form-group label-floating ">
+                                      <label class="control-label">Descripcion</label>
+                                      <input id="Descripcion" formControlName="Descripcion" class="form-control"  type="text">
+                                    </div>
+                                  </div>
+                                </div>
+                  
+                                <div class="row">
+                                    <label class="col-sm-2 label-on-left">DescripcionDomicilio</label>
+                                    <div class="col-sm-7" >
+                                      <div class="form-group label-floating ">
+                                        <label class="control-label">Descripcion</label>
+                                        <input id="DescripcionDomicilio" formControlName="DescripcionDomicilio" class="form-control"  type="text">
+                                      </div>
+                                    </div>                              
+                                  </div>
+                                  <div class="text-center">
+                                      <button class="btn btn-rose btn-fill btn-wd" (click)="onSubmit()">Enviar Solicitud</button>
+                                </div>
+                                
+              </div>
+
+              
+            </form>
+      </div>
+
+    </div>
+    <spinner></spinner>
+  </div>
+

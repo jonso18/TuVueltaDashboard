@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth/auth.service';
 import { DbService } from '../../services/db/db.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -16,7 +17,8 @@ export class SolicitudFormComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private authProvider: AuthService,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
 
   ) { }
 
@@ -26,17 +28,17 @@ export class SolicitudFormComponent implements OnInit {
 
   buildForm(){
     this.form = this.formBuilder.group({
-      puntoInicio: ['universidad del tolima', [Validators.required]],
-      puntoFinal: ['universidad de ibague, ibague tolima', [Validators.required]],
+      puntoInicio: ['', [Validators.required]],
+      puntoFinal: ['', [Validators.required]],
       esPagoConTarjeta: [false, [Validators.required]],
-      Nombres: ['Ronaldo Pruebas', [Validators.required]],
-      Apellidos: ['Ronaldo', [Validators.required]],
-      Telefono: ['12123123', [Validators.required]],
-      Celular: ['351351', [Validators.required]],
-      ValorDomicilio: [20000, [Validators.required]],
-      codigoCiudad: [73001, [Validators.required]],
-      Descripcion: ['asdf', [Validators.required]],
-      DescripcionDomicilio: ['asdf', [Validators.required]],
+      Nombres: ['', [Validators.required]],
+      Apellidos: ['', [Validators.required]],
+      Telefono: ['0', [Validators.required]],
+      Celular: ['0', [Validators.required]],
+      ValorDomicilio: [ 0, [Validators.required]],
+      codigoCiudad: [11001, [Validators.required]],
+      Descripcion: ['sin descripcion', [Validators.required]],
+      DescripcionDomicilio: ['sin descripcion', [Validators.required]],
     })
   }
 
@@ -46,15 +48,16 @@ export class SolicitudFormComponent implements OnInit {
     const getToken = this.authProvider.userState.getToken()
     const newSolicitud = getToken.then(token => {
       data.idToken = token;
-      console.log(data)
+      //alert(data)
       return this.newSolicitud(data).toPromise();
     })
     const response = newSolicitud.then(response => {
-      console.log("Exitoso")
-      console.log(response)
+      alert ('Servicio recibido exitosamente,' + ' '+ 'Codigo de la solicitud: '+ response.servicio_id + ' '+  ', El costo del servicio es de ' + response.servicio.TotalAPagar);
+      //console.log(response)
+      this.router.navigateByUrl("/dashboard/solicitud/lista");
+    }).catch(err =>{
+       alert(err);
     })
-    
-    
   }
 
   public newSolicitud(body){
@@ -63,7 +66,8 @@ export class SolicitudFormComponent implements OnInit {
         'Content-Type':  'application/json',
       })
     };
-    const url = 'https://us-central1-tuvueltap.cloudfunctions.net/api/solicitudes'
+    const url = 'https://us-central1-ptuvuelta.cloudfunctions.net/api/solicitudes'
+    
     const _body = body;
 
     return this.http.post(url,_body, httpOptions)

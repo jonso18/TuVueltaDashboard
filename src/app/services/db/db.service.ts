@@ -28,4 +28,9 @@ export class DbService {
     return this.http.post(url,_body, httpOptions)
   } */
 
+  public listSolicitudes(){
+    const id:string = this.authService.userState.uid;
+    return this.db.list("/Operativo/Solicitud/", ref => ref.orderByChild('user_id').equalTo(id)).snapshotChanges();
+  }
+  
 }

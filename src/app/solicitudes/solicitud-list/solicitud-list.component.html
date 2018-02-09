@@ -1,1 +1,72 @@
-<h1>Hola a todo el mundo</h1>
+<div>
+  <mat-table #table [dataSource]="dataSource" *ngIf="dataSource" matSort (matSortChange)="sortData($event)">
+    <!-- ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'Telefono', 'PagoConTarjeta', 'Distancia', 'Punto Inicio', 'Punto Final', 'Estado']; -->
+    <!-- Position Column -->
+    <!-- Fecha -->
+    <ng-container matColumnDef="Fecha">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="key"> Fecha. </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.key | date:'d/M/yy'}} </mat-cell>
+    </ng-container>
+
+    <!-- Nombres -->
+    <ng-container matColumnDef="Nombres">
+      <mat-header-cell *matHeaderCellDef> Nombres </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.payload.val().Nombres }} </mat-cell>
+    </ng-container>
+
+    <!-- Apellidos -->
+    <ng-container matColumnDef="Apellidos">
+      <mat-header-cell *matHeaderCellDef> Apellidos </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.payload.val().Apellidos }} </mat-cell>
+    </ng-container>
+
+    <!-- Celular -->
+    <ng-container matColumnDef="Celular">
+      <mat-header-cell *matHeaderCellDef> Celular </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.payload.val().Celular }} </mat-cell>
+    </ng-container>
+
+    <!-- Telefono -->
+    <ng-container matColumnDef="Telefono">
+      <mat-header-cell *matHeaderCellDef> Telefono </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.payload.val().Telefono }} </mat-cell>
+    </ng-container>
+
+    <!-- PagoConTarjeta -->
+    <ng-container matColumnDef="PagoConTarjeta">
+      <mat-header-cell *matHeaderCellDef> Pago Con Tarjeta </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.payload.val().esPagoConTarjeta ? 'Si':'No' }} </mat-cell>
+    </ng-container>
+
+    <!-- DistanciaTotal -->
+    <ng-container matColumnDef="Distancia">
+      <mat-header-cell *matHeaderCellDef>Distancia</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{(element.payload.val().DistanciaTotal / 1000) | number }} Km </mat-cell>
+    </ng-container>
+
+    <!-- PuntoInicio -->
+    <ng-container matColumnDef="puntoInicio">
+      <mat-header-cell *matHeaderCellDef>Punto Inicio</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.payload.val().puntoInicio}} </mat-cell>
+    </ng-container>
+
+    <!-- puntoFinal -->
+    <ng-container matColumnDef="puntoFinal">
+      <mat-header-cell *matHeaderCellDef>Punto Final</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.payload.val().puntoFinal}} </mat-cell>
+    </ng-container>
+
+    <!-- Estado -->
+    <ng-container matColumnDef="Estado">
+      <mat-header-cell *matHeaderCellDef>Estado</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.payload.val().Estado}} </mat-cell>
+    </ng-container>
+
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+
+  <mat-paginator #paginator [length]="resultsLength" [pageSize]="5">
+  </mat-paginator>
+</div>

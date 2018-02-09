@@ -12,7 +12,7 @@ import { SolicitudFormComponent } from '../solicitudes/solicitud-form/solicitud-
 import { SolicitudListComponent } from '../solicitudes/solicitud-list/solicitud-list.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DbService } from '../services/db/db.service';
-
+import { NgHttpLoaderModule } from 'ng-http-loader/ng-http-loader.module';
 
 @NgModule({
     imports: [
@@ -22,7 +22,8 @@ import { DbService } from '../services/db/db.service';
         MdModule,
         MaterialModule,
         ReactiveFormsModule,
-        HttpClientModule
+        HttpClientModule,
+        NgHttpLoaderModule
     ],
     
     declarations: [DashboardComponent, SolicitudComponent, SolicitudFormComponent, SolicitudListComponent]

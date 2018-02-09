@@ -9,6 +9,7 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
 import { environment } from '../environments/environment';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { 
   MatAutocompleteModule,
@@ -113,6 +114,7 @@ export class MaterialModule {}
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     CommonModule,
     FormsModule,
     RouterModule.forRoot(AppRoutes),
@@ -125,7 +127,7 @@ export class MaterialModule {}
     FixedpluginModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
-    AngularFireAuthModule    
+    AngularFireAuthModule 
   ],
   providers: [
     AuthGuardService,
