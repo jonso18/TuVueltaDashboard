@@ -5,3 +5,9 @@ export interface Ciudad{
     nombre: string,
     prefijo: string
 }
+
+export interface ICiudad{
+    Codigo?: number | string,
+    Nombre: string,
+    Prefijo: string
+}

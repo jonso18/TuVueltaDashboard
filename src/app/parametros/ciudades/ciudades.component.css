@@ -1,0 +1,8 @@
+:host{
+    top: 100px;
+    position: relative;
+}
+
+.text-center{
+    text-align: center;
+}

@@ -32,7 +32,7 @@ export const ROUTES: RouteInfo[] = [{
         type: 'link',
         icontype: 'dashboard',
         Rol: {
-            Administrador: ROLES.Administrador
+            Administrador: true
         }
     },{
         path: '/dashboard/solicitud',
@@ -44,22 +44,22 @@ export const ROUTES: RouteInfo[] = [{
         }
     },
     {
-        path: '/parametros',
+        path: '/dashboard/parametros',
         title: 'Parametros',
         Rol: {
-            Administrador: ROLES.Administrador,
-            //Cliente: ROLES.Cliente
+            Administrador: true,
+            Cliente: false
         },
         type: 'sub',
         icontype: 'settings',
         collapse: 'parametros',
         children: [
-            {path: 'ciudad', title: 'Ciudades', ab:'CI', Rol: {Cliente: ROLES.Administrador}},
-            {path: 'tarifas', title: 'Tarifas', ab:'T', Rol: {Cliente: ROLES.Administrador}},
-            {path: 'Ganacias', title: 'Ganacias', ab:'G', Rol: {Cliente: ROLES.Administrador}},
-            {path: 'Estados-Domicilios', title: 'Estados Domicilios', ab:'ED', Rol: {Cliente: ROLES.Administrador}},
-            {path: 'Equipamiento', title: 'Equipamiento', ab:'EQ', Rol: {Cliente: ROLES.Administrador}},
-            {path: 'Reglas-activo', title: 'Reglas de Activo', ab:'RA', Rol: {Administrador: ROLES.Administrador}},
+            {path: 'ciudad', title: 'Ciudades', ab:'CI', Rol: {Administrador: true}},
+            {path: 'tarifas', title: 'Tarifas', ab:'T', Rol: {Administrador: true}},
+            {path: 'Ganacias', title: 'Ganacias', ab:'G', Rol: {Administrador: true}},
+            {path: 'Estados-Domicilios', title: 'Estados Domicilios', ab:'ED', Rol: {Administrador: true}},
+            {path: 'Equipamiento', title: 'Equipamiento', ab:'EQ', Rol: {Administrador: true}},
+            {path: 'Reglas-activo', title: 'Reglas de Activo', ab:'RA', Rol: {Administrador: true}},
         ]
        },
 ];
