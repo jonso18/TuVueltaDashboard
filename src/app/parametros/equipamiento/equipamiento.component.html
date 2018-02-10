@@ -1,3 +1,169 @@
-<p>
-  equipamiento works!
-</p>
+<div class="container-fluid">
+  <mat-card>
+    <h1>Equipamiento</h1>
+    <form *ngIf="form" [formGroup]="form">
+      <!-- Mensaje -->
+      <mat-form-field>
+        <textarea formControlName="Mensaje" matInput placeholder="Mensaje"></textarea>
+        <mat-error>
+          Mensaje es
+          <strong>Obligatorio</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Monto para trabajar hoy -->
+      <mat-form-field>
+        <span matPrefix>&#36;</span>
+        <input formControlName="MontoParaTrabajarHoy" matInput placeholder="Monto Para Trabajar Hoy">
+        <mat-error>
+          Monto es
+          <strong>Obligatorio y Numerico</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <div formGroupName="Requisitos">
+        <div formGroupName="ChaquetaMensajero">
+          <h3 mat-subheader>Chaqueta Mensajero</h3>
+          <!-- Etiqueta -->
+          <div class="row">
+            <div class="col-sm-offset-1 col-sm-10">
+              <mat-form-field>
+                <input formControlName="Etiqueta" matInput placeholder="Etiqueta">
+                <mat-error>
+                  Etiqueta es
+                  <strong>Obligatorio</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Opciones -->
+          <div formArrayName="Opciones">
+            <mat-list *ngFor="let opcion of getOpciones('ChaquetaMensajero').controls; let i=index">
+              <div class="row">
+                <mat-list-item>
+                  <div class="col-sm-offset-1 col-sm-9">
+                    <mat-form-field>
+                      <input [formControlName]="i" matInput placeholder="Opcion {{ i+1 }}">
+                      <mat-error>
+                        Opción {{i+1}} es
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-sm-1">
+                    <button *ngIf="getOpciones('ChaquetaMensajero').length > 1" (click)="deleteControlOption('ChaquetaMensajero', i)" mat-mini-fab
+                      color="warn">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </mat-list-item>
+              </div>
+
+            </mat-list>
+            <div class="text-center">
+              <button (click)="addOpcion('ChaquetaMensajero')" mat-raised-button color="primary">
+                <mat-icon>add</mat-icon> Agregar Opción
+              </button>
+            </div>
+          </div>
+        </div>
+        <div formGroupName="EquipoMensajero">
+          <h3 mat-subheader>Equipo Mensajero </h3>
+          <!-- Etiqueta -->
+          <div class="row">
+            <div class="col-sm-offset-1 col-sm-10">
+              <mat-form-field>
+                <input formControlName="Etiqueta" matInput placeholder="Etiqueta">
+                <mat-error>
+                  Etiqueta es
+                  <strong>Obligatorio</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+
+          <!-- Opciones -->
+          <div formArrayName="Opciones">
+            <mat-list *ngFor="let opcion of getOpciones('EquipoMensajero').controls; let i=index">
+              <div class="row">
+                <mat-list-item>
+                  <div class="col-sm-offset-1 col-sm-9">
+                    <mat-form-field>
+                      <input [formControlName]="i" matInput placeholder="Opcion {{ i+1 }}">
+                      <mat-error>
+                        Opción {{i+1}} es
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-sm-1">
+                    <button *ngIf="getOpciones('EquipoMensajero').length > 1" (click)="deleteControlOption('EquipoMensajero', i)" mat-mini-fab
+                      color="warn">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </mat-list-item>
+              </div>
+            </mat-list>
+            <div class="text-center">
+              <button (click)="addOpcion('EquipoMensajero')" mat-raised-button color="primary">
+                <mat-icon>add</mat-icon> Agregar Opción
+              </button>
+            </div>
+          </div>
+        </div>
+        <div formGroupName="EquipoMoto">
+          <h3 mat-subheader>Equipo Moto </h3>
+
+          <!-- Etiqueta -->
+          <div class="row">
+            <div class="col-sm-offset-1 col-sm-10">
+              <mat-form-field>
+                <input formControlName="Etiqueta" matInput placeholder="Etiqueta">
+                <mat-error>
+                  Etiqueta es
+                  <strong>Obligatorio</strong>
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Opciones -->
+          <div formArrayName="Opciones">
+            <mat-list *ngFor="let opcion of getOpciones('EquipoMoto').controls; let i=index">
+              <div class="row">
+                <mat-list-item>
+                  <div class="col-sm-offset-1 col-sm-9">
+                    <mat-form-field>
+                      <input [formControlName]="i" matInput placeholder="Opcion {{ i+1 }}">
+                      <mat-error>
+                        Opción {{i+1}} es
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-sm-1">
+                    <button *ngIf="getOpciones('EquipoMoto').length > 1" (click)="deleteControlOption('EquipoMoto', i)" mat-mini-fab color="warn">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+
+                </mat-list-item>
+              </div>
+            </mat-list>
+          </div>
+          <div class="text-center">
+            <button (click)="addOpcion('EquipoMoto')" mat-raised-button color="primary">
+              <mat-icon>add</mat-icon> Agregar Opción
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="text-center">
+        <button [disabled]="form.invalid" class="btn btn-primary" (click)="save()" class="btn btn-block btn-primary">Actualizar Información</button>
+      </div>
+    </form>
+  </mat-card>
+</div>

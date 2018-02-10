@@ -29,7 +29,6 @@ import { ParametrosComponent } from '../parametros/parametros/parametros.compone
         ReactiveFormsModule,
         MdModule,
         MaterialModule,
-        ReactiveFormsModule,
         HttpClientModule,
         NgHttpLoaderModule
     ],

@@ -4,9 +4,10 @@ import { AuthService } from '../auth/auth.service';
 /* import { HttpClient, HttpHeaders } from '@angular/common/http'; */
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
-import { AngularFireAction } from 'angularfire2/database/interfaces';
+import { AngularFireAction, AngularFireObject } from 'angularfire2/database/interfaces';
 import { DataSnapshot } from '@firebase/database-types';
 import { ICiudad } from '../../interfaces/ciudad.interface';
+import { IEquipamiento } from '../../interfaces/equipamiento.interface';
 @Injectable()
 export class DbService {
   public Ciudades: ICiudad[];
@@ -41,18 +42,23 @@ export class DbService {
     return this.db.list("/Administrativo/Usuarios", ref => ref.orderByChild('Rol').equalTo('Mensajero'));
   }
 
-  public listCiudades(): Observable<ICiudad[]>  {
+  public listCiudades(): Observable<ICiudad[]> {
     return this.db.list("/Administrativo/ParamsRegistro/Ciudades")
       .snapshotChanges().map(changes => {
-        return changes.map(city => ({ 
-          Codigo: city.payload.key, 
+        return changes.map(city => ({
+          Codigo: city.payload.key,
           Nombre: city.payload.val().Nombre,
           Prefijo: city.payload.val().Prefijo
         }))
       });
   }
 
-  public objectCiudad(codigo){
+  public objectEquipamiento():AngularFireObject<IEquipamiento> {
+    return this.db.object(`/Administrativo/Equipamiento`)
+    
+  }
+
+  public objectCiudad(codigo) {
     const key = codigo;
     return this.db.object(`/Administrativo/ParamsRegistro/Ciudades/${key}`)
   }
