@@ -9,6 +9,7 @@ import { AngularFireAction, AngularFireObject } from 'angularfire2/database/inte
 import { DataSnapshot } from '@firebase/database-types';
 import { ICiudad } from '../../interfaces/ciudad.interface';
 import { IEquipamiento } from '../../interfaces/equipamiento.interface';
+import { IRegasActivos } from '../../interfaces/reglasactivos.interface';
 @Injectable()
 export class DbService {
   public Ciudades: ICiudad[];
@@ -54,9 +55,9 @@ export class DbService {
       });
   }
 
-  public objectEquipamiento():AngularFireObject<IEquipamiento> {
+  public objectEquipamiento(): AngularFireObject<IEquipamiento> {
     return this.db.object(`/Administrativo/Equipamiento`)
-    
+
   }
 
   public objectCiudad(codigo) {
@@ -64,7 +65,20 @@ export class DbService {
     return this.db.object(`/Administrativo/ParamsRegistro/Ciudades/${key}`)
   }
 
-  public objectGanancias(): AngularFireObject<IGanancias>{
+  public objectGanancias(): AngularFireObject<IGanancias> {
     return this.db.object(`/Administrativo/Ganancias`)
+  }
+
+  public objectReglasActivos(): AngularFireObject<IRegasActivos> {
+    return this.db.object(`/Administrativo/ReglasActivos`)
+  }
+
+  public objectReglasActivosSnap(): Observable<IRegasActivos> {
+    return this.objectReglasActivos()
+      .snapshotChanges()
+      .map(snap => {
+        const data: IRegasActivos = snap.payload.val()
+        return data
+      })
   }
 }

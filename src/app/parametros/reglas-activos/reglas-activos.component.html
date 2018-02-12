@@ -1,3 +1,74 @@
-<p>
-  reglas-activos works!
-</p>
+<mat-card>
+  <h1>Reglas Activos</h1>
+  <div class="row">
+    <div class="col-sm-offset-1 col-sm-10">
+      <form [formGroup]="form" *ngIf="form">
+        <mat-form-field>
+          <input matInput formControlName="TiempoActualizarPosicion" placeholder="Tiempo para actualizar la posicion">
+          <span class="matPrefix" matPrefix>
+            <strong>Milisegundos:</strong>
+          </span>
+          <span matSuffix>{{ TiempoActualizarPosicion.value / 1000 }} Segundos </span>
+          <mat-error *ngIf="TiempoActualizarPosicion.hasError('required')">Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+          <mat-error *ngIf="TiempoActualizarPosicion.hasError('min')">El valor debe ser
+            <strong>mayor a 0</strong>
+          </mat-error>
+          <mat-error *ngIf="TiempoActualizarPosicion.hasError('pattern') && !TiempoActualizarPosicion.hasError('min')">El valor debe ser
+            <strong>Numerico</strong>
+          </mat-error>
+        </mat-form-field>
+        <div formGroupName="RazonDeCambio">
+          <mat-list>
+            <h3>Razon de Cambio</h3>
+            <mat-list-item>
+              <mat-form-field>
+                <input matInput formControlName="Tiempo" placeholder="Tiempo">
+                <span class="matPrefix" matPrefix>
+                  <strong>Milisegundos:</strong>
+                </span>
+                <span matSuffix>{{ Tiempo.value / 1000 }} Segundos </span>
+                <mat-error *ngIf="Tiempo.hasError('required')">Campo
+                  <strong>Obligatorio</strong>
+                </mat-error>
+                <mat-error *ngIf="Tiempo.hasError('min')">El valor debe ser
+                  <strong>mayor a 0</strong>
+                </mat-error>
+                <mat-error *ngIf="Tiempo.hasError('pattern') && !Tiempo.hasError('min')">El valor debe ser
+                  <strong>Numerico</strong>
+                </mat-error>
+              </mat-form-field>
+            </mat-list-item>
+            <mat-list-item>
+              <mat-form-field>
+                <input matInput formControlName="Distancia" placeholder="Distancia">
+                <span class="matPrefix" matPrefix>
+                  <strong>Metros:</strong>
+                </span>
+                <span matSuffix>{{ Distancia.value / 1000 }} Km </span>
+                <mat-error *ngIf="Distancia.hasError('required')">Campo
+                  <strong>Obligatorio</strong>
+                </mat-error>
+                <mat-error *ngIf="Distancia.hasError('min')">El valor debe ser
+                  <strong>mayor a 0</strong>
+                </mat-error>
+                <mat-error *ngIf="Distancia.hasError('pattern') && !Distancia.hasError('min')">El valor debe ser
+                  <strong>Numerico</strong>
+                </mat-error>
+              </mat-form-field>
+            </mat-list-item>
+          </mat-list>
+
+
+        </div>
+        <div class="text-center">
+          <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">
+            Actualizar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</mat-card>
