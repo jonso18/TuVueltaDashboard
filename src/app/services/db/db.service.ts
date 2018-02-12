@@ -1,3 +1,4 @@
+import { IGanancias } from './../../interfaces/gananciass.interface';
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { AuthService } from '../auth/auth.service';
@@ -61,5 +62,9 @@ export class DbService {
   public objectCiudad(codigo) {
     const key = codigo;
     return this.db.object(`/Administrativo/ParamsRegistro/Ciudades/${key}`)
+  }
+
+  public objectGanancias(): AngularFireObject<IGanancias>{
+    return this.db.object(`/Administrativo/Ganancias`)
   }
 }
