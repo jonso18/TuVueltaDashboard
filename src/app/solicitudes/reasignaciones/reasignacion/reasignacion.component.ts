@@ -3,6 +3,7 @@ import { DbService } from '../../../services/db/db.service';
 import { MatTableDataSource, MatPaginator, MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatSnackBar } from '@angular/material';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { AuthService } from '../../../services/auth/auth.service';
+import { ROLES } from '../../../config/Roles';
 
 @Component({
   selector: 'app-reasignacion',
@@ -12,13 +13,14 @@ import { AuthService } from '../../../services/auth/auth.service';
 export class ReasignacionComponent implements OnInit {
   public Mensajeros;
   resultsLength = 0;
-  displayedColumns = ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'TotalAPagar', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'PlacaVehiculo', 'MensajeroCelular', 'Actions'];
+  displayedColumns = ['Fecha', 'TotalAPagar', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'PlacaVehiculo', 'MensajeroCelular', 'Actions'];
   public dataSource: MatTableDataSource<any>;
   public solicitudes;
+  public Clientes;
+  public allSolicitudes;
   @ViewChild('paginator') paginator: MatPaginator;
   constructor(
     private dbService: DbService,
-    
     public dialog: MatDialog,
     public snackBar: MatSnackBar
   ) { }
@@ -29,7 +31,15 @@ export class ReasignacionComponent implements OnInit {
 
   private loadInfo() {
     this.loadMensajeros();
+    this.loadClients();
     this.loadSolicitudEnProceso();
+  }
+
+  loadClients(){
+    const rol = ROLES.Cliente
+    this.dbService.listUsersByRol(rol).subscribe(res => {
+      this.Clientes = res;
+    })
   }
 
   loadMensajeros() {
@@ -41,15 +51,32 @@ export class ReasignacionComponent implements OnInit {
     })
   }
 
+  sortByClient(client){
+    if (!client){
+      this.solicitudes = this.allSolicitudes;
+      this.instanceTable();
+      return
+    }
+    
+    this.solicitudes = this.allSolicitudes.filter(item => {
+      if (item.payload.val().user_id == client.$key){
+        return item
+      }
+    })
+    
+    this.instanceTable();
+    
+
+  }
+
   loadSolicitudEnProceso() {
     this.dbService.listSolicitudEnProceso().snapshotChanges().subscribe(res => {
-      this.solicitudes = res;
-      res.forEach(item => {
-        console.log(item.payload.val())
-      })
+      this.solicitudes = this.allSolicitudes = res;
       this.instanceTable();
     })
   }
+
+
 
   instanceTable() {
     this.dataSource = new MatTableDataSource<any>(this.solicitudes)
