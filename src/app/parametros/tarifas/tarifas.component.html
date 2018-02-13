@@ -1,3 +1,90 @@
-<p>
-  tarifas works!
-</p>
+<mat-card>
+  <h1>Tarifas</h1>
+  <div *ngIf="TiposServicio && Ciudades && ListaTiposServicio">
+
+    <mat-form-field>
+      <mat-select placeholder="Seleccione Ciudad" [(ngModel)]="citySelected">
+        <mat-option *ngFor="let tipoServicio of TiposServicio" [value]="tipoServicio.payload.val()" (click)="serviceTypeSelected=null; cityCodeSelected=tipoServicio.key">
+          {{ Ciudades[tipoServicio.key].Nombre }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field *ngIf="citySelected">
+      <mat-select placeholder="Seleccione Tipo de Servicio" [(ngModel)]="serviceTypeSelected">
+        <ng-container *ngFor="let type of ListaTiposServicio">
+          <mat-option *ngIf="citySelected[type.key]" [value]="type.key" (click)="buildForm()">
+            {{ type.payload.val().Nombre }}
+          </mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <ng-container *ngIf="citySelected && serviceTypeSelected">
+    <h3>Tarifas</h3>
+    <form [formGroup]="form">
+      <mat-list>
+        <h3 mat-subheader>Tarifa 1</h3>
+        <mat-list-item>
+          <ng-container formGroupName="Tarifa1">
+            <mat-form-field>
+              <input matInput placeholder="min Km" formControlName="minKm" readonly>
+            </mat-form-field>
+            <!-- <mat-form-field>
+              <input matInput placeholder="max Km" formControlName="maxKm">
+            </mat-form-field> -->
+            <mat-form-field>
+              <input matInput placeholder="Valor" formControlName="value">
+            </mat-form-field>
+          </ng-container>
+        </mat-list-item>
+        <h3 mat-subheader>Tarifa 2</h3>
+        <mat-list-item>
+          <ng-container formGroupName="Tarifa2">
+            <mat-form-field>
+              <input matInput placeholder="min Km" formControlName="minKm" >
+              <mat-error *ngIf="form.get('Tarifa2').get('minKm').hasError('max')">
+                El valor no puede ser superior al min Km de Tarifa 3
+              </mat-error>
+              <mat-error *ngIf="form.get('Tarifa2').get('minKm').hasError('pattern')">
+                Debe ser Númerico
+              </mat-error>
+              <mat-error *ngIf="form.get('Tarifa2').get('minKm').hasError('min')">
+                Debe ser superior a 1 Km
+              </mat-error>
+              <mat-error *ngIf="form.get('Tarifa2').get('minKm').hasError('required')">
+                Campo Obligatorio
+              </mat-error>
+            </mat-form-field>
+            <!-- <mat-form-field>
+              <input matInput placeholder="max Km" formControlName="maxKm">
+            </mat-form-field> -->
+            <mat-form-field>
+              <input matInput placeholder="Valor" formControlName="value">
+            </mat-form-field>
+          </ng-container>
+        </mat-list-item>
+        <h3 mat-subheader>Tarifa 3</h3>
+        <mat-list-item>
+          <ng-container formGroupName="Tarifa3">
+            <mat-form-field>
+              <input matInput placeholder="min Km" formControlName="minKm" (keyup)="addValidators('Tarifa2', 'Tarifa3')">
+            </mat-form-field>
+            <!-- <mat-form-field>
+              <input matInput placeholder="max Km" formControlName="maxKm">
+            </mat-form-field> -->
+            <mat-form-field>
+              <input matInput placeholder="Valor" formControlName="value">
+            </mat-form-field>
+          </ng-container>
+        </mat-list-item>
+      </mat-list>
+      <div class="text-center">
+        <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">
+          Actualizar
+        </button>
+      </div>
+    </form>
+  </ng-container>
+
+</mat-card>

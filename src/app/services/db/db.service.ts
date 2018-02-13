@@ -5,11 +5,12 @@ import { AuthService } from '../auth/auth.service';
 /* import { HttpClient, HttpHeaders } from '@angular/common/http'; */
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
-import { AngularFireAction, AngularFireObject } from 'angularfire2/database/interfaces';
+import { AngularFireAction, AngularFireObject, AngularFireList } from 'angularfire2/database/interfaces';
 import { DataSnapshot } from '@firebase/database-types';
 import { ICiudad } from '../../interfaces/ciudad.interface';
 import { IEquipamiento } from '../../interfaces/equipamiento.interface';
 import { IRegasActivos } from '../../interfaces/reglasactivos.interface';
+import { IEstadoServicio } from '../../interfaces/estadoservicio.interface';
 @Injectable()
 export class DbService {
   public Ciudades: ICiudad[];
@@ -81,4 +82,46 @@ export class DbService {
         return data
       })
   }
+
+  public listEstadosServicio(): AngularFireList<IEstadoServicio> {
+    return this.db.list(`/Administrativo/EstadosServicio`)
+  }
+
+  public listEstadosServicioSnap(): Observable<IEstadoServicio[]> {
+    return this.listEstadosServicio().snapshotChanges()
+      .map(changes => changes.map(estado => {
+        const value = estado.payload.val();
+        const data: IEstadoServicio = {
+          $key: estado.payload.key,
+          Nombre: value.Nombre,
+          Descripcion: value.Descripcion
+        };
+        return data;
+      }))
+  }
+
+  public listTipoServicio(){
+    return this.db.list(`/Administrativo/TipoServicio`)
+  }
+
+  public objectListaTiposServicio(){
+    return this.db.object(`/Administrativo/ListaTipoServicios`)
+  }
+  
+  public listListaTiposServicio(){
+    return this.db.list(`/Administrativo/ListaTipoServicios`)
+  }
+
+  public objectTarifas(cityCode: number, serviceType: string){
+    return this.db.object(`/Administrativo/TipoServicio/${cityCode}/${serviceType}/Tarifas`)
+  }
+
+  public listSolicitudEnProceso(){
+    return this.db.list(`/Operativo/Solicitud`, ref => ref.orderByChild('EnProceso').equalTo(true))
+  }
+
+  public objectSolicitud(key: string){
+    return this.db.object(`/Operativo/Solicitud/${key}`)
+  }
+
 }

@@ -65,6 +65,7 @@ import { AdminLayoutComponent } from './layouts/admin/admin-layout.component';
 import { AuthLayoutComponent } from './layouts/auth/auth-layout.component';
 import { AuthService } from './services/auth/auth.service';
 import { DbService } from './services/db/db.service';
+import { ReasignacionComponent } from './solicitudes/reasignaciones/reasignacion/reasignacion.component';
 
 
 

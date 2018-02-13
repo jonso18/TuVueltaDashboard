@@ -1,8 +1,4 @@
 <div>
-  <div class="text-right">
-    <button class="btn btn-primary" (click)="_new()">Nueva Solicitud</button>
-    <!--<button class="btn btn-oulet" (click)="_list()">Listado de solicitudes</button>-->
-  </div>
   <mat-table #table [dataSource]="dataSource" *ngIf="dataSource && Mensajeros" matSort (matSortChange)="sortData($event)">
     <!-- ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'Telefono', 'PagoConTarjeta', 'Distancia', 'Punto Inicio', 'Punto Final', 'Estado']; -->
     <!-- Position Column -->
@@ -96,8 +92,16 @@
       </mat-cell>
     </ng-container>
 
+    <!--  Actions-->
+    <ng-container matColumnDef="Actions">
+      <mat-header-cell *matHeaderCellDef>Acciones </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span ><button mat-raised-button color="primary" (click)="openDialog(element.payload.key, element.payload.val().fechaCompra, element.payload.val().Motorratoner_id)">Reasignar</button></span>
+      </mat-cell>
+    </ng-container>
+
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="row.payload.val().Reasignando? 'reasignando': ''"></mat-row>
   </mat-table>
 
   <mat-paginator #paginator [length]="resultsLength" [pageSize]="5">

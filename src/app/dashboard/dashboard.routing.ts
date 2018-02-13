@@ -11,6 +11,7 @@ import { GananciasComponent } from '../parametros/ganancias/ganancias.component'
 import { EstadosDomiciliosComponent } from '../parametros/estados-domicilios/estados-domicilios.component';
 import { EquipamientoComponent } from '../parametros/equipamiento/equipamiento.component';
 import { ReglasActivosComponent } from '../parametros/reglas-activos/reglas-activos.component';
+import { ReasignacionComponent } from '../solicitudes/reasignaciones/reasignacion/reasignacion.component';
 
 export const DashboardRoutes: Routes = [
     {
@@ -45,6 +46,10 @@ export const DashboardRoutes: Routes = [
                             {
                                 path: 'lista',
                                 component: SolicitudListComponent
+                            },
+                            {
+                                path: 'hacer-reasignacion',
+                                component: ReasignacionComponent
                             }
                         ]
                     },
