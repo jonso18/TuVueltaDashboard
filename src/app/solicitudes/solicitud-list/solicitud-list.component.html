@@ -1,6 +1,6 @@
 <div>
   <div class="text-right">
-    <button class="btn btn-primary" (click)="_new()">Nueva Solicitud</button>
+    <button class="btn btn-primary" (click)="_new()" *ngIf="authService.userInfo.Rol == ROLES.Cliente">Nueva Solicitud</button>
     <!--<button class="btn btn-oulet" (click)="_list()">Listado de solicitudes</button>-->
   </div>
   <mat-table #table [dataSource]="dataSource" *ngIf="dataSource && Mensajeros" matSort (matSortChange)="sortData($event)">
@@ -9,7 +9,7 @@
     <!-- Fecha -->
     <ng-container matColumnDef="Fecha">
       <mat-header-cell *matHeaderCellDef mat-sort-header="key"> Fecha. </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.key | date:'d/M/yy'}} </mat-cell>
+      <mat-cell *matCellDef="let element"> {{element.key | date:'d/M/yy, h:mm:ss a'}} </mat-cell>
     </ng-container>
 
     <!-- Nombres -->
@@ -93,6 +93,14 @@
       <mat-header-cell *matHeaderCellDef> Mensajero Celular </mat-header-cell>
       <mat-cell *matCellDef="let element">
         <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Celular }}</span>
+      </mat-cell>
+    </ng-container>
+
+    <!-- MensajeroCelular -->
+    <ng-container matColumnDef="Acciones" *ngIf="authService.userInfo.Rol == ROLES.Administrador">
+      <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <span><button mat-raised-button color="primary" (click)="openDialogUpdate(element)">Actualizar</button></span>
       </mat-cell>
     </ng-container>
 

@@ -54,7 +54,8 @@ import { ReasignacionComponent, DialogReasignacion } from '../solicitudes/reasig
     entryComponents:[
         DialogNewCity,
         DialogDeleteCity,
-        DialogReasignacion
+        DialogReasignacion,
+        SolicitudFormComponent
     ]
 })
 

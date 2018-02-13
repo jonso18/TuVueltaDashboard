@@ -1,29 +1,23 @@
 <div>
+<!-- Filter Reasignacion -->
+  <mat-form-field>
+    <mat-select placeholder="Cliente">
+      <mat-option *ngFor="let cliente of Clientes" [value]="cliente" (click)="sortByClient(cliente)">
+        {{ cliente.Nombres }}
+      </mat-option>
+      <mat-option [value]="null" (click)="sortByClient(null)">
+        Todos
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <mat-table #table [dataSource]="dataSource" *ngIf="dataSource && Mensajeros" matSort (matSortChange)="sortData($event)">
     <!-- ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'Telefono', 'PagoConTarjeta', 'Distancia', 'Punto Inicio', 'Punto Final', 'Estado']; -->
     <!-- Position Column -->
     <!-- Fecha -->
     <ng-container matColumnDef="Fecha">
       <mat-header-cell *matHeaderCellDef mat-sort-header="key"> Fecha. </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.key | date:'d/M/yy'}} </mat-cell>
-    </ng-container>
-
-    <!-- Nombres -->
-    <ng-container matColumnDef="Nombres">
-      <mat-header-cell *matHeaderCellDef> Nombres </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.payload.val().Nombres }} </mat-cell>
-    </ng-container>
-
-    <!-- Apellidos -->
-    <ng-container matColumnDef="Apellidos">
-      <mat-header-cell *matHeaderCellDef> Apellidos </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.payload.val().Apellidos }} </mat-cell>
-    </ng-container>
-
-    <!-- Celular -->
-    <ng-container matColumnDef="Celular">
-      <mat-header-cell *matHeaderCellDef> Celular </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.payload.val().Celular }} </mat-cell>
+      <mat-cell *matCellDef="let element"> {{element.key | date:'d/M/yy, h:mm a'}} </mat-cell>
     </ng-container>
 
     <!-- Telefono -->
@@ -96,7 +90,9 @@
     <ng-container matColumnDef="Actions">
       <mat-header-cell *matHeaderCellDef>Acciones </mat-header-cell>
       <mat-cell *matCellDef="let element">
-        <span ><button mat-raised-button color="primary" (click)="openDialog(element.payload.key, element.payload.val().fechaCompra, element.payload.val().Motorratoner_id)">Reasignar</button></span>
+        <span>
+          <button mat-raised-button color="primary" (click)="openDialog(element.payload.key, element.payload.val().fechaCompra, element.payload.val().Motorratoner_id)">Reasignar</button>
+        </span>
       </mat-cell>
     </ng-container>
 

@@ -75,6 +75,7 @@ export const ROUTES: RouteInfo[] = [
         collapse: 'Reasignaciones',
         children: [
             { path: 'hacer-reasignacion', title: 'Hacer Reasignacion', ab: 'HR', Rol: { Administrador: true } },
+            { path: 'lista', title: 'Lista', ab: 'L', Rol: { Administrador: true } },
         ]
     },
 ];
