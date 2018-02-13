@@ -3,6 +3,7 @@ import { DbService } from '../../services/db/db.service';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { DataSource } from '@angular/cdk/collections';
 import { Solicitud } from '../../interfaces/solicitud.interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-solicitud-list',
@@ -22,11 +23,16 @@ export class SolicitudListComponent implements OnInit {
   @ViewChild('paginator') paginator: MatPaginator;
   
   constructor(
-    public dbService: DbService
+    public dbService: DbService,
+    private router: Router
   ) { }
 
   ngAfterViewInit() {
     
+  }
+
+  _new(){
+    this.router.navigateByUrl('/dashboard/solicitud/nueva')
   }
 
   ngOnInit() {

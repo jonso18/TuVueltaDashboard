@@ -15,9 +15,7 @@ export class SolicitudComponent implements OnInit {
   ngOnInit() {
   }
 
-  _new(){
-    this.router.navigateByUrl('/dashboard/solicitud/nueva')
-  }
+  
   _list(){
     this.router.navigateByUrl('/dashboard/solicitud/lista')
   }

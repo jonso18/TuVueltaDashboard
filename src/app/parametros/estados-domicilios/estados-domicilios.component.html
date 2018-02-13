@@ -1,3 +1,20 @@
-<p>
-  estados-domicilios works!
-</p>
+<mat-card>
+  <h1>Estados Domicilios</h1>
+  <div *ngIf="Estados; else loading">
+    <div class="row">
+      <div class="col-sm-3">Id</div>
+      <div class="col-sm-3">Nombre</div>
+      <div class="col-sm-6">Descripción</div>
+    </div>
+    <div class="row" *ngFor="let row of Estados">
+      <div class="col-sm-3">{{ row.$key }}</div>
+      <div class="col-sm-3">{{ row.Nombre }}</div>
+      <div class="col-sm-6">{{ row.Descripcion }}</div>
+    </div>
+  </div>
+  <ng-template #loading>
+    <div class="text-center">
+        <mat-spinner></mat-spinner>
+    </div>
+  </ng-template>
+</mat-card>

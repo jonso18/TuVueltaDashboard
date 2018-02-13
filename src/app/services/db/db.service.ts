@@ -1,13 +1,16 @@
+import { IGanancias } from './../../interfaces/gananciass.interface';
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { AuthService } from '../auth/auth.service';
 /* import { HttpClient, HttpHeaders } from '@angular/common/http'; */
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
-import { AngularFireAction, AngularFireObject } from 'angularfire2/database/interfaces';
+import { AngularFireAction, AngularFireObject, AngularFireList } from 'angularfire2/database/interfaces';
 import { DataSnapshot } from '@firebase/database-types';
 import { ICiudad } from '../../interfaces/ciudad.interface';
 import { IEquipamiento } from '../../interfaces/equipamiento.interface';
+import { IRegasActivos } from '../../interfaces/reglasactivos.interface';
+import { IEstadoServicio } from '../../interfaces/estadoservicio.interface';
 @Injectable()
 export class DbService {
   public Ciudades: ICiudad[];
@@ -53,13 +56,72 @@ export class DbService {
       });
   }
 
-  public objectEquipamiento():AngularFireObject<IEquipamiento> {
+  public objectEquipamiento(): AngularFireObject<IEquipamiento> {
     return this.db.object(`/Administrativo/Equipamiento`)
-    
+
   }
 
   public objectCiudad(codigo) {
     const key = codigo;
     return this.db.object(`/Administrativo/ParamsRegistro/Ciudades/${key}`)
   }
+
+  public objectGanancias(): AngularFireObject<IGanancias> {
+    return this.db.object(`/Administrativo/Ganancias`)
+  }
+
+  public objectReglasActivos(): AngularFireObject<IRegasActivos> {
+    return this.db.object(`/Administrativo/ReglasActivos`)
+  }
+
+  public objectReglasActivosSnap(): Observable<IRegasActivos> {
+    return this.objectReglasActivos()
+      .snapshotChanges()
+      .map(snap => {
+        const data: IRegasActivos = snap.payload.val()
+        return data
+      })
+  }
+
+  public listEstadosServicio(): AngularFireList<IEstadoServicio> {
+    return this.db.list(`/Administrativo/EstadosServicio`)
+  }
+
+  public listEstadosServicioSnap(): Observable<IEstadoServicio[]> {
+    return this.listEstadosServicio().snapshotChanges()
+      .map(changes => changes.map(estado => {
+        const value = estado.payload.val();
+        const data: IEstadoServicio = {
+          $key: estado.payload.key,
+          Nombre: value.Nombre,
+          Descripcion: value.Descripcion
+        };
+        return data;
+      }))
+  }
+
+  public listTipoServicio(){
+    return this.db.list(`/Administrativo/TipoServicio`)
+  }
+
+  public objectListaTiposServicio(){
+    return this.db.object(`/Administrativo/ListaTipoServicios`)
+  }
+  
+  public listListaTiposServicio(){
+    return this.db.list(`/Administrativo/ListaTipoServicios`)
+  }
+
+  public objectTarifas(cityCode: number, serviceType: string){
+    return this.db.object(`/Administrativo/TipoServicio/${cityCode}/${serviceType}/Tarifas`)
+  }
+
+  public listSolicitudEnProceso(){
+    return this.db.list(`/Operativo/Solicitud`, ref => ref.orderByChild('EnProceso').equalTo(true))
+  }
+
+  public objectSolicitud(key: string){
+    return this.db.object(`/Operativo/Solicitud/${key}`)
+  }
+
 }

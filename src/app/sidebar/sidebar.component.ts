@@ -13,7 +13,7 @@ export interface RouteInfo {
     type: string;
     icontype: string;
     collapse?: string;
-    Rol?:any;
+    Rol?: any;
     children?: ChildrenItems[];
 }
 
@@ -22,11 +22,12 @@ export interface ChildrenItems {
     title: string;
     ab: string;
     type?: string;
-    Rol?:any;
+    Rol?: any;
 }
 
 //Menu Items
-export const ROUTES: RouteInfo[] = [{
+export const ROUTES: RouteInfo[] = [
+    {
         path: '/dashboard/inicio',
         title: 'Dashboard',
         type: 'link',
@@ -34,7 +35,7 @@ export const ROUTES: RouteInfo[] = [{
         Rol: {
             Administrador: true
         }
-    },{
+    }, {
         path: '/dashboard/solicitud',
         title: 'Cargar Domicilio',
         type: 'link',
@@ -54,14 +55,28 @@ export const ROUTES: RouteInfo[] = [{
         icontype: 'settings',
         collapse: 'parametros',
         children: [
-            {path: 'ciudad', title: 'Ciudades', ab:'CI', Rol: {Administrador: true}},
-            {path: 'tarifas', title: 'Tarifas', ab:'T', Rol: {Administrador: true}},
-            {path: 'Ganacias', title: 'Ganacias', ab:'G', Rol: {Administrador: true}},
-            {path: 'Estados-Domicilios', title: 'Estados Domicilios', ab:'ED', Rol: {Administrador: true}},
-            {path: 'Equipamiento', title: 'Equipamiento', ab:'EQ', Rol: {Administrador: true}},
-            {path: 'Reglas-activo', title: 'Reglas de Activo', ab:'RA', Rol: {Administrador: true}},
+            { path: 'ciudad', title: 'Ciudades', ab: 'CI', Rol: { Administrador: true } },
+            { path: 'tarifas', title: 'Tarifas', ab: 'T', Rol: { Administrador: true } },
+            { path: 'Ganacias', title: 'Ganacias', ab: 'G', Rol: { Administrador: true } },
+            { path: 'Estados-Domicilios', title: 'Estados Domicilios', ab: 'ED', Rol: { Administrador: true } },
+            { path: 'Equipamiento', title: 'Equipamiento', ab: 'EQ', Rol: { Administrador: true } },
+            { path: 'Reglas-activo', title: 'Reglas de Activo', ab: 'RA', Rol: { Administrador: true } },
         ]
-       },
+    },
+    {
+        path: '/dashboard/solicitud',
+        title: 'Solicitudes',
+        Rol: {
+            Administrador: true,
+            Cliente: false
+        },
+        type: 'sub',
+        icontype: 'settings',
+        collapse: 'Reasignaciones',
+        children: [
+            { path: 'hacer-reasignacion', title: 'Hacer Reasignacion', ab: 'HR', Rol: { Administrador: true } },
+        ]
+    },
 ];
 @Component({
     selector: 'app-sidebar-cmp',
@@ -71,7 +86,7 @@ export const ROUTES: RouteInfo[] = [{
 export class SidebarComponent implements OnInit {
     public menuItems: any[];
 
-    constructor(public authService:AuthService){}
+    constructor(public authService: AuthService) { }
 
 
     isMobileMenu() {
@@ -85,13 +100,13 @@ export class SidebarComponent implements OnInit {
         this.menuItems = ROUTES.filter(menuItem => menuItem);
     }
 
-    updatePS(): void  {
+    updatePS(): void {
         if (window.matchMedia(`(min-width: 960px)`).matches && !this.isMac()) {
             const elemSidebar = <HTMLElement>document.querySelector('.sidebar .sidebar-wrapper');
             let ps = new PerfectScrollbar(elemSidebar, { wheelSpeed: 2, suppressScrollX: true });
         }
     }
-    
+
     isMac(): boolean {
         let bool = false;
         if (navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.platform.toUpperCase().indexOf('IPAD') >= 0) {

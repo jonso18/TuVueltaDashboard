@@ -1,0 +1,15 @@
+mat-form-field{
+    width: 100%;
+}
+:host{
+    top: 100px;
+    position: relative;
+}
+
+mat-card{
+    margin-bottom: 44px;
+}
+
+span.matPrefix{
+    padding-right: 8px;
+}
