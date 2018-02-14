@@ -6,7 +6,7 @@ import { Solicitud } from '../../interfaces/solicitud.interface';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { ROLES } from '../../config/Roles';
-import { SolicitudFormComponent } from '../solicitud-form/solicitud-form.component';
+import { SolicitudFormDialog } from '../solicitud-form/solicitud-form.component';
 
 @Component({
   selector: 'app-solicitud-list',
@@ -98,7 +98,7 @@ export class SolicitudListComponent implements OnInit {
 
   openDialogUpdate(element){
     console.log(element)
-    let dialogRef = this.dialog.open(SolicitudFormComponent, {
+    let dialogRef = this.dialog.open(SolicitudFormDialog, {
       width: '600px',
       data: { update:true, snap: element  }
     });

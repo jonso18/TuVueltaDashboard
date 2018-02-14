@@ -8,7 +8,7 @@ import { MaterialModule } from '../app.module';
 import { DashboardComponent } from './dashboard.component';
 import { DashboardRoutes } from './dashboard.routing';
 import { SolicitudComponent } from '../solicitudes/solicitud/solicitud.component';
-import { SolicitudFormComponent } from '../solicitudes/solicitud-form/solicitud-form.component';
+import { SolicitudFormComponent, SolicitudFormDialog } from '../solicitudes/solicitud-form/solicitud-form.component';
 import { SolicitudListComponent } from '../solicitudes/solicitud-list/solicitud-list.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DbService } from '../services/db/db.service';
@@ -53,13 +53,14 @@ import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/
         ReasignacionComponent,
         DialogReasignacion,
         ReporteClientesServiciosComponent, 
-        ReportesComponent
+        ReportesComponent,
+        SolicitudFormDialog
     ],
     entryComponents:[
         DialogNewCity,
         DialogDeleteCity,
         DialogReasignacion,
-        SolicitudFormComponent
+        SolicitudFormDialog
     ]
 })
 
