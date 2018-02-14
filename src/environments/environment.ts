@@ -15,6 +15,6 @@ export const environment = {
   },
 
   baseapi: {
-    tuvuelta: 'https://us-central1-tuvuelta-produccion.cloudfunctions.net/asdfas'
+    tuvuelta: 'https://us-central1-tuvuelta-produccion.cloudfunctions.net/'
   }
 };
