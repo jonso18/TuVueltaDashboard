@@ -1,143 +1,148 @@
 <div>
-  <div class="text-right">
-    <button class="btn btn-primary" (click)="_new()" *ngIf="authService.userInfo.Rol == ROLES.Cliente">Nueva Solicitud</button>
+  <div class="text-right" *ngIf="authService.userInfo.Rol == ROLES.Cliente">
+    <button class="btn btn-primary" (click)="_new()" >Nueva Solicitud</button>
     <!--<button class="btn btn-oulet" (click)="_list()">Listado de solicitudes</button>-->
   </div>
-  <div class="row">
-    <div class="col-md-4" *ngIf="Clientes">
-      <mat-form-field class="w-100">
-        <mat-select placeholder="Cliente" [(ngModel)]="clientSelected">
-          <mat-option *ngFor="let cliente of Clientes" [value]="cliente" (click)="this.applyFilter()">
-            {{ cliente.Nombres }}
-          </mat-option>
-          <mat-option [value]="null" (click)="this.applyFilter();">
-            Todos
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+  <div class="table-solicitudes">
+    <div class="filtros" *ngIf="authService.userInfo.Rol == ROLES.Administrador">
+      <div class="row">
+        <div class="col-md-4" *ngIf="Clientes">
+          <mat-form-field class="w-100" matTooltip="Realizar Filtro por Cliente">
+            <mat-select placeholder="Cliente" [(ngModel)]="clientSelected">
+              <mat-option *ngFor="let cliente of Clientes" [value]="cliente" (click)="this.applyFilter()">
+                {{ cliente.Nombres }}
+              </mat-option>
+              <mat-option [value]="null" (click)="this.applyFilter();">
+                Todos
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field class="w-100" matTooltip="Click en el icono de calendario para asignar fecha de inicio">
+            <input matInput [matDatepicker]="pickerstart" placeholder="Fecha Inicio" (dateChange)="pickerStart('change', $event)" disabled>
+            <mat-datepicker-toggle matSuffix [for]="pickerstart"></mat-datepicker-toggle>
+            <mat-datepicker #pickerstart disabled="false"></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field class="w-100" matTooltip="Click en el icono de calendario para asignar fecha de finalizacion">
+            <input matInput [matDatepicker]="pickerend" placeholder="Fecha Finalización" (dateChange)="pickerEnd('change', $event)" disabled>
+            <mat-datepicker-toggle matSuffix [for]="pickerend"></mat-datepicker-toggle>
+            <mat-datepicker #pickerend disabled="false"></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
     </div>
-    <div class="col-md-4">
-      <mat-form-field class="w-100">
-        <input matInput [matDatepicker]="pickerstart" placeholder="Fecha Inicio" (dateChange)="pickerStart('change', $event)" disabled>
-        <mat-datepicker-toggle matSuffix [for]="pickerstart"></mat-datepicker-toggle>
-        <mat-datepicker #pickerstart disabled="false"></mat-datepicker>
-      </mat-form-field>
-    </div>
-    <div class="col-md-4">
-      <mat-form-field class="w-100">
-        <input matInput [matDatepicker]="pickerend" placeholder="Fecha Finalización" (dateChange)="pickerEnd('change', $event)" disabled>
-        <mat-datepicker-toggle matSuffix [for]="pickerend"></mat-datepicker-toggle>
-        <mat-datepicker #pickerend disabled="false"></mat-datepicker>
-      </mat-form-field>
-    </div>
+    <mat-table #table [dataSource]="dataSource" *ngIf="dataSource && Mensajeros" matSort (matSortChange)="sortData($event)">
+      <!-- ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'Telefono', 'PagoConTarjeta', 'Distancia', 'Punto Inicio', 'Punto Final', 'Estado']; -->
+      <!-- Position Column -->
+      <!-- Fecha -->
+      <ng-container matColumnDef="Fecha">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="key"> Fecha. </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.key | date:'d/M/yy, h:mm:ss a'}} </mat-cell>
+      </ng-container>
+
+      <!-- Nombres -->
+      <ng-container matColumnDef="Nombres">
+        <mat-header-cell *matHeaderCellDef> Nombres </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.payload.val().Nombres }} </mat-cell>
+      </ng-container>
+
+      <!-- Apellidos -->
+      <ng-container matColumnDef="Apellidos">
+        <mat-header-cell *matHeaderCellDef> Apellidos </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.payload.val().Apellidos }} </mat-cell>
+      </ng-container>
+
+      <!-- Celular -->
+      <ng-container matColumnDef="Celular">
+        <mat-header-cell *matHeaderCellDef> Celular </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.payload.val().Celular }} </mat-cell>
+      </ng-container>
+
+      <!-- Telefono -->
+      <ng-container matColumnDef="Telefono">
+        <mat-header-cell *matHeaderCellDef> Telefono </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.payload.val().Telefono }} </mat-cell>
+      </ng-container>
+
+      <!-- PagoConTarjeta -->
+      <ng-container matColumnDef="PagoConTarjeta">
+        <mat-header-cell *matHeaderCellDef> Pago Con Tarjeta </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.payload.val().esPagoConTarjeta ? 'Si':'No' }} </mat-cell>
+      </ng-container>
+
+      <!-- TotalAPagar -->
+      <ng-container matColumnDef="TotalAPagar">
+        <mat-header-cell *matHeaderCellDef> Total A Pagar </mat-header-cell>
+        <mat-cell *matCellDef="let element"> $ {{element.payload.val().TotalAPagar | number }} </mat-cell>
+      </ng-container>
+
+      <!-- DistanciaTotal -->
+      <ng-container matColumnDef="Distancia">
+        <mat-header-cell *matHeaderCellDef>Distancia</mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{(element.payload.val().DistanciaTotal / 1000) | number }} Km </mat-cell>
+      </ng-container>
+
+      <!-- PuntoInicio -->
+      <ng-container matColumnDef="puntoInicio">
+        <mat-header-cell *matHeaderCellDef>Punto Inicio</mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.payload.val().puntoInicio}} </mat-cell>
+      </ng-container>
+
+      <!-- puntoFinal -->
+      <ng-container matColumnDef="puntoFinal">
+        <mat-header-cell *matHeaderCellDef>Punto Final</mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.payload.val().puntoFinal}} </mat-cell>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="Estado">
+        <mat-header-cell *matHeaderCellDef>Estado</mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.payload.val().Estado}} </mat-cell>
+      </ng-container>
+
+      <!-- Mensajero -->
+      <ng-container matColumnDef="Mensajero">
+        <mat-header-cell *matHeaderCellDef> Mensajero </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Nombres }}</span>
+        </mat-cell>
+      </ng-container>
+
+      <!-- PlacaVehiculo -->
+      <ng-container matColumnDef="PlacaVehiculo">
+        <mat-header-cell *matHeaderCellDef> Placa Vehiculo </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].PlacaVehiculo }}</span>
+        </mat-cell>
+      </ng-container>
+
+      <!-- MensajeroCelular -->
+      <ng-container matColumnDef="MensajeroCelular">
+        <mat-header-cell *matHeaderCellDef> Mensajero Celular </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Celular }}</span>
+        </mat-cell>
+      </ng-container>
+
+      <!-- MensajeroCelular -->
+      <ng-container matColumnDef="Acciones" *ngIf="authService.userInfo.Rol == ROLES.Administrador">
+        <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          <span>
+            <button mat-raised-button color="primary" (click)="openDialogUpdate(element)">Actualizar</button>
+          </span>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+    <mat-paginator #paginator [length]="resultsLength" [pageSize]="5">
+    </mat-paginator>
   </div>
-  <mat-table #table [dataSource]="dataSource" *ngIf="dataSource && Mensajeros" matSort (matSortChange)="sortData($event)">
-    <!-- ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'Telefono', 'PagoConTarjeta', 'Distancia', 'Punto Inicio', 'Punto Final', 'Estado']; -->
-    <!-- Position Column -->
-    <!-- Fecha -->
-    <ng-container matColumnDef="Fecha">
-      <mat-header-cell *matHeaderCellDef mat-sort-header="key"> Fecha. </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.key | date:'d/M/yy, h:mm:ss a'}} </mat-cell>
-    </ng-container>
 
-    <!-- Nombres -->
-    <ng-container matColumnDef="Nombres">
-      <mat-header-cell *matHeaderCellDef> Nombres </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.payload.val().Nombres }} </mat-cell>
-    </ng-container>
-
-    <!-- Apellidos -->
-    <ng-container matColumnDef="Apellidos">
-      <mat-header-cell *matHeaderCellDef> Apellidos </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.payload.val().Apellidos }} </mat-cell>
-    </ng-container>
-
-    <!-- Celular -->
-    <ng-container matColumnDef="Celular">
-      <mat-header-cell *matHeaderCellDef> Celular </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.payload.val().Celular }} </mat-cell>
-    </ng-container>
-
-    <!-- Telefono -->
-    <ng-container matColumnDef="Telefono">
-      <mat-header-cell *matHeaderCellDef> Telefono </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.payload.val().Telefono }} </mat-cell>
-    </ng-container>
-
-    <!-- PagoConTarjeta -->
-    <ng-container matColumnDef="PagoConTarjeta">
-      <mat-header-cell *matHeaderCellDef> Pago Con Tarjeta </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.payload.val().esPagoConTarjeta ? 'Si':'No' }} </mat-cell>
-    </ng-container>
-
-    <!-- TotalAPagar -->
-    <ng-container matColumnDef="TotalAPagar">
-      <mat-header-cell *matHeaderCellDef> Total A Pagar </mat-header-cell>
-      <mat-cell *matCellDef="let element"> $ {{element.payload.val().TotalAPagar | number }} </mat-cell>
-    </ng-container>
-
-    <!-- DistanciaTotal -->
-    <ng-container matColumnDef="Distancia">
-      <mat-header-cell *matHeaderCellDef>Distancia</mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{(element.payload.val().DistanciaTotal / 1000) | number }} Km </mat-cell>
-    </ng-container>
-
-    <!-- PuntoInicio -->
-    <ng-container matColumnDef="puntoInicio">
-      <mat-header-cell *matHeaderCellDef>Punto Inicio</mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.payload.val().puntoInicio}} </mat-cell>
-    </ng-container>
-
-    <!-- puntoFinal -->
-    <ng-container matColumnDef="puntoFinal">
-      <mat-header-cell *matHeaderCellDef>Punto Final</mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.payload.val().puntoFinal}} </mat-cell>
-    </ng-container>
-
-    <!-- Estado -->
-    <ng-container matColumnDef="Estado">
-      <mat-header-cell *matHeaderCellDef>Estado</mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element.payload.val().Estado}} </mat-cell>
-    </ng-container>
-
-    <!-- Mensajero -->
-    <ng-container matColumnDef="Mensajero">
-      <mat-header-cell *matHeaderCellDef> Mensajero </mat-header-cell>
-      <mat-cell *matCellDef="let element">
-        <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Nombres }}</span>
-      </mat-cell>
-    </ng-container>
-
-    <!-- PlacaVehiculo -->
-    <ng-container matColumnDef="PlacaVehiculo">
-      <mat-header-cell *matHeaderCellDef> Placa Vehiculo </mat-header-cell>
-      <mat-cell *matCellDef="let element">
-        <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].PlacaVehiculo }}</span>
-      </mat-cell>
-    </ng-container>
-
-    <!-- MensajeroCelular -->
-    <ng-container matColumnDef="MensajeroCelular">
-      <mat-header-cell *matHeaderCellDef> Mensajero Celular </mat-header-cell>
-      <mat-cell *matCellDef="let element">
-        <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Celular }}</span>
-      </mat-cell>
-    </ng-container>
-
-    <!-- MensajeroCelular -->
-    <ng-container matColumnDef="Acciones" *ngIf="authService.userInfo.Rol == ROLES.Administrador">
-      <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
-      <mat-cell *matCellDef="let element">
-        <span>
-          <button mat-raised-button color="primary" (click)="openDialogUpdate(element)">Actualizar</button>
-        </span>
-      </mat-cell>
-    </ng-container>
-
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-  </mat-table>
-
-  <mat-paginator #paginator [length]="resultsLength" [pageSize]="5">
-  </mat-paginator>
 </div>
