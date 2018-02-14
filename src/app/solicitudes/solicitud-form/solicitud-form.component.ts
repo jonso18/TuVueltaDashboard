@@ -112,7 +112,8 @@ export class SolicitudFormDialog implements OnInit {
       })
     };
     /* const url = 'https://us-central1-ptuvuelta.cloudfunctions.net/api/solicitudes' */
-    const url = 'https://us-central1-tuvueltap.cloudfunctions.net/api/solicitudes';
+    /*const url = 'https://us-central1-tuvueltap.cloudfunctions.net/api/solicitudes'; */
+    const url = 'https://us-central1-tuvuelta-produccion.cloudfunctions.net/api/solicitudes';
 
     const _body = body;
 
