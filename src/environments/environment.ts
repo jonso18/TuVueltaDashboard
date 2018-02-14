@@ -5,10 +5,6 @@
 
 export const environment = {
   production: false,
-  
-  //firebase Desarrollo
-  
-  /*
   firebase:{
    apiKey: "AIzaSyB_Shc3PWqhPr2JCC_GTCheczHMyyttNmY",
    authDomain: "tuvueltap.firebaseapp.com",
@@ -16,27 +12,9 @@ export const environment = {
     projectId: "tuvueltap",
     storageBucket: "tuvueltap.appspot.com",
     messagingSenderId: "565294870666"
+  },
+
+  baseapi: {
+    tuvuelta: 'https://us-central1-tuvuelta-produccion.cloudfunctions.net/'
   }
- */
-
-  //Firebase pruebas
-  /* firebase:{
-    apiKey: "AIzaSyBUS5cy6FLocCnKclySb-6zMb9_5lTWpA8",
-    authDomain: "ptuvuelta.firebaseapp.com",
-    databaseURL: "https://ptuvuelta.firebaseio.com",
-    projectId: "ptuvuelta",
-    storageBucket: "ptuvuelta.appspot.com",
-    messagingSenderId: "1008156158697"
-  } */
-
-  //firebase produccion
-  firebase:{
-    apiKey: "AIzaSyCAGzLWyjseJMnUuwrMveTu3DyYpVVCN30",
-    authDomain: "tuvuelta-produccion.firebaseapp.com",
-    databaseURL: "https://tuvuelta-produccion.firebaseio.com",
-    projectId: "tuvuelta-produccion",
-    storageBucket: "tuvuelta-produccion.appspot.com",
-    messagingSenderId: "49107694834"
-  }
-
 };
