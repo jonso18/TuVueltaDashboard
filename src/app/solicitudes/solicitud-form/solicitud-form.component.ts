@@ -6,6 +6,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ICiudad } from '../../interfaces/ciudad.interface';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
@@ -111,9 +112,7 @@ export class SolicitudFormDialog implements OnInit {
         'Content-Type': 'application/json',
       })
     };
-    /* const url = 'https://us-central1-ptuvuelta.cloudfunctions.net/api/solicitudes' */
-    /*const url = 'https://us-central1-tuvueltap.cloudfunctions.net/api/solicitudes'; */
-    const url = 'https://us-central1-tuvuelta-produccion.cloudfunctions.net/api/solicitudes';
+    const url = environment.baseapi.tuvuelta+ 'api/solicitudes';
 
     const _body = body;
 
@@ -218,8 +217,7 @@ export class SolicitudFormComponent implements OnInit {
         'Content-Type': 'application/json',
       })
     };
-    /* const url = 'https://us-central1-ptuvuelta.cloudfunctions.net/api/solicitudes' */
-    const url = 'https://us-central1-tuvueltap.cloudfunctions.net/api/solicitudes';
+    const url = environment.baseapi.tuvuelta+ 'api/solicitudes';
 
     const _body = body;
 
