@@ -3,6 +3,34 @@
     <button class="btn btn-primary" (click)="_new()" *ngIf="authService.userInfo.Rol == ROLES.Cliente">Nueva Solicitud</button>
     <!--<button class="btn btn-oulet" (click)="_list()">Listado de solicitudes</button>-->
   </div>
+  <div class="row">
+    <div class="col-md-4" *ngIf="Clientes">
+      <mat-form-field class="w-100">
+        <mat-select placeholder="Cliente" [(ngModel)]="clientSelected">
+          <mat-option *ngFor="let cliente of Clientes" [value]="cliente" (click)="this.applyFilter()">
+            {{ cliente.Nombres }}
+          </mat-option>
+          <mat-option [value]="null" (click)="this.applyFilter();">
+            Todos
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-4">
+      <mat-form-field class="w-100">
+        <input matInput [matDatepicker]="pickerstart" placeholder="Fecha Inicio" (dateChange)="pickerStart('change', $event)" disabled>
+        <mat-datepicker-toggle matSuffix [for]="pickerstart"></mat-datepicker-toggle>
+        <mat-datepicker #pickerstart disabled="false"></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="col-md-4">
+      <mat-form-field class="w-100">
+        <input matInput [matDatepicker]="pickerend" placeholder="Fecha Finalización" (dateChange)="pickerEnd('change', $event)" disabled>
+        <mat-datepicker-toggle matSuffix [for]="pickerend"></mat-datepicker-toggle>
+        <mat-datepicker #pickerend disabled="false"></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
   <mat-table #table [dataSource]="dataSource" *ngIf="dataSource && Mensajeros" matSort (matSortChange)="sortData($event)">
     <!-- ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'Telefono', 'PagoConTarjeta', 'Distancia', 'Punto Inicio', 'Punto Final', 'Estado']; -->
     <!-- Position Column -->
@@ -100,7 +128,9 @@
     <ng-container matColumnDef="Acciones" *ngIf="authService.userInfo.Rol == ROLES.Administrador">
       <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
       <mat-cell *matCellDef="let element">
-        <span><button mat-raised-button color="primary" (click)="openDialogUpdate(element)">Actualizar</button></span>
+        <span>
+          <button mat-raised-button color="primary" (click)="openDialogUpdate(element)">Actualizar</button>
+        </span>
       </mat-cell>
     </ng-container>
 

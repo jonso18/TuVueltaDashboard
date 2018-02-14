@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DbService } from '../../services/db/db.service';
-import { MatPaginator, MatTableDataSource, MatDialog } from '@angular/material';
+import { MatPaginator, MatTableDataSource, MatDialog, MatDatepickerInputEvent } from '@angular/material';
 import { DataSource } from '@angular/cdk/collections';
 import { Solicitud } from '../../interfaces/solicitud.interface';
 import { Router } from '@angular/router';
@@ -15,14 +15,17 @@ import { SolicitudFormDialog } from '../solicitud-form/solicitud-form.component'
 })
 export class SolicitudListComponent implements OnInit {
 
+  dateEnd: number;
+  dateStart: number;
   public displayedColumns = ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'TotalAPagar', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'PlacaVehiculo', 'MensajeroCelular'];
-
+  public Clientes;
   public dataSource: MatTableDataSource<any>;
   public ROLES;
   resultsLength = 0;
-
+  public allSolicitudes;
   public solicitudes;
   public Mensajeros;
+  public clientSelected;
   @ViewChild('paginator') paginator: MatPaginator;
 
   constructor(
@@ -36,6 +39,13 @@ export class SolicitudListComponent implements OnInit {
 
   }
 
+  loadClients() {
+    const rol = ROLES.Cliente
+    this.dbService.listUsersByRol(rol).subscribe(res => {
+      this.Clientes = res;
+    })
+  }
+
   _new() {
     this.router.navigateByUrl('/dashboard/solicitud/nueva')
   }
@@ -46,31 +56,73 @@ export class SolicitudListComponent implements OnInit {
   }
 
   loadInfo() {
-
+    this.loadClients();
     this.loadMensajeros();
     const Rol = this.authService.userInfo.Rol
-    if ( Rol == ROLES.Cliente){
+    if (Rol == ROLES.Cliente) {
       this.loadSolicitudes();
-    }else if (Rol == ROLES.Administrador){
+    } else if (Rol == ROLES.Administrador) {
       this.displayedColumns.push("Acciones");
       this.loadAllSolicitudes()
     }
-    
+
   }
 
   loadSolicitudes() {
     this.dbService.listSolicitudes().subscribe(res => {
-      this.solicitudes = res;
+      this.solicitudes = this.allSolicitudes = res;
       this.instanceTable();
     })
   }
 
-  loadAllSolicitudes(){
-    
+  loadAllSolicitudes() {
+
     this.dbService.listAllSolicitudes().subscribe(res => {
-      this.solicitudes = res;
+      this.solicitudes = this.allSolicitudes = res;
       this.instanceTable();
     })
+  }
+
+  applyFilter() {
+    if (!this.clientSelected) {
+      this.solicitudes = this.allSolicitudes
+    } else {
+      this.solicitudes = this.allSolicitudes.filter(item => {
+        if (item.payload.val().user_id == this.clientSelected.$key) {
+          return item
+        }
+      })
+    }
+
+    if (this.dateStart) {
+      this.solicitudes = this.solicitudes.filter(item => {
+        if (item.key > this.dateStart) {
+          return item
+        }
+      })
+    }
+
+    if (this.dateEnd) {
+      this.solicitudes = this.solicitudes.filter(item => {
+        if (item.key < this.dateEnd) {
+          return item
+        }
+      })
+    }
+
+    this.instanceTable();
+  }
+
+  pickerStart(type: string, event: MatDatepickerInputEvent<Date>) {
+    console.log(new Date(event.value))
+    this.dateStart = new Date(event.value).getTime();
+    this.applyFilter();
+  }
+
+  pickerEnd(type: string, event: MatDatepickerInputEvent<Date>) {
+    console.log(new Date(event.value))
+    this.dateEnd = new Date(event.value).getTime();
+    this.applyFilter();
   }
 
   loadMensajeros() {
@@ -96,11 +148,11 @@ export class SolicitudListComponent implements OnInit {
     }
   }
 
-  openDialogUpdate(element){
+  openDialogUpdate(element) {
     console.log(element)
     let dialogRef = this.dialog.open(SolicitudFormDialog, {
       width: '600px',
-      data: { update:true, snap: element  }
+      data: { update: true, snap: element }
     });
   }
 
