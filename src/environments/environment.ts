@@ -6,15 +6,15 @@
 export const environment = {
   production: false,
   firebase:{
-   apiKey: "AIzaSyB_Shc3PWqhPr2JCC_GTCheczHMyyttNmY",
-   authDomain: "tuvueltap.firebaseapp.com",
-   databaseURL: "https://tuvueltap.firebaseio.com",
-    projectId: "tuvueltap",
-    storageBucket: "tuvueltap.appspot.com",
-    messagingSenderId: "565294870666"
+   apiKey: "AIzaSyCAGzLWyjseJMnUuwrMveTu3DyYpVVCN30",
+    authDomain: "tuvuelta-produccion.firebaseapp.com",
+    databaseURL: "https://tuvuelta-produccion.firebaseio.com",
+    projectId: "tuvuelta-produccion",
+    storageBucket: "tuvuelta-produccion.appspot.com",
+    messagingSenderId: "49107694834"
   },
 
   baseapi: {
-    tuvuelta: 'https://us-central1-tuvuelta-produccion.cloudfunctions.net/asdfas'
+    tuvuelta: 'https://us-central1-tuvuelta-produccion.cloudfunctions.net/'
   }
 };
