@@ -12,6 +12,8 @@ import { EstadosDomiciliosComponent } from '../parametros/estados-domicilios/est
 import { EquipamientoComponent } from '../parametros/equipamiento/equipamiento.component';
 import { ReglasActivosComponent } from '../parametros/reglas-activos/reglas-activos.component';
 import { ReasignacionComponent } from '../solicitudes/reasignaciones/reasignacion/reasignacion.component';
+import { ReportesComponent } from '../reportes/reportes/reportes.component';
+import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/reporte-clientes-servicios/reporte-clientes-servicios.component';
 
 export const DashboardRoutes: Routes = [
     {
@@ -85,6 +87,21 @@ export const DashboardRoutes: Routes = [
                             {
                                 path: 'Reglas-activo',
                                 component: ReglasActivosComponent
+                            }
+                        ]
+                    },
+                    {
+                        path:'reportes',
+                        component: ReportesComponent,
+                        children:[
+                            {
+                                path:'',
+                                redirectTo: 'clientes-servicios',
+                                pathMatch: 'full'
+                            },
+                            {
+                                path: 'clientes-servicios',
+                                component: ReporteClientesServiciosComponent
                             }
                         ]
                     }

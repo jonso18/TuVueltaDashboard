@@ -78,6 +78,21 @@ export const ROUTES: RouteInfo[] = [
             { path: 'lista', title: 'Lista', ab: 'L', Rol: { Administrador: true } },
         ]
     },
+    {
+        path: '/dashboard/reportes',
+        title: 'Reportes',
+        Rol: {
+            Administrador: true,
+            Cliente: false
+        },
+        type: 'sub',
+        icontype: 'settings',
+        collapse: 'Reportes',
+        children: [
+            { path: 'clientes-servicios', title: 'Clientes Servicios', ab: 'CS', Rol: { Administrador: true } },
+            
+        ]
+    },
 ];
 @Component({
     selector: 'app-sidebar-cmp',
