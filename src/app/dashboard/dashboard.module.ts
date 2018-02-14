@@ -21,6 +21,8 @@ import { TarifasComponent } from '../parametros/tarifas/tarifas.component';
 import { CiudadesComponent, DialogNewCity, DialogDeleteCity } from '../parametros/ciudades/ciudades.component';
 import { ParametrosComponent } from '../parametros/parametros/parametros.component';
 import { ReasignacionComponent, DialogReasignacion } from '../solicitudes/reasignaciones/reasignacion/reasignacion.component';
+import { ReportesComponent } from '../reportes/reportes/reportes.component';
+import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/reporte-clientes-servicios/reporte-clientes-servicios.component';
 
 @NgModule({
     imports: [
@@ -49,7 +51,9 @@ import { ReasignacionComponent, DialogReasignacion } from '../solicitudes/reasig
         DialogNewCity,
         DialogDeleteCity,
         ReasignacionComponent,
-        DialogReasignacion
+        DialogReasignacion,
+        ReporteClientesServiciosComponent, 
+        ReportesComponent
     ],
     entryComponents:[
         DialogNewCity,

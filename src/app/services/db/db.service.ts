@@ -125,9 +125,16 @@ export class DbService {
   public listSolicitudEnProceso(){
     return this.db.list(`/Operativo/Solicitud`, ref => ref.orderByChild('EnProceso').equalTo(true))
   }
+  public listSolicitudFinalizadas(){
+    return this.db.list(`/Operativo/Solicitud`, ref => ref.orderByChild('Estado').equalTo('Finalizado'))
+  }
 
   public objectSolicitud(key: string){
     return this.db.object(`/Operativo/Solicitud/${key}`)
+  }
+
+  public listLogSolicitud(){
+    return this.db.list(`/Operativo/Logs/Solicitud`)
   }
   
   public listUsersByRol(Rol: string): Observable<IUser[]>{

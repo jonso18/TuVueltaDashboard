@@ -66,6 +66,8 @@ import { AuthLayoutComponent } from './layouts/auth/auth-layout.component';
 import { AuthService } from './services/auth/auth.service';
 import { DbService } from './services/db/db.service';
 import { ReasignacionComponent } from './solicitudes/reasignaciones/reasignacion/reasignacion.component';
+import { ReporteClientesServiciosComponent } from './reportes/reporte-clientes/reporte-clientes-servicios/reporte-clientes-servicios.component';
+import { ReportesComponent } from './reportes/reportes/reportes.component';
 
 
 

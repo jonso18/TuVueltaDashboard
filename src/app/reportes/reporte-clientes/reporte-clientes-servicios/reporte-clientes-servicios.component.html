@@ -1,0 +1,34 @@
+<mat-card>
+  <h1>Reportes de Cliente</h1>
+  <ng-container *ngIf="solicitudes">
+    <mat-form-field>
+      <input matInput [matDatepicker]="pickerstart" placeholder="Fecha Inicio" (dateChange)="pickerStart('change', $event)" disabled>
+      <mat-datepicker-toggle matSuffix [for]="pickerstart"></mat-datepicker-toggle>
+      <mat-datepicker #pickerstart disabled="false"></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput [matDatepicker]="pickerend" placeholder="Fecha Finalización" (dateChange)="pickerEnd('change', $event)" disabled>
+      <mat-datepicker-toggle matSuffix [for]="pickerend"></mat-datepicker-toggle>
+      <mat-datepicker #pickerend disabled="false"></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field  *ngIf="Clientes">
+      <mat-select placeholder="Cliente"   [(ngModel)]="clientSelected">
+        <mat-option *ngFor="let cliente of Clientes" [value]="cliente" >
+          {{ cliente.Nombres }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    
+  </ng-container>
+  <div>
+    <button mat-raised-button (click)="generateReport()" *ngIf="dateStart && dateEnd && clientSelected">Generar Reporte</button>
+  </div>
+  <div [innerHTML]="reporteHTML">
+
+  </div>
+  <div *ngIf="canSend">
+    <button mat-raised-button (click)="sendEmal()">Enviar Reporte a {{ clientSelected.Nombres }}</button>
+  </div>
+  <spinner></spinner>
+</mat-card>
