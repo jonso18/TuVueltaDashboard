@@ -14,6 +14,8 @@ import { ReglasActivosComponent } from '../parametros/reglas-activos/reglas-acti
 import { ReasignacionComponent } from '../solicitudes/reasignaciones/reasignacion/reasignacion.component';
 import { ReportesComponent } from '../reportes/reportes/reportes.component';
 import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/reporte-clientes-servicios/reporte-clientes-servicios.component';
+import { MensajeriaComponent } from '../mensajeria/mensajeria/mensajeria.component';
+import { MensajeriaFormComponent } from '../mensajeria/mensajeria-form/mensajeria-form.component';
 
 export const DashboardRoutes: Routes = [
     {
@@ -102,6 +104,21 @@ export const DashboardRoutes: Routes = [
                             {
                                 path: 'clientes-servicios',
                                 component: ReporteClientesServiciosComponent
+                            }
+                        ]
+                    },
+                    {
+                        path: 'mensajeria',
+                        component: MensajeriaComponent,
+                        children: [
+                            {
+                                path: '',
+                                redirectTo: 'nuevo',
+                                pathMatch: 'full'
+                            },
+                            {
+                                path:'nuevo',
+                                component: MensajeriaFormComponent
                             }
                         ]
                     }

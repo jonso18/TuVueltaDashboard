@@ -1,0 +1,8 @@
+agm-map {
+    height: 80vh;
+}
+
+:host{
+    position: relative;
+    top: 100px
+}

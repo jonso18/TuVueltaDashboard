@@ -90,7 +90,22 @@ export const ROUTES: RouteInfo[] = [
         collapse: 'Reportes',
         children: [
             { path: 'clientes-servicios', title: 'Clientes Servicios', ab: 'CS', Rol: { Administrador: true } },
-            
+
+        ]
+    },
+    {
+        path: '/dashboard/mensajeria',
+        title: 'Mensajeria',
+        Rol: {
+            Administrador: true,
+            Cliente: false
+        },
+        type: 'sub',
+        icontype: 'settings',
+        collapse: 'Mensajeria',
+        children: [
+            { path: 'nuevo', title: 'Mensajeria', ab: 'CS', Rol: { Administrador: true } },
+
         ]
     },
 ];

@@ -1,0 +1,57 @@
+<div class="row">
+  <div class="col-sm-6">
+    <mat-card>
+      <form [formGroup]="form">
+
+        <ng-container formArrayName="puntosIntermedios">
+          <ng-container *ngFor="let point of puntosIntermedios.controls; let i=index">
+            <ng-container [formGroupName]="i">
+              <mat-form-field>
+                <input matInput placeholder="Nombre punto {{i+1}}" formControlName="Nombre" (keyup)="removeCoors('Coors',i)" ><!-- (keyup)="removeCoors('Coors',i)" -->
+                <mat-error>
+                  Campo <strong>Obligatorio</strong>
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput placeholder="Coors punto {{i+1}}" formControlName="Coors" readonly>
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput placeholder="Informacion Extra Punto {{i+1}}" formControlName="InformacionExtra" readonly>
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput placeholder="Que Debe Hacer Punto {{i+1}}" formControlName="QueDebeHacer" readonly>
+              </mat-form-field>
+              <div class="text-right" *ngIf="puntosIntermedios.length > 2">
+                <button mat-button (click)="removeIntermediatePoint(i)">
+                  <mat-icon>remove</mat-icon>
+                </button>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        <div class="text-right">
+          <button mat-raised-button (click)="addIntermediatePoint()">Agregar {{puntosIntermedios.length+1}} Punto</button>
+        </div>
+        <div class="text-center">
+          <button type="submit" mat-button (click)="onSubmit()" color="primary">Hacer Cotización</button>
+        </div>
+      </form>
+    </mat-card>
+  </div>
+  <div class="col-sm-6">
+    <agm-map [latitude]="lat" [longitude]="lng" [zoom]="15" (mapDblClick)="onMapClick($event)">
+      <ng-container *ngFor="let marker of markers">
+        <agm-marker [latitude]="marker.lat" [longitude]="marker.lng">
+          <agm-info-window>{{marker.title}}</agm-info-window>
+        </agm-marker>
+      </ng-container>
+      <agm-polyline  [editable]="true" [strokeColor]="blue">
+        <agm-polyline-point [latitude]="marker.lat" [longitude]="marker.lng" *ngFor="let marker of markers"></agm-polyline-point>
+      </agm-polyline>
+    </agm-map>
+  </div>
+</div>
+<spinner></spinner>
+<pre>
+  {{ form.value | json }}
+</pre>
