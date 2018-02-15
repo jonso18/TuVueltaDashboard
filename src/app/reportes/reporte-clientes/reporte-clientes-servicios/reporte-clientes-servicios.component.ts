@@ -80,8 +80,11 @@ export class ReporteClientesServiciosComponent implements OnInit {
   }
 
   generateReport() {
+    let fechaproceso;
+    let fechachaDespachado;
+    let FechaFinalizado;
     this.reporteHTML = '';
-    this.reporteHTML+='<h1>Reporte</h1>';
+    this.reporteHTML+='<h1 class="text-center">Reporte de servicios</h1>';
     const s_finalizadas = this.solicitudes.filter(item => {
       if (item.key > this.dateStart && item.key < this.dateEnd && this.clientSelected.$key == item.payload.val().user_id){
         item['logs'] = this.logsSolicitudes[item.key]
@@ -93,25 +96,60 @@ export class ReporteClientesServiciosComponent implements OnInit {
     s_finalizadas.forEach(element => {
       let logs = '';
       element.logs.forEach(log => {
-        const date = new Date(Number(log.key));
-        console.log(log)
-        logs+=`<br>`
-        logs+=`<li><strong>Fecha:  </strong> ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</li>`
-        logs+=`<li><strong>Estado:  </strong>${log.value.Estado}</li>`
-        logs+=`<li><strong>Mensajero Id: </strong> ${log.value.Motorratoner_id}</li>`
+        
+        if(log.value.Estado === "EnProceso"){
+          fechaproceso = new Date(Number(log.key));
+        }
+
+        if(log.value.Estado === "Despachado"){
+          fechachaDespachado = new Date(Number(log.key));
+        }
+        
+        if(log.value.Estado === "Finalizado"){
+          FechaFinalizado = new Date(Number(log.key));
+        }
+        
+
+
+        //const date = new Date(Number(log.key));
+        //console.log(log)
+        //logs+=`<li><strong>Tiempo Proceso a Despachado: ${fechaproceso} </strong> </li> `
+        //logs+=`<li><strong>Tiempo Proceso a en proceso: ${fechachaDespachado}</strong> </li> `
+        //logs+=`<li><strong>Fecha:  </strong> ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</li>`
+        //logs+=`<li><strong>Estado:  </strong>${log.value.Estado}</li>`
+        //logs+=`<li><strong>Mensajero Id: </strong> ${log.value.Motorratoner_id}</li>`
+        
         
       });
       const date = new Date(Number(element.key));
+
+      var diasDifdespacho=  fechachaDespachado.getTime() - fechaproceso.getTime();
+      var diasDiffFinalizado=  FechaFinalizado.getTime() - fechachaDespachado.getTime();
+
+      var totaltiempodespacho = Math.round(diasDifdespacho/(60*24*60));
+      var totaltiempoFinalizado = Math.round(diasDiffFinalizado/(60*24*60));
+    
+
       this.reporteHTML+=`
-      <div>
-        <ul>
-          <li>Id: ${element.key}</li>
-          <li>Fecha: ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</li>
-          <li>Nombres: ${element.payload.val().Nombres}</li>
-          <ul>
-            ${logs}
-          </ul>
-        </ul>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="text-center">Id</th>
+              <th>Fecha</th>
+              <th>Datos Cliente</th>
+              <th>Tiempo Despacho</th>
+              <th>Tiempo Finalización</th>
+            </tr>
+          </thead>
+          <tbody>
+            <td >${element.key}</td>
+            <td > ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</td>
+            <td >${element.payload.val().Nombres}</td>
+            <td >${totaltiempodespacho}</td>
+            <td >${totaltiempoFinalizado}</td>
+          </tbody>
+        </table>
       </div>`
     });
 
