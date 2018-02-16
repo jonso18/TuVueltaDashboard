@@ -28,27 +28,29 @@
                     <mat-form-field  *ngIf="Clientes">
                         <mat-select placeholder="Cliente"   [(ngModel)]="clientSelected">
                           <mat-option *ngFor="let cliente of Clientes" [value]="cliente" >
-                            {{ cliente.Nombres }}
+                            {{ cliente.Nombres }} {{ cliente.Apellidos }}
                           </mat-option>
                         </mat-select>
                       </mat-form-field>
                 </div> 
             </ng-container>
-            <div class="text-center">
+            <div class="text-center" *ngIf="Mensajeros">
                 <button class="btn btn-warning" mat-raised-button (click)="generateReport()" *ngIf="dateStart && dateEnd && clientSelected">Generar Reporte</button>
             </div>
-
-            <div [innerHTML]="reporteHTML"></div>
-
-            
-
-              <div class="text-center" *ngIf="canSend">
-                <button  class="btn btn-success" mat-raised-button (click)="sendEmal()">Enviar Reporte a {{ clientSelected.Nombres }}</button>
-              </div>
-              <spinner></spinner>
-
-              
       </div>
-    </div>                
+    </div>
+
+  
+
+ 
+                
+  </div>
+  <div class="container-fluid">
+    <div [innerHTML]="reporteHTML"></div>       
+    <div class="text-center" *ngIf="canSend">
+      <button  class="btn btn-success" mat-raised-button (click)="sendEmal()">Enviar Reporte a {{ clientSelected.Nombres }}</button>
+    </div>
+    <spinner></spinner>
   </div>
 </div>
+ 
