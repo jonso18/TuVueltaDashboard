@@ -1,57 +1,308 @@
 <div class="row">
-  <div class="col-sm-6">
-    <mat-card>
+  <div class="col-sm-12">
+    <div class="container-map">
+      <agm-map [latitude]="lat" [longitude]="lng" [zoom]="14" (mapClick)="onMapClick($event)">
+        <!-- mapDblClick -->
+        <ng-container *ngFor="let marker of markers">
+          <agm-marker [latitude]="marker.lat" [longitude]="marker.lng">
+            <agm-info-window>{{marker.title}}</agm-info-window>
+          </agm-marker>
+        </ng-container>
+        <agm-polyline [editable]="true" [strokeColor]="blue">
+          <agm-polyline-point [latitude]="marker.lat" [longitude]="marker.lng" *ngFor="let marker of markers"></agm-polyline-point>
+        </agm-polyline>
+      </agm-map>
+    </div>
+
+  </div>
+  <!-- <div class="col-sm-offset-1 col-sm-10">
+    <mat-card class="card-form">
       <form [formGroup]="form">
 
         <ng-container formArrayName="puntosIntermedios">
           <ng-container *ngFor="let point of puntosIntermedios.controls; let i=index">
-            <ng-container [formGroupName]="i">
+            <ng-container [formGroupName]="i" class="row">
               <mat-form-field>
-                <input matInput placeholder="Nombre punto {{i+1}}" formControlName="Nombre" (keyup)="removeCoors('Coors',i)" ><!-- (keyup)="removeCoors('Coors',i)" -->
+                <input matInput placeholder="Nombre punto {{i+1}}" formControlName="Nombre" (keyup)="removeCoors('Coors',i)">
+                <span matPrefix>
+                  <mat-icon>location_on</mat-icon>
+                </span>
+                <span matSuffix>{{puntosIntermedios.at(i).get('Coors').value}}</span>
                 <mat-error>
-                  Campo <strong>Obligatorio</strong>
+                  Campo
+                  <strong>Obligatorio</strong>
                 </mat-error>
               </mat-form-field>
-              <mat-form-field>
-                <input matInput placeholder="Coors punto {{i+1}}" formControlName="Coors" readonly>
-              </mat-form-field>
-              <mat-form-field>
-                <input matInput placeholder="Informacion Extra Punto {{i+1}}" formControlName="InformacionExtra" readonly>
-              </mat-form-field>
-              <mat-form-field>
-                <input matInput placeholder="Que Debe Hacer Punto {{i+1}}" formControlName="QueDebeHacer" readonly>
-              </mat-form-field>
               <div class="text-right" *ngIf="puntosIntermedios.length > 2">
-                <button mat-button (click)="removeIntermediatePoint(i)">
+                <button class="remove-point-button" mat-button color="warn" (click)="removeIntermediatePoint(i)">
                   <mat-icon>remove</mat-icon>
                 </button>
+              </div>
+              <div class="col-sm-6">
+                <mat-form-field>
+                  <textarea matInput placeholder="Informacion Extra Punto {{i+1}}" formControlName="InformacionExtra"></textarea>
+                  <span matPrefix>
+                    <mat-icon>short_text</mat-icon>
+                  </span>
+                </mat-form-field>
+              </div>
+              <div class="col-sm-6">
+                <mat-form-field>
+                  <textarea matInput placeholder="Que Debe Hacer Punto {{i+1}}" formControlName="QueDebeHacer"></textarea>
+                  <span matPrefix>
+                    <mat-icon>create</mat-icon>
+                  </span>
+                </mat-form-field>
               </div>
             </ng-container>
           </ng-container>
         </ng-container>
         <div class="text-right">
-          <button mat-raised-button (click)="addIntermediatePoint()">Agregar {{puntosIntermedios.length+1}} Punto</button>
+          <button mat-mini-fab (click)="addIntermediatePoint()">
+            <mat-icon>add</mat-icon>
+          </button>
         </div>
         <div class="text-center">
-          <button type="submit" mat-button (click)="onSubmit()" color="primary">Hacer Cotización</button>
+          <button type="submit" class="btn btn-primary" (click)="onSubmit()" color="primary">Hacer Cotización</button>
         </div>
       </form>
     </mat-card>
   </div>
-  <div class="col-sm-6">
-    <agm-map [latitude]="lat" [longitude]="lng" [zoom]="15" (mapDblClick)="onMapClick($event)">
-      <ng-container *ngFor="let marker of markers">
-        <agm-marker [latitude]="marker.lat" [longitude]="marker.lng">
-          <agm-info-window>{{marker.title}}</agm-info-window>
-        </agm-marker>
-      </ng-container>
-      <agm-polyline  [editable]="true" [strokeColor]="blue">
-        <agm-polyline-point [latitude]="marker.lat" [longitude]="marker.lng" *ngFor="let marker of markers"></agm-polyline-point>
-      </agm-polyline>
-    </agm-map>
+  <div class="col-sm-offset-1 col-sm-10">
+    <mat-card class="card-summary">
+      <mat-list>
+        <h3 mat-subheader>Resumen del Servicio</h3>
+        <mat-divider></mat-divider>
+        <mat-list-item>
+          <mat-icon mat-list-icon>location_on</mat-icon>
+          <h4 mat-line>Distancia Total:
+            <strong>5.3 Km</strong>
+          </h4>
+          <p mat-line> </p>
+        </mat-list-item>
+        <mat-list-item>
+          <mat-icon mat-list-icon>timer</mat-icon>
+          <h4 mat-line>Duración Aproximada:
+            <strong>5 Minutos</strong>
+          </h4>
+          <p mat-line>Más el tiempo de tome cada parada.</p>
+        </mat-list-item>
+        <mat-list-item>
+          <mat-icon mat-list-icon>timeline</mat-icon>
+          <h4 mat-line>Total Puntos a Recorrer:
+            <strong>5 Puntos</strong>
+          </h4>
+          <p mat-line></p>
+        </mat-list-item>
+        <mat-list-item>
+          <mat-icon mat-list-icon>play_arrow</mat-icon>
+          <h4 mat-line>Primer Punto:
+            <strong>Casa de la Moneda Ibague</strong>
+          </h4>
+          <p mat-line></p>
+        </mat-list-item>
+        <mat-list-item>
+          <mat-icon mat-list-icon>location_off</mat-icon>
+          <h4 mat-line>Primer Punto:
+            <strong>Punto 6</strong>
+          </h4>
+          <p mat-line></p>
+        </mat-list-item>
+      </mat-list>
+      <div class="text-center">
+        <button class="btn btn-primary" color="primary">
+          Realizar Solicitud
+        </button>
+      </div>
+    </mat-card>
+  </div> -->
+</div>
+
+<div class="row">
+  <div class="col-sm-offset-1 col-sm-10">
+    <mat-card class="card-summary">
+      <mat-horizontal-stepper (selectionChange)="test($event)" [linear]="true" #stepper="matHorizontalStepper">
+        <mat-step [stepControl]="form" [editable]="isStepEditable">
+
+          <form [formGroup]="form">
+            <ng-template matStepLabel>Registre Los Puntos</ng-template>
+            <ng-container formArrayName="puntosIntermedios">
+              <ng-container *ngFor="let point of puntosIntermedios.controls; let i=index">
+                <ng-container [formGroupName]="i" class="row">
+
+                  <mat-form-field>
+                    <input matInput placeholder="Nombre punto {{i+1}}" formControlName="Nombre" (keyup)="removeCoors('Coors',i)">
+                    <!-- (keyup)="removeCoors('Coors',i)" -->
+                    <span matPrefix>
+                      <mat-icon>location_on</mat-icon>
+                    </span>
+                    <span matSuffix>{{puntosIntermedios.at(i).get('Coors').value}}</span>
+                    <mat-error>
+                      Campo
+                      <strong>Obligatorio</strong>
+                    </mat-error>
+                  </mat-form-field>
+                  <div>
+                    <mat-checkbox formControlName="Vuelta" *ngIf="i > 0">
+                      <mat-icon>refresh</mat-icon>
+                      Debe Volver al Punto {{i}}
+                    </mat-checkbox>
+                  </div>
+
+                  <!-- <mat-form-field>
+                    <input matInput placeholder="Coors punto {{i+1}}" formControlName="Coors" readonly>
+                  </mat-form-field> -->
+                  <div class="text-right" *ngIf="puntosIntermedios.length > 2">
+                    <button class="remove-point-button" mat-button color="warn" (click)="removeIntermediatePoint(i)">
+                      <mat-icon>remove</mat-icon>
+                    </button>
+                  </div>
+                  <div class="col-sm-6">
+                    <mat-form-field>
+                      <textarea matInput placeholder="Informacion Extra Punto {{i+1}}" formControlName="InformacionExtra"></textarea>
+                      <span matPrefix>
+                        <mat-icon>short_text</mat-icon>
+                      </span>
+                      <mat-error>
+                        Campo
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-sm-6">
+                    <mat-form-field>
+                      <textarea matInput placeholder="Que Debe Hacer Punto {{i+1}}" formControlName="QueDebeHacer"></textarea>
+                      <span matPrefix>
+                        <mat-icon>create</mat-icon>
+                      </span>
+                      <mat-error>
+                        Campo
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                    </mat-form-field>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+            <div class="text-right">
+              <button mat-mini-fab (click)="addIntermediatePoint()">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+            <div class="text-center">
+              <button matStepperNext type="submit" class="btn btn-primary" color="primary">Siguiente</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [editable]="isStepEditable" [completed]="isQuoteCompleted">
+          <ng-template matStepLabel>Hacer Cotización</ng-template>
+          <ng-container *ngIf="isQuoteCompleted; else noQuoteCompleted">
+            <mat-list>
+              <h3 mat-subheader>Resumen del servicio</h3>
+              <mat-list-item>
+                <mat-icon mat-list-icon>location_on</mat-icon>
+                <h4 mat-line>Distancia Total:
+                  <strong>{{(Servicio.DistanciaTotal) | number:'1.1-4'}} Km</strong>
+                </h4>
+                <p mat-line> </p>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon mat-list-icon>timer</mat-icon>
+                <h4 mat-line>Duración Aproximada:
+                  <strong>{{(Servicio.DuracionTotal) | number:'1.1-2'}} Minutos</strong>
+                </h4>
+                <p mat-line>Más el tiempo de tome cada parada.</p>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon mat-list-icon>monetization_on</mat-icon>
+                <h4 mat-line>Total a pagar:
+                  <strong>$ {{(Servicio.TotalAPagar) | number:'1.1-4'}}</strong>
+                </h4>
+                <p mat-line>Pesos Colombianos.</p>
+
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon mat-list-icon>timeline</mat-icon>
+                <h4 mat-line>Total Puntos a Recorrer:
+                  <strong>{{Servicio.Recorrido.length}} Puntos</strong>
+                </h4>
+                <p mat-line></p>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon mat-list-icon>play_arrow</mat-icon>
+                <h4 mat-line>Dirección de Partida:
+                  <strong>{{Servicio.Recorrido[0].Nombre}}</strong>
+                </h4>
+                <p mat-line></p>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon mat-list-icon>location_off</mat-icon>
+                <h4 mat-line>Dirección de Entrega:
+                  <strong>{{Servicio.Recorrido[Servicio.Recorrido.length - 1].Nombre}}</strong>
+                </h4>
+                <p mat-line></p>
+              </mat-list-item>
+              <mat-divider></mat-divider>
+              <h3 mat-subheader>Resumen del recorrido</h3>
+              <mat-list-item *ngFor="let point of Servicio.Recorrido; let i=index">
+
+                <mat-icon mat-list-icon>location_on</mat-icon>
+                <div [ngSwitch]="i">
+                  <h4 matLine *ngSwitchCase="0">Dirección de Partida</h4>
+                  <h4 matLine *ngSwitchCase="Servicio.Recorrido.length-1">Dirección de Entrega</h4>
+                  <h4 matLine *ngSwitchDefault>Punto Intermedio</h4>
+                </div>
+                <h4 mat-line>
+                  <strong>Ubicación {{i+1}}</strong>
+                </h4>
+                <p mat-line>{{point.Nombre}}</p>
+                <h4 mat-line>
+                  <strong>Informacion Extra</strong>
+                </h4>
+                <p mat-line>{{point.InformacionExtra}}</p>
+                <h4 mat-line>
+                  <strong>¿Que Debo Hacer?</strong>
+                </h4>
+                <p mat-line>{{point.QueDebeHacer}}</p>
+              </mat-list-item>
+            </mat-list>
+            <div class="text-center">
+              <button class="btn btn-primary" color="primary" matStepperNext>
+                Realizar Solicitud
+              </button>
+            </div>
+          </ng-container>
+
+          <ng-template #noQuoteCompleted>
+            <div class="text-center">
+              <h3 class="h3">Hubo un Error
+                <small>Error en la Cotización</small>
+              </h3>
+            </div>
+            <mat-divider></mat-divider>
+            <div>
+              Lo sentimos, el sistema tuvo un error calculando la Cotización para su servicio. Le ofrecemos disculpas, por favor vuelva
+              al paso anterior e intentelo de nuevo.
+            </div>
+          </ng-template>
+          <div class="text-left">
+            <button mat-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+          </div>
+        </mat-step>
+        <mat-step>
+          <ng-template matStepLabel>Hacer Solicitud</ng-template>
+          Se ha realizado la Solicitud Exitosamente
+          <div class="text-center">
+            <button mat-button color="primary" (click)="doNewSolicitud()">Hacer Nueva Solicitud</button>
+
+          </div>
+        </mat-step>
+      </mat-horizontal-stepper>
+    </mat-card>
   </div>
 </div>
+
+
 <spinner></spinner>
-<pre>
-  {{ form.value | json }}
-</pre>
