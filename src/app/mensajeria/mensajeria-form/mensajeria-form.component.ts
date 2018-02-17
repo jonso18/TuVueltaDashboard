@@ -14,6 +14,7 @@ import { Observable } from 'rxjs/Rx';
 import { DbService } from '../../services/db/db.service';
 import { ITarifasMensajeria } from '../../interfaces/tarifas.interfaces';
 import { AuthService } from '../../services/auth/auth.service';
+import { ICiudad } from '../../interfaces/ciudad.interface';
 
 @Component({
   selector: 'app-mensajeria-form',
@@ -33,6 +34,11 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   public isQuoteCompleted: boolean = false;
   public TarifasMensajeria: ITarifasMensajeria;
   public TarifasMensajeriaCustom: ITarifasMensajeria;
+  public Ciudades: ICiudad[];
+  public selectedCity: ICiudad;
+  public subTM: Subscription;
+  public subTMC: Subscription;
+
   constructor(
     private formBuilder: FormBuilder,
     private http: HttpClient,
@@ -42,13 +48,29 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.loadTarifasMensajeria();
-    this.loadTarifasMensajeriaCustom();
+    this.loadCitys();
     this.buildForm();
   }
+
   ngOnDestroy() {
+    this.subTM.unsubscribe()
+    this.subTMC.unsubscribe()
     this.subs.forEach(sub => {
       sub.unsubscribe();
+    })
+  }
+
+  onSelectedCity() {
+    const code: number = Number(this.selectedCity.Codigo);
+    this.loadTarifasMensajeria(code);
+    this.loadTarifasMensajeriaCustom(code);
+  }
+
+
+
+  loadCitys() {
+    this.dbService.listCiudades().subscribe(res => {
+      this.Ciudades = res;
     })
   }
 
@@ -94,7 +116,8 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
 
 
   loadTarifasMensajeria(cityCode = 11001) {
-    this.dbService.objectTarifas(cityCode, 'Mensajeria')
+    if (this.subTM) this.subTM.unsubscribe();
+    this.subTM = this.dbService.objectTarifas(cityCode, 'Mensajeria')
       .snapshotChanges()
       .map(res => {
         const TarifaMensajeria: ITarifasMensajeria = res.payload.val()
@@ -107,7 +130,8 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
 
   loadTarifasMensajeriaCustom(cityCode = 11001) {
     const id = this.authService.userState.uid;
-    this.dbService.objectTarifasCustom(cityCode, 'Mensajeria', id)
+    if (this.subTMC) this.subTMC.unsubscribe();
+    this.subTMC = this.dbService.objectTarifasCustom(cityCode, 'Mensajeria', id)
       .snapshotChanges()
       .map(res => {
         const TarifaMensajeria: ITarifasMensajeria = res.payload.val()
@@ -146,7 +170,6 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
           centinel++;
         })
       }))
-
   }
 
   addIntermediatePoint(coords?) {
@@ -219,7 +242,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   doQuote() {
     console.log("doing quote")
     const key = environment.google.distanceMatrix;
-    const points = this.puntosIntermedios.value;
+    const points: IPunto[] = this.puntosIntermedios.value;
     let origins = '';
     let destinations = '';
     for (let i = 0; i < points.length; i++) {
@@ -257,13 +280,17 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
 
 
           console.log(`Full Distancia ${fullDistance}`)
-
+          const Tarifas: ITarifasMensajeria = this.TarifasMensajeriaCustom ?
+            this.TarifasMensajeriaCustom :
+            this.TarifasMensajeria;
+          this.calcOvercostoutoftown(points, Tarifas)
           this.Servicio = {
             Recorrido: this.puntosIntermedios.value,
             DistanciaTotal: Number(fullDistance),
             DuracionTotal: Number(fullDuration),
             TipoServicio: 'Mensajeria',
-            TotalAPagar: this.calcAmount(fullDistance, (points.length-2))
+            TotalAPagar: this.calcAmount(fullDistance, (points.length - 2), Tarifas),
+            SobreCostoFueraCiudad: 0
           }
           console.log(this.Servicio)
 
@@ -280,11 +307,9 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
       })
   }
 
-  private calcAmount(fullDistance: number, aditionalStop: number): number {
+  private calcAmount(fullDistance: number, aditionalStop: number, Tarifas: ITarifasMensajeria): number {
     let amountToPay: number = 0;
-    const Tarifas: ITarifasMensajeria = this.TarifasMensajeriaCustom ?
-      this.TarifasMensajeriaCustom :
-      this.TarifasMensajeria;
+
     let distance = fullDistance;
 
     // Apply Tarifas by distance
@@ -296,16 +321,67 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     }
 
     // Apply Tarifas by Parada Adicional
-    amountToPay +=aditionalStop*Tarifas.ParadaAdicional;
+    amountToPay += aditionalStop * Tarifas.ParadaAdicional;
 
     return amountToPay;
   }
 
+  private calcOvercostoutoftown(Points: IPunto[], Tarifas: ITarifasMensajeria) {
+    let overCost: number = 0;
+    const key: string = environment.google.geocoding;
+    const hasDiferentCity = Points.map(point => {
+      const url: string = `https://maps.googleapis.com/maps/api/geocode/json?` +
+        `latlng=${point.Coors}&` +
+        `key=${key}&` +
+
+        `result_type=locality`;
+
+      return this.http.get(url)
+        .map((res: any) => {
+          console.log(res)
+          if (res && res.results && res.status == "OK") return res.results
+          return []
+        })
+        .toPromise()
+        .then((res: any[]) => {
+          console.log(res);
+          const prefix = this.selectedCity.Prefijo;
+          const Nombre = this.selectedCity.Nombre;
+          let hasPrefix: boolean = false;
+          res.forEach(item => {
+            if (item.address_components) {
+              const address_components: any[] = item.address_components;
+              if (item.formatted_address.indexOf(prefix) > -1)
+                  hasPrefix = true;
+              address_components.forEach(_address_component => {
+                console.log(`Comparando Nombre: ${Nombre} long_name ${_address_component.long_name} short_name ${_address_component.short_name}`)
+                if (_address_component.long_name.indexOf(Nombre) > -1)
+                  hasPrefix = true;
+
+                if (_address_component.short_name.indexOf(Nombre) > -1)
+                  hasPrefix = true;
+              })
+            }
+          });
+          return Promise.resolve(hasPrefix)
+
+        })
+    })
+
+    Promise.all(hasDiferentCity).then(res => {
+      console.log("En el promise all")
+      console.log(res)
+      if (res.indexOf(false) != -1){
+        console.log("Hay una ubicación fuera de la ciudad")
+        this.Servicio.SobreCostoFueraCiudad = Tarifas.SobreCostoFueraCiudad;
+      }
+    })
+
+  }
+
   doNewSolicitud() {
     this.isStepEditable = true;
-
     this.stepper.selectedIndex = 0;
-
     this.form.reset();
     setTimeout(() => {
       this.stepper.selectedIndex = 0;
@@ -374,7 +450,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     this.form.get(`${control}Coors`).setValue(null)
   }
 
-  test(event) {
+  onSelectionChange(event) {
     console.log(this.stepper)
     console.log(event)
     const selectedIndex: number = event.selectedIndex;
@@ -445,4 +521,5 @@ class IServicioMensajeria {
   public TipoServicio: string;
   public TotalAPagar?: number;
   public ValorDomicilio?: number;
+  public SobreCostoFueraCiudad?: number;
 }

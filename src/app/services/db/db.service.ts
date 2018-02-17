@@ -57,7 +57,8 @@ export class DbService {
         return changes.map(city => ({
           Codigo: city.payload.key,
           Nombre: city.payload.val().Nombre,
-          Prefijo: city.payload.val().Prefijo
+          Prefijo: city.payload.val().Prefijo,
+          Coordenadas: city.payload.val().Coordenadas
         }))
       });
   }
