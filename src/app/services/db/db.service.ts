@@ -12,12 +12,15 @@ import { IEquipamiento } from '../../interfaces/equipamiento.interface';
 import { IRegasActivos } from '../../interfaces/reglasactivos.interface';
 import { IEstadoServicio } from '../../interfaces/estadoservicio.interface';
 import { IUser } from '../../interfaces/usuario.interface';
+import { HttpClient } from '@angular/common/http';
+import { IGlobalConfig } from '../../interfaces/config-global.interface';
 @Injectable()
 export class DbService {
   public Ciudades: ICiudad[];
   constructor(
     private db: AngularFireDatabase,
-    private authService: AuthService
+    private authService: AuthService,
+    private http: HttpClient
   ) { }
 
   public objectUserInfo() {
@@ -169,5 +172,19 @@ export class DbService {
 
   public objectTarifasCustom(cityCode: number, serviceType: string, userId: string) {
     return this.db.object(`Administrativo/Usuarios/${userId}/Tarifas/${cityCode}/${serviceType}`)
+  }
+
+  public objectConfigGlobal(): Observable<IGlobalConfig> {
+    return this.db.object(`/Administrativo/ConfigGlobal`)
+      .snapshotChanges()
+      .distinctUntilChanged()
+      .map(res => {
+        return res.payload.val();
+      })
+      .do(console.log)
+  }
+
+  public patchConfigGlobal(data: IGlobalConfig){
+    return this.http.patch(`https://tuvueltap.firebaseio.com/Administrativo/ConfigGlobal.json`, data);
   }
 }

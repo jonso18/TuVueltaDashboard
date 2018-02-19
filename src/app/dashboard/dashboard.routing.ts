@@ -16,6 +16,7 @@ import { ReportesComponent } from '../reportes/reportes/reportes.component';
 import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/reporte-clientes-servicios/reporte-clientes-servicios.component';
 import { MensajeriaComponent } from '../mensajeria/mensajeria/mensajeria.component';
 import { MensajeriaFormComponent } from '../mensajeria/mensajeria-form/mensajeria-form.component';
+import { ConfigGlobalComponent } from '../parametros/config-global/config-global.component';
 
 export const DashboardRoutes: Routes = [
     {
@@ -89,6 +90,10 @@ export const DashboardRoutes: Routes = [
                             {
                                 path: 'Reglas-activo',
                                 component: ReglasActivosComponent
+                            },
+                            {
+                                path: 'Configuracion-global',
+                                component: ConfigGlobalComponent
                             }
                         ]
                     },

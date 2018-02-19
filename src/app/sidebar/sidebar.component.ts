@@ -61,6 +61,8 @@ export const ROUTES: RouteInfo[] = [
             { path: 'Estados-Domicilios', title: 'Estados Domicilios', ab: 'ED', Rol: { Administrador: true } },
             { path: 'Equipamiento', title: 'Equipamiento', ab: 'EQ', Rol: { Administrador: true } },
             { path: 'Reglas-activo', title: 'Reglas de Activo', ab: 'RA', Rol: { Administrador: true } },
+            { path: 'Configuracion-global', title: 'Configuración Global', ab: 'CG', Rol: { Administrador: true } },
+            
         ]
     },
     {

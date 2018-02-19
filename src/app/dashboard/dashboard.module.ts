@@ -27,6 +27,7 @@ import { MensajeriaFormComponent, DialogOnClickMap } from '../mensajeria/mensaje
 import { MensajeriaComponent } from '../mensajeria/mensajeria/mensajeria.component';
 import { AgmCoreModule } from '@agm/core';
 import { environment } from '../../environments/environment';
+import { ConfigGlobalComponent } from '../parametros/config-global/config-global.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -63,7 +64,8 @@ import { environment } from '../../environments/environment';
         SolicitudFormDialog,
         MensajeriaFormComponent,
         MensajeriaComponent,
-        DialogOnClickMap
+        DialogOnClickMap,
+        ConfigGlobalComponent
     ],
     entryComponents: [
         DialogNewCity,

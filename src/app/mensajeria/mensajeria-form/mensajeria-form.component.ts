@@ -53,8 +53,8 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subTM.unsubscribe()
-    this.subTMC.unsubscribe()
+    if (this.subTM) this.subTM.unsubscribe();
+    if (this.subTMC) this.subTMC.unsubscribe();
     this.subs.forEach(sub => {
       sub.unsubscribe();
     })
