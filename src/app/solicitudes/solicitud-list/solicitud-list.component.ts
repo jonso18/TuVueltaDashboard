@@ -17,7 +17,7 @@ export class SolicitudListComponent implements OnInit {
 
   dateEnd: number;
   dateStart: number;
-  public displayedColumns = ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'TotalAPagar', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'PlacaVehiculo', 'MensajeroCelular'];
+  public displayedColumns = ['Id','Fecha', 'Nombres', 'Apellidos', 'Celular', 'TotalAPagar', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'MensajeroCelular'];
   public Clientes;
   public dataSource: MatTableDataSource<any>;
   public ROLES;

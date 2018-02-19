@@ -38,6 +38,12 @@
       <!-- ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'Telefono', 'PagoConTarjeta', 'Distancia', 'Punto Inicio', 'Punto Final', 'Estado']; -->
       <!-- Position Column -->
       <!-- Fecha -->
+      
+      <ng-container matColumnDef="Id">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="key"> Id. </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.key}} </mat-cell>
+      </ng-container>
+      
       <ng-container matColumnDef="Fecha">
         <mat-header-cell *matHeaderCellDef mat-sort-header="key"> Fecha. </mat-header-cell>
         <mat-cell *matCellDef="let element"> {{element.key | date:'d/M/yy, h:mm:ss a'}} </mat-cell>
@@ -75,7 +81,7 @@
 
       <!-- TotalAPagar -->
       <ng-container matColumnDef="TotalAPagar">
-        <mat-header-cell *matHeaderCellDef> Total A Pagar </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef> Costo TuVuelta </mat-header-cell>
         <mat-cell *matCellDef="let element"> $ {{element.payload.val().TotalAPagar | number }} </mat-cell>
       </ng-container>
 
@@ -111,13 +117,13 @@
         </mat-cell>
       </ng-container>
 
-      <!-- PlacaVehiculo -->
+      <!-- PlacaVehiculo 
       <ng-container matColumnDef="PlacaVehiculo">
         <mat-header-cell *matHeaderCellDef> Placa Vehiculo </mat-header-cell>
         <mat-cell *matCellDef="let element">
           <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].PlacaVehiculo }}</span>
         </mat-cell>
-      </ng-container>
+      </ng-container>-->
 
       <!-- MensajeroCelular -->
       <ng-container matColumnDef="MensajeroCelular">

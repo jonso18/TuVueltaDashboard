@@ -13,7 +13,7 @@ import { ROLES } from '../../../config/Roles';
 export class ReasignacionComponent implements OnInit {
   public Mensajeros;
   resultsLength = 0;
-  displayedColumns = ['Fecha', 'TotalAPagar', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'PlacaVehiculo', 'MensajeroCelular', 'Actions'];
+  displayedColumns = ['Id','Fecha', 'TotalAPagar', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'MensajeroCelular', 'Actions'];
   public dataSource: MatTableDataSource<any>;
   public solicitudes;
   public Clientes;

@@ -160,16 +160,16 @@ export class ReporteClientesServiciosComponent implements OnInit {
       let logs = '';
       console.log("datos",element);
 
-      ValorDeDomicilios = element.payload.val().TotalAPagar + ValorDeDomicilios;
-      console.log("Total a pagar: "+element.payload.val().TotalAPagar)
+      ValorDeDomicilios =  Number(ValorDeDomicilios) + Number(element.payload.val().TotalAPagar) ;
+      //console.log("Total a pagar: "+element.payload.val().TotalAPagar)
       element.logs.forEach(log => {
         
         if(log.value.Estado === "EnProceso"){
           fechaproceso = new Date(Number(log.key));
         }
-        fechachaDespachado = new Date(Number(log.key));
         
-                if(log.value.Estado === "Despachado"){
+        if(log.value.Estado === "Despachado"){
+          fechachaDespachado = new Date(Number(log.key));
         }
         
         if(log.value.Estado === "Finalizado"){
@@ -259,7 +259,7 @@ export class ReporteClientesServiciosComponent implements OnInit {
     };
     console.log(this.clientSelected)
     if (this.clientSelected.Correo){
-      const url = 'https://us-central1-tuvueltap.cloudfunctions.net/api/reportes/enviar-mail';
+      const url = 'https://us-central1-tuvuelta-produccion.cloudfunctions.net/api/reportes/enviar-mail';
     const body = {
       to: this.clientSelected.Correo,
       text: this.reporteHTML,
