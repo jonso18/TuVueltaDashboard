@@ -12,12 +12,15 @@ import { IEquipamiento } from '../../interfaces/equipamiento.interface';
 import { IRegasActivos } from '../../interfaces/reglasactivos.interface';
 import { IEstadoServicio } from '../../interfaces/estadoservicio.interface';
 import { IUser } from '../../interfaces/usuario.interface';
+import { HttpClient } from '@angular/common/http';
+import { IGlobalConfig } from '../../interfaces/config-global.interface';
 @Injectable()
 export class DbService {
   public Ciudades: ICiudad[];
   constructor(
     private db: AngularFireDatabase,
-    private authService: AuthService
+    private authService: AuthService,
+    private http: HttpClient
   ) { }
 
   public objectUserInfo() {
@@ -57,7 +60,8 @@ export class DbService {
         return changes.map(city => ({
           Codigo: city.payload.key,
           Nombre: city.payload.val().Nombre,
-          Prefijo: city.payload.val().Prefijo
+          Prefijo: city.payload.val().Prefijo,
+          Coordenadas: city.payload.val().Coordenadas
         }))
       });
   }
@@ -106,63 +110,81 @@ export class DbService {
       }))
   }
 
-  public listTipoServicio(){
+  public listTipoServicio() {
     return this.db.list(`/Administrativo/TipoServicio`)
   }
 
-  public objectListaTiposServicio(){
+  public objectListaTiposServicio() {
     return this.db.object(`/Administrativo/ListaTipoServicios`)
   }
-  
-  public listListaTiposServicio(){
+
+  public listListaTiposServicio() {
     return this.db.list(`/Administrativo/ListaTipoServicios`)
   }
 
-  public objectTarifas(cityCode: number, serviceType: string){
+  public objectTarifas(cityCode: number, serviceType: string) {
     return this.db.object(`/Administrativo/TipoServicio/${cityCode}/${serviceType}/Tarifas`)
   }
 
-  public listSolicitudEnProceso(){
+  public listSolicitudEnProceso() {
     return this.db.list(`/Operativo/Solicitud`, ref => ref.orderByChild('EnProceso').equalTo(true))
   }
-  public listSolicitudFinalizadas(){
+  public listSolicitudFinalizadas() {
     return this.db.list(`/Operativo/Solicitud`, ref => ref.orderByChild('Estado').equalTo('Finalizado'))
   }
 
-  public objectSolicitud(key: string){
+  public objectSolicitud(key: string) {
     return this.db.object(`/Operativo/Solicitud/${key}`)
   }
 
-  public listLogSolicitud(){
+  public listLogSolicitud() {
     return this.db.list(`/Operativo/Logs/Solicitud`)
   }
-  
-  public listUsersByRol(Rol: string): Observable<IUser[]>{
+
+  public listUsersByRol(Rol: string): Observable<IUser[]> {
     return this.db.list(`/Administrativo/Usuarios`, ref => ref.orderByChild('Rol').equalTo(Rol))
-    .snapshotChanges().map(change => change.map(_user => {
-      const data = _user.payload.val();
-      const user: IUser = {
-        $key: _user.payload.key,
-        Apellidos: data.Apellidos? data.Apellidos : null,
-        Estado: data.Estado? data.Estado : null,
-        Rol: data.Rol? data.Rol : null,
-        Cedula: data.Cedula? data.Cedula : null,
-        Celular: data.Celular? data.Celular : null,
-        CelularFijo: data.CelularFijo? data.CelularFijo : null,
-        Ciudad: data.Ciudad? data.Ciudad : null,
-        ComoNosConocio: data.ComoNosConocio? data.ComoNosConocio : null,
-        Correo: data.Correo? data.Correo : null,
-        Direccion: data.Direccion? data.Direccion : null,
-        FechaNacimiento: data.FechaNacimiento? data.FechaNacimiento : null,
-        Nombres: data.Nombres? data.Nombres : null,
-        PlacaVehiculo: data.PlacaVehiculo? data.PlacaVehiculo : null,
-        TiempoDispParaHacerServicio: data.TiempoDispParaHacerServicio? data.TiempoDispParaHacerServicio : null,
-        TieneDatos: data.TieneDatos? data.TieneDatos : null,
-        TieneEPS: data.TieneEPS? data.TieneEPS : null,
-        TipoCelular: data.TipoCelular? data.TipoCelular : null,
-        TipoVehiculo: data.TipoVehiculo? data.TipoVehiculo : null,
-      }
-      return (user)
-    }))
+      .snapshotChanges().map(change => change.map(_user => {
+        const data = _user.payload.val();
+        const user: IUser = {
+          $key: _user.payload.key,
+          Apellidos: data.Apellidos ? data.Apellidos : null,
+          Estado: data.Estado ? data.Estado : null,
+          Rol: data.Rol ? data.Rol : null,
+          Cedula: data.Cedula ? data.Cedula : null,
+          Celular: data.Celular ? data.Celular : null,
+          CelularFijo: data.CelularFijo ? data.CelularFijo : null,
+          Ciudad: data.Ciudad ? data.Ciudad : null,
+          ComoNosConocio: data.ComoNosConocio ? data.ComoNosConocio : null,
+          Correo: data.Correo ? data.Correo : null,
+          Direccion: data.Direccion ? data.Direccion : null,
+          FechaNacimiento: data.FechaNacimiento ? data.FechaNacimiento : null,
+          Nombres: data.Nombres ? data.Nombres : null,
+          PlacaVehiculo: data.PlacaVehiculo ? data.PlacaVehiculo : null,
+          TiempoDispParaHacerServicio: data.TiempoDispParaHacerServicio ? data.TiempoDispParaHacerServicio : null,
+          TieneDatos: data.TieneDatos ? data.TieneDatos : null,
+          TieneEPS: data.TieneEPS ? data.TieneEPS : null,
+          TipoCelular: data.TipoCelular ? data.TipoCelular : null,
+          TipoVehiculo: data.TipoVehiculo ? data.TipoVehiculo : null,
+        }
+        return (user)
+      }))
+  }
+
+  public objectTarifasCustom(cityCode: number, serviceType: string, userId: string) {
+    return this.db.object(`Administrativo/Usuarios/${userId}/Tarifas/${cityCode}/${serviceType}`)
+  }
+
+  public objectConfigGlobal(): Observable<IGlobalConfig> {
+    return this.db.object(`/Administrativo/ConfigGlobal`)
+      .snapshotChanges()
+      .distinctUntilChanged()
+      .map(res => {
+        return res.payload.val();
+      })
+      .do(console.log)
+  }
+
+  public patchConfigGlobal(data: IGlobalConfig){
+    return this.http.patch(`https://tuvueltap.firebaseio.com/Administrativo/ConfigGlobal.json`, data);
   }
 }

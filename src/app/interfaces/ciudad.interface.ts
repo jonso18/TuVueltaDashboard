@@ -10,4 +10,8 @@ export interface ICiudad{
     Codigo?: number | string,
     Nombre: string,
     Prefijo: string
+    Coordenadas?: {
+        Lat: number;
+        Lng: number;
+    }
 }

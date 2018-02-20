@@ -1,0 +1,14 @@
+<div class="container-fluid">
+  <mat-card>
+    <h1>Nuevo Usuario</h1>
+    <ng-container *ngIf="form; else loading">
+      <form [formGroup]="form"></form>
+    </ng-container>
+
+    <ng-template #loading>
+      <div class="text-center">
+        <mat-spinner></mat-spinner>
+      </div>
+    </ng-template>
+  </mat-card>
+</div>

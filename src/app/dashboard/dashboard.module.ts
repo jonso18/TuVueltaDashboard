@@ -23,7 +23,13 @@ import { ParametrosComponent } from '../parametros/parametros/parametros.compone
 import { ReasignacionComponent, DialogReasignacion } from '../solicitudes/reasignaciones/reasignacion/reasignacion.component';
 import { ReportesComponent } from '../reportes/reportes/reportes.component';
 import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/reporte-clientes-servicios/reporte-clientes-servicios.component';
-
+import { MensajeriaFormComponent, DialogOnClickMap } from '../mensajeria/mensajeria-form/mensajeria-form.component';
+import { MensajeriaComponent } from '../mensajeria/mensajeria/mensajeria.component';
+import { AgmCoreModule } from '@agm/core';
+import { environment } from '../../environments/environment';
+import { ConfigGlobalComponent } from '../parametros/config-global/config-global.component';
+import { UsuarioFormComponent } from '../usuarios/usuario-form/usuario-form.component';
+import { UsuariosComponent } from '../usuarios/usuarios/usuarios.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -33,7 +39,10 @@ import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/
         MdModule,
         MaterialModule,
         HttpClientModule,
-        NgHttpLoaderModule
+        NgHttpLoaderModule,
+        AgmCoreModule.forRoot({
+            apiKey: environment.google.maps
+        })
     ],
 
     declarations: [
@@ -41,26 +50,33 @@ import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/
         SolicitudComponent,
         SolicitudFormComponent,
         SolicitudListComponent,
-        ParametrosComponent, 
-        CiudadesComponent, 
-        TarifasComponent, 
-        GananciasComponent, 
-        EstadosDomiciliosComponent, 
-        EquipamientoComponent, 
+        ParametrosComponent,
+        CiudadesComponent,
+        TarifasComponent,
+        GananciasComponent,
+        EstadosDomiciliosComponent,
+        EquipamientoComponent,
         ReglasActivosComponent,
         DialogNewCity,
         DialogDeleteCity,
         ReasignacionComponent,
         DialogReasignacion,
-        ReporteClientesServiciosComponent, 
+        ReporteClientesServiciosComponent,
         ReportesComponent,
-        SolicitudFormDialog
+        SolicitudFormDialog,
+        MensajeriaFormComponent,
+        MensajeriaComponent,
+        DialogOnClickMap,
+        ConfigGlobalComponent,
+        UsuarioFormComponent,
+        UsuariosComponent
     ],
-    entryComponents:[
+    entryComponents: [
         DialogNewCity,
         DialogDeleteCity,
         DialogReasignacion,
-        SolicitudFormDialog
+        SolicitudFormDialog,
+        DialogOnClickMap
     ]
 })
 

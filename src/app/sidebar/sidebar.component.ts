@@ -61,6 +61,23 @@ export const ROUTES: RouteInfo[] = [
             { path: 'Estados-Domicilios', title: 'Estados Domicilios', ab: 'ED', Rol: { Administrador: true } },
             { path: 'Equipamiento', title: 'Equipamiento', ab: 'EQ', Rol: { Administrador: true } },
             { path: 'Reglas-activo', title: 'Reglas de Activo', ab: 'RA', Rol: { Administrador: true } },
+            { path: 'Configuracion-global', title: 'Configuración Global', ab: 'CG', Rol: { Administrador: true } },
+            
+        ]
+    },
+    {
+        path: '/dashboard/Usuarios',
+        title: 'Usuarios',
+        Rol: {
+            Administrador: true,
+            Cliente: false
+        },
+        type: 'sub',
+        icontype: 'settings',
+        collapse: 'Usuarios',
+        children: [
+            { path: 'nuevo', title: 'Nuevo', ab: 'CS', Rol: { Administrador: true } },
+
         ]
     },
     {
@@ -90,7 +107,22 @@ export const ROUTES: RouteInfo[] = [
         collapse: 'Reportes',
         children: [
             { path: 'clientes-servicios', title: 'Clientes Servicios', ab: 'CS', Rol: { Administrador: true } },
-            
+
+        ]
+    },
+    {
+        path: '/dashboard/mensajeria',
+        title: 'Mensajeria',
+        Rol: {
+            Administrador: true,
+            Cliente: false
+        },
+        type: 'sub',
+        icontype: 'settings',
+        collapse: 'Mensajeria',
+        children: [
+            { path: 'nuevo', title: 'Mensajeria', ab: 'CS', Rol: { Administrador: true } },
+
         ]
     },
 ];
