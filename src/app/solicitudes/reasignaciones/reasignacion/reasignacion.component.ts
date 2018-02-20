@@ -4,6 +4,7 @@ import { MatTableDataSource, MatPaginator, MatDialogRef, MAT_DIALOG_DATA, MatDia
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ROLES } from '../../../config/Roles';
+import { DialogDeleteCity } from '../../../parametros/ciudades/ciudades.component';
 
 @Component({
   selector: 'app-reasignacion',
@@ -86,7 +87,23 @@ export class ReasignacionComponent implements OnInit {
     this.resultsLength = this.solicitudes.length;
   }
 
+  openDialogDelete(element){
+    console.log(element)
+    const key = element.key;
+    let dialogRef = this.dialog.open(DialogDeleteCity, {
+      width: '250px',
+      data: { action: this.dbService.objectSolicitud(key) }
+    })
 
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        this.snackBar.open("Solicitud Eliminada", 'Ok', {
+          duration: 3000,
+          verticalPosition: 'top'
+        })
+      }
+    })
+  }
 
   openDialog(serviceId, fechaCompra, PrevioMotorratoner_id) {
     const _serviceId = serviceId;

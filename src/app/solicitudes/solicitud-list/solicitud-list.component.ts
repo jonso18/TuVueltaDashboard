@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DbService } from '../../services/db/db.service';
-import { MatPaginator, MatTableDataSource, MatDialog, MatDatepickerInputEvent } from '@angular/material';
+import { MatPaginator, MatTableDataSource, MatDialog, MatDatepickerInputEvent, MatSnackBar } from '@angular/material';
 import { DataSource } from '@angular/cdk/collections';
 import { Solicitud } from '../../interfaces/solicitud.interface';
 import { Router } from '@angular/router';
@@ -34,6 +34,7 @@ export class SolicitudListComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     public dialog: MatDialog,
+    public snackBar: MatSnackBar
   ) { }
 
   ngAfterViewInit() {
@@ -155,6 +156,15 @@ export class SolicitudListComponent implements OnInit {
     let dialogRef = this.dialog.open(DialogDeleteCity, {
       width: '250px',
       data: { action: this.dbService.objectSolicitud(key) }
+    })
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        this.snackBar.open("Solicitud Eliminada", 'Ok', {
+          duration: 3000,
+          verticalPosition: 'top'
+        })
+      }
     })
   }
 
