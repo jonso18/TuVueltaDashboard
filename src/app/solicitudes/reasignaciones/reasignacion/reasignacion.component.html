@@ -99,6 +99,7 @@
       <mat-cell *matCellDef="let element">
         <span>
           <button mat-raised-button color="primary" (click)="openDialog(element.payload.key, element.payload.val().fechaCompra, element.payload.val().Motorratoner_id)">Reasignar</button>
+          <button mat-raised-button color="warn" (click)="openDialogDelete(element)">Eliminar</button>
         </span>
       </mat-cell>
     </ng-container>

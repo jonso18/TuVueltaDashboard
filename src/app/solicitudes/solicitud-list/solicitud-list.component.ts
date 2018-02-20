@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { ROLES } from '../../config/Roles';
 import { SolicitudFormDialog } from '../solicitud-form/solicitud-form.component';
+import { DialogDeleteCity } from '../../parametros/ciudades/ciudades.component';
 
 @Component({
   selector: 'app-solicitud-list',
@@ -146,6 +147,15 @@ export class SolicitudListComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  openDialogDelete(element){
+    console.log(element)
+    const key = element.key;
+    let dialogRef = this.dialog.open(DialogDeleteCity, {
+      width: '250px',
+      data: { action: this.dbService.objectSolicitud(key) }
+    })
   }
 
   openDialogUpdate(element) {
