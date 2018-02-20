@@ -8,5 +8,4 @@ export interface IParamsRegistro {
     TieneCelAndroidYDatos: string[];
     TieneEPS: string[];
     TipoVehiculo: string[];
-    
 }
