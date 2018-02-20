@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { Subscription } from 'rxjs';
 
 @Injectable()
 export class AuthService {
 
   public userInfo: any;
   public userState;
+
+  public subUserInfo: Subscription;
   constructor(
     private authService: AngularFireAuth
   ) { }
@@ -16,6 +19,7 @@ export class AuthService {
   }
 
   public logout() {
+    this.subUserInfo.unsubscribe();
     return this.authService.auth.signOut()
   }
   /**

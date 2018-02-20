@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
         this.router.navigateByUrl('/pages/login')
       }else {
         // Get user info
-        this.subUserInfo = this.dbService.objectUserInfo().snapshotChanges().subscribe(_userInfo => {
+        this.authService.subUserInfo = this.dbService.objectUserInfo().snapshotChanges().subscribe(_userInfo => {
           const info = this.authService.userInfo = _userInfo.payload.val();
           //console.log(info)
           if (info){

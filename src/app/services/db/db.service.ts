@@ -14,6 +14,8 @@ import { IEstadoServicio } from '../../interfaces/estadoservicio.interface';
 import { IUser } from '../../interfaces/usuario.interface';
 import { HttpClient } from '@angular/common/http';
 import { IGlobalConfig } from '../../interfaces/config-global.interface';
+import { IRol } from '../../interfaces/rol.interface';
+import { IParamsRegistro } from '../../interfaces/params-registro.interface';
 @Injectable()
 export class DbService {
   public Ciudades: ICiudad[];
@@ -184,7 +186,39 @@ export class DbService {
       .do(console.log)
   }
 
-  public patchConfigGlobal(data: IGlobalConfig){
+  public patchConfigGlobal(data: IGlobalConfig) {
     return this.http.patch(`https://tuvueltap.firebaseio.com/Administrativo/ConfigGlobal.json`, data);
+  }
+
+  public listRol(): Observable<IRol[]> {
+    return this.db.list(`/Administrativo/Roles`)
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(rol => {
+          const data = rol.payload.val();
+          const _rol: IRol = {
+            $key: rol.payload.key,
+            Nombre: data.Nombre,
+            Descripcion: data.Descripcion ? data.Descripcion : null
+          };
+          return (_rol);
+        }))
+      .do(console.log)
+      .distinctUntilChanged()
+  }
+
+  public listParamsRegistro(): Observable<IParamsRegistro> {
+    return this.db.list(`/Administrativo/ParamsRegistro`)
+      .snapshotChanges()
+      .map(changes =>{
+        let params = {};
+        changes.forEach(item => {
+          params[item.key] = item.payload.val();
+        })
+        return params
+      }
+        )
+      .distinctUntilChanged()
+      .do(console.log)
   }
 }

@@ -1,8 +1,237 @@
 <div class="container-fluid">
   <mat-card>
     <h1>Nuevo Usuario</h1>
-    <ng-container *ngIf="form; else loading">
-      <form [formGroup]="form"></form>
+    <ng-container 
+      *ngIf="form; else loading">
+      <form 
+        [formGroup]="form">
+        <!-- Nombres -->
+        <mat-form-field>
+          <input matInput formControlName="Nombres" placeholder="Nombres">
+          <mat-error 
+            *ngIf="Nombres.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Apellidos -->
+        <mat-form-field>
+          <input matInput formControlName="Apellidos" placeholder="Apellidos">
+          <mat-error 
+            *ngIf="Apellidos.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Cedula -->
+        <mat-form-field>
+          <input matInput formControlName="Cedula" placeholder="Cedula">
+          <mat-error 
+            *ngIf="Cedula.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Celular -->
+        <mat-form-field>
+          <input matInput formControlName="Celular" placeholder="Celular">
+          <mat-error 
+            *ngIf="Celular.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Ciudad -->
+        <mat-form-field>
+
+          <mat-select formControlName="Ciudad" placeholder="Ciudad">
+            <ng-container 
+              *ngIf="Ciudades$ | async as Ciudades">
+              <mat-option 
+                *ngFor="let row of Ciudades" 
+                [value]="row.Codigo" 
+                [matTooltip]="row.Prefijo">
+                {{ row.Nombre }}
+              </mat-option>
+            </ng-container>
+          </mat-select>
+          <mat-error 
+            *ngIf="Ciudad.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Correo -->
+        <mat-form-field>
+          <input matInput formControlName="Correo" placeholder="Correo">
+          <mat-error 
+            *ngIf="Correo.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Rol -->
+        <mat-form-field>
+          <mat-select formControlName="Rol" placeholder="Rol">
+            <ng-container 
+              *ngIf="Roles$ | async as Roles">
+              <mat-option 
+                *ngFor="let row of Roles" 
+                [value]="row.$key" 
+                [matTooltip]="row.Descripcion" 
+                (click)="AddInputsByRol(row.$key)">
+                {{ row.Nombre }}
+              </mat-option>
+            </ng-container>
+          </mat-select>
+          <mat-error 
+            *ngIf="Rol.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- PlacaVehiculo -->
+        <mat-form-field 
+          *ngIf="PlacaVehiculo">
+          <input matInput formControlName="PlacaVehiculo" placeholder="Placa Vehiculo">
+          <mat-error 
+            *ngIf="PlacaVehiculo.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- FechaNacimiento -->
+        <mat-form-field 
+          *ngIf="FechaNacimiento">
+          <input matInput formControlName="FechaNacimiento" 
+            placeholder="Fecha Nacimiento" 
+            [matDatepicker]="picker" disabled>
+          <mat-datepicker-toggle matSuffix 
+            [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker disabled></mat-datepicker>
+          <mat-error 
+            *ngIf="FechaNacimiento.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <ng-container 
+          *ngIf="TiempoDispParaHacerServicio && ComoNosConocio && TieneEPS && TipoVehiculo && TipoCelular">
+          <ng-container 
+            *ngIf="ParamsMensajero$ | async as ParamsMensajero">
+            <!-- TiempoDispParaHacerServicio -->
+            <mat-form-field>
+              <mat-select formControlName="TiempoDispParaHacerServicio" 
+                placeholder="Tiempo Disponible Para Hacer Servicio">
+                <mat-option 
+                  *ngFor="let row of ParamsMensajero.TiempoDispParaHacerServicio" 
+                  [value]="row">
+                  {{ row }}
+                </mat-option>
+              </mat-select>
+              <mat-error 
+                *ngIf="TiempoDispParaHacerServicio.hasError('required')">
+                Campo
+                <strong>Obligatorio</strong>
+              </mat-error>
+            </mat-form-field>
+
+            <!-- ComoNosConocio -->
+            <mat-form-field>
+              <mat-select formControlName="ComoNosConocio" 
+                placeholder="Como Nos Conocio">
+                <mat-option 
+                  *ngFor="let row of ParamsMensajero.ComoNosConocio" 
+                  [value]="row">
+                  {{ row }}
+                </mat-option>
+              </mat-select>
+              <mat-error 
+                *ngIf="ComoNosConocio.hasError('required')">
+                Campo
+                <strong>Obligatorio</strong>
+              </mat-error>
+            </mat-form-field>
+
+            <!-- TieneEPS -->
+            <mat-form-field>
+              <mat-select formControlName="TieneEPS" placeholder="Tiene EPS">
+                <mat-option 
+                  *ngFor="let row of ParamsMensajero.TieneEPS" 
+                  [value]="row">
+                  {{ row }}
+                </mat-option>
+              </mat-select>
+              <mat-error 
+                *ngIf="TieneEPS.hasError('required')">
+                Campo
+                <strong>Obligatorio</strong>
+              </mat-error>
+            </mat-form-field>
+
+            <!-- TipoVehiculo -->
+            <mat-form-field>
+              <mat-select formControlName="TipoVehiculo" 
+                placeholder="Tipo Vehiculo">
+                <mat-option 
+                  *ngFor="let row of ParamsMensajero.TipoVehiculo" 
+                  [value]="row">
+                  {{ row }}
+                </mat-option>
+              </mat-select>
+              <mat-error 
+                *ngIf="TipoVehiculo.hasError('required')">
+                Campo
+                <strong>Obligatorio</strong>
+              </mat-error>
+            </mat-form-field>
+
+            <!-- TipoCelular -->
+            <mat-form-field>
+              <mat-select formControlName="TipoCelular" 
+                placeholder="Tipo Celular">
+                <mat-option 
+                  *ngFor="let row of ParamsMensajero.TipoCelular" 
+                  [value]="row">
+                  {{ row }}
+                </mat-option>
+              </mat-select>
+              <mat-error 
+                *ngIf="TipoCelular.hasError('required')">
+                Campo
+                <strong>Obligatorio</strong>
+              </mat-error>
+            </mat-form-field>
+          </ng-container>
+          
+        </ng-container>
+        <mat-slide-toggle
+            *ngIf="EsClienteDeIntegracion"
+            (change)="toggleIsIntegratorClient($event)"
+            formControlName="EsClienteDeIntegracion">
+          ¿Es Cliente de Integración?
+        </mat-slide-toggle>
+        <ng-container *ngIf="ClienteIntegracion && EsClienteDeIntegracion.value">
+          <ng-container formGroupName="ClienteIntegracion">
+            <ng-container formGroupName="urls">
+              <mat-form-field>
+                <input matInput formControlName="logSolicitud" placeholder="Url integración Log Solicitud">
+              </mat-form-field>
+            </ng-container>
+          </ng-container>
+
+        </ng-container>
+
+      </form>
     </ng-container>
 
     <ng-template #loading>
@@ -12,3 +241,7 @@
     </ng-template>
   </mat-card>
 </div>
+
+<pre>
+  {{ form.value | json }}
+</pre>
