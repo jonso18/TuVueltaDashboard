@@ -66,6 +66,21 @@ export const ROUTES: RouteInfo[] = [
         ]
     },
     {
+        path: '/dashboard/Usuarios',
+        title: 'Usuarios',
+        Rol: {
+            Administrador: true,
+            Cliente: false
+        },
+        type: 'sub',
+        icontype: 'settings',
+        collapse: 'Usuarios',
+        children: [
+            { path: 'nuevo', title: 'Nuevo', ab: 'CS', Rol: { Administrador: true } },
+
+        ]
+    },
+    {
         path: '/dashboard/solicitud',
         title: 'Solicitudes',
         Rol: {

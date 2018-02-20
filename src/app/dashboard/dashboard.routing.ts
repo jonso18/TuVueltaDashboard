@@ -17,6 +17,8 @@ import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/
 import { MensajeriaComponent } from '../mensajeria/mensajeria/mensajeria.component';
 import { MensajeriaFormComponent } from '../mensajeria/mensajeria-form/mensajeria-form.component';
 import { ConfigGlobalComponent } from '../parametros/config-global/config-global.component';
+import { UsuariosComponent } from '../usuarios/usuarios/usuarios.component';
+import { UsuarioFormComponent } from '../usuarios/usuario-form/usuario-form.component';
 
 export const DashboardRoutes: Routes = [
     {
@@ -94,6 +96,21 @@ export const DashboardRoutes: Routes = [
                             {
                                 path: 'Configuracion-global',
                                 component: ConfigGlobalComponent
+                            }
+                        ]
+                    },
+                    {
+                        path:'Usuarios',
+                        component: UsuariosComponent,
+                        children:[
+                            {
+                                path:'',
+                                redirectTo: 'nuevo',
+                                pathMatch: 'full'
+                            },
+                            {
+                                path: 'nuevo',
+                                component: UsuarioFormComponent
                             }
                         ]
                     },

@@ -28,6 +28,8 @@ import { MensajeriaComponent } from '../mensajeria/mensajeria/mensajeria.compone
 import { AgmCoreModule } from '@agm/core';
 import { environment } from '../../environments/environment';
 import { ConfigGlobalComponent } from '../parametros/config-global/config-global.component';
+import { UsuarioFormComponent } from '../usuarios/usuario-form/usuario-form.component';
+import { UsuariosComponent } from '../usuarios/usuarios/usuarios.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -65,7 +67,9 @@ import { ConfigGlobalComponent } from '../parametros/config-global/config-global
         MensajeriaFormComponent,
         MensajeriaComponent,
         DialogOnClickMap,
-        ConfigGlobalComponent
+        ConfigGlobalComponent,
+        UsuarioFormComponent,
+        UsuariosComponent
     ],
     entryComponents: [
         DialogNewCity,
