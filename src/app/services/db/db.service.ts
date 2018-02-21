@@ -147,28 +147,7 @@ export class DbService {
   public listUsersByRol(Rol: string): Observable<IUser[]> {
     return this.db.list(`/Administrativo/Usuarios`, ref => ref.orderByChild('Rol').equalTo(Rol))
       .snapshotChanges().map(change => change.map(_user => {
-        const data = _user.payload.val();
-        const user: IUser = {
-          $key: _user.payload.key,
-          Apellidos: data.Apellidos ? data.Apellidos : null,
-          Estado: data.Estado ? data.Estado : null,
-          Rol: data.Rol ? data.Rol : null,
-          Cedula: data.Cedula ? data.Cedula : null,
-          Celular: data.Celular ? data.Celular : null,
-          CelularFijo: data.CelularFijo ? data.CelularFijo : null,
-          Ciudad: data.Ciudad ? data.Ciudad : null,
-          ComoNosConocio: data.ComoNosConocio ? data.ComoNosConocio : null,
-          Correo: data.Correo ? data.Correo : null,
-          Direccion: data.Direccion ? data.Direccion : null,
-          FechaNacimiento: data.FechaNacimiento ? data.FechaNacimiento : null,
-          Nombres: data.Nombres ? data.Nombres : null,
-          PlacaVehiculo: data.PlacaVehiculo ? data.PlacaVehiculo : null,
-          TiempoDispParaHacerServicio: data.TiempoDispParaHacerServicio ? data.TiempoDispParaHacerServicio : null,
-          TieneDatos: data.TieneDatos ? data.TieneDatos : null,
-          TieneEPS: data.TieneEPS ? data.TieneEPS : null,
-          TipoCelular: data.TipoCelular ? data.TipoCelular : null,
-          TipoVehiculo: data.TipoVehiculo ? data.TipoVehiculo : null,
-        }
+        const user: IUser = this.formatUser(_user)
         return (user)
       }))
   }
@@ -237,5 +216,58 @@ export class DbService {
         }))
       .do(console.log)
       .distinctUntilChanged()
+  }
+
+  objectUserInfoSnap(id: string): Observable<IUser | null> {
+    return this.db.object(`/Administrativo/Usuarios/${id}`)
+      .snapshotChanges()
+      .map(user => {
+        const data = user.payload.val();
+        const _user: IUser | null = this.formatUser(user)
+        return _user
+      })
+      .distinctUntilChanged()
+      .do(console.log)
+  }
+
+  listUsers(): Observable<IUser[]> {
+    return this.db.list(`/Administrativo/Usuarios`)
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(user => {
+          const data = user.payload.val();
+          const _user: IUser = this.formatUser(user)
+          return _user
+        }))
+
+      .do(console.log)
+  }
+
+  formatUser(dataSnapshot: AngularFireAction<DataSnapshot>): IUser | null {
+    const data = dataSnapshot.payload.val()
+    if (!data) return null
+    return {
+      $key: dataSnapshot.key,
+      Apellidos: data.Apellidos ? data.Apellidos : null,
+      Estado: data.Estado ? data.Estado : null,
+      Rol: data.Rol ? data.Rol : null,
+      Cedula: data.Cedula ? data.Cedula : null,
+      Celular: data.Celular ? data.Celular : null,
+      CelularFijo: data.CelularFijo ? data.CelularFijo : null,
+      Ciudad: data.Ciudad ? data.Ciudad : null,
+      ComoNosConocio: data.ComoNosConocio ? data.ComoNosConocio : null,
+      Correo: data.Correo ? data.Correo : null,
+      Direccion: data.Direccion ? data.Direccion : null,
+      FechaNacimiento: data.FechaNacimiento ? data.FechaNacimiento : null,
+      Nombres: data.Nombres ? data.Nombres : null,
+      PlacaVehiculo: data.PlacaVehiculo ? data.PlacaVehiculo : null,
+      TiempoDispParaHacerServicio: data.TiempoDispParaHacerServicio ? data.TiempoDispParaHacerServicio : null,
+      TieneDatos: data.TieneDatos ? data.TieneDatos : null,
+      TieneEPS: data.TieneEPS ? data.TieneEPS : null,
+      TipoCelular: data.TipoCelular ? data.TipoCelular : null,
+      TipoVehiculo: data.TipoVehiculo ? data.TipoVehiculo : null,
+      Tarifas: data.Tarifas ? data.Tarifas : null,
+      ClienteIntegracion: data.ClienteIntegracion ? data.ClienteIntegracion : null
+    }
   }
 }

@@ -18,4 +18,6 @@ export interface IUser {
     TieneEPS?: string;
     TipoCelular?: string;
     TipoVehiculo?: string;
+    Tarifas?: any;
+    ClienteIntegracion?: any
 }

@@ -1,0 +1,12 @@
+{
+  "Tarifas" : {
+    "Cancelacion" : 5000,
+    "KmAdicional" : 900,
+    "ParadaAdicional" : 3000,
+    "PrimerosKm" : {
+      "Costo" : 5500,
+      "Km" : 3
+    },
+    "SobreCostoFueraCiudad" : 10000
+  }
+}

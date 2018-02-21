@@ -77,6 +77,7 @@ export const ROUTES: RouteInfo[] = [
         collapse: 'Usuarios',
         children: [
             { path: 'nuevo', title: 'Nuevo', ab: 'CS', Rol: { Administrador: true } },
+            { path: 'lista', title: 'Lista', ab: 'CS', Rol: { Administrador: true } },
 
         ]
     },

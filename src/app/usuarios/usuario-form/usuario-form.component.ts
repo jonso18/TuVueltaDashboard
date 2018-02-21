@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 import { IRol } from '../../interfaces/rol.interface';
@@ -8,29 +8,92 @@ import { ICiudad } from '../../interfaces/ciudad.interface';
 import { IParamsRegistro } from '../../interfaces/params-registro.interface';
 import { MatSlideToggleChange, MatSelect } from '@angular/material';
 import { ITipoServicio } from '../../interfaces/tipo-servicio.interface';
+import { ActivatedRoute, Router } from '@angular/router';
+import { IUser } from '../../interfaces/usuario.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-usuario-form',
   templateUrl: './usuario-form.component.html',
   styleUrls: ['./usuario-form.component.css']
 })
-export class UsuarioFormComponent implements OnInit {
+export class UsuarioFormComponent implements OnInit, OnDestroy {
 
   form: FormGroup
   Roles$: Observable<IRol[]>;
   Ciudades$: Observable<ICiudad[]>;
+  private subs: Subscription[] = [];
   public ROLES = ROLES;
   public Roles: IRol[];
   public ParamsMensajero$: Observable<IParamsRegistro>
   public TiposServicio$: Observable<ITipoServicio[]>
+  public userInfo: IUser;
   constructor(
     private formBuilder: FormBuilder,
-    private dbService: DbService
+    private dbService: DbService,
+    private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit() {
     this.loadData();
     this.buildForm();
+    this.route.params.subscribe(params => {
+      const id = params['id'];
+      console.log(`Id en nuevo ${id}`)
+      if (id == 'nuevo') {
+        return this.buildForm();
+
+      }
+      if (id) {
+        this.subs.push(
+          this.dbService.objectUserInfoSnap(id)
+            .subscribe(res => {
+              if (!res) {
+                alert("El usuario no se encontró")
+                return this.router.navigateByUrl(`/dashboard/Usuarios/lista`)
+              }
+              this.userInfo = res;
+              this.loadFormToUpdate()
+            }))
+      }
+    })
+
+  }
+
+  ngOnDestroy() {
+    this.subs.forEach(sub => sub.unsubscribe());
+  }
+
+
+  loadFormToUpdate() {
+    this.buildForm();
+    const rol = this.userInfo.Rol;
+    this.AddInputsByRol(rol)
+    const Tarifas = this.userInfo.Tarifas;
+
+    if (Tarifas) {
+      this.form.addControl('Tarifas', this.formBuilder.group({}))
+      this.hasTarifasPersonalizadas.setValue(true)
+
+      Object.keys(Tarifas).forEach(cityCode => {
+        Object.keys(Tarifas[cityCode]).forEach(serviceCode => {
+          this.addCustomTarifa(cityCode, serviceCode);
+        })
+      });
+
+    }
+
+    const ClienteIntegracion = this.userInfo.ClienteIntegracion;
+    if (ClienteIntegracion) {
+      this.form.addControl('ClienteIntegracion', this.formBuilder.group({
+        urls: this.formBuilder.group({
+          logSolicitud: [null]
+        })
+      }));
+      this.EsClienteDeIntegracion.setValue(true);
+    }
+    this.form.patchValue(this.userInfo);
   }
 
   loadData() {
@@ -72,8 +135,14 @@ export class UsuarioFormComponent implements OnInit {
     const _service: string = Service.value;
     City.value = false;
     Service.value = false;
-
+    console.log(typeof City)
     console.log(_city)
+    this.addCustomTarifa(_city, _service);
+
+  }
+
+
+  addCustomTarifa(_city: string, _service: string) {
     if (!this.Tarifas.get(_city)) {
       this.Tarifas.addControl(_city, this.formBuilder.group({}))
     }
@@ -90,20 +159,75 @@ export class UsuarioFormComponent implements OnInit {
     console.log(cityGroup)
     switch (_service) {
       case 'Domicilios':
-        tarifasGroup.addControl('Tarifa1', this.formBuilder.group({
-          maxKm: [null],
+        const tarifa1: FormGroup = this.formBuilder.group({
+          maxKm: [null, [Validators.required, Validators.min(1), Validators.pattern('^(0|[1-9][0-9]*)$')]],
           minKm: [0],
-          value: [null]
-        }))
-        tarifasGroup.addControl('Tarifa2', this.formBuilder.group({
-          maxKm: [null],
-          minKm: [null],
-          value: [null]
-        }))
-        tarifasGroup.addControl('Tarifa3', this.formBuilder.group({
-          minKm: [null],
-          value: [null]
-        }))
+          value: [null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]]
+        })
+        tarifasGroup.addControl('Tarifa1', tarifa1)
+
+        const tarifa2: FormGroup = this.formBuilder.group({
+          maxKm: [null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]],
+          minKm: [null ],
+          value: [null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]]
+        })
+        tarifasGroup.addControl('Tarifa2', tarifa2)
+        const tarifa3: FormGroup = this.formBuilder.group({
+          minKm: [null ],
+          value: [null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]]
+        })
+
+        this.subs.push(tarifa1.get('value')
+          .valueChanges
+          .debounceTime(500)
+          .subscribe(val => {
+            tarifa1.get('value').setValue(Number(val))
+          }))
+
+        this.subs.push(tarifa2.get('value')
+          .valueChanges
+          .debounceTime(500)
+          .subscribe(val => {
+            tarifa2.get('value').setValue(Number(val))
+          }))
+
+        this.subs.push(tarifa3.get('value')
+          .valueChanges
+          .debounceTime(500)
+          .subscribe(val => {
+            tarifa3.get('value').setValue(Number(val))
+          }))
+        tarifasGroup.addControl('Tarifa3', tarifa3)
+        this.subs.push(
+          tarifa1.get('maxKm').valueChanges
+            .debounceTime(500)
+            .subscribe(val => {
+              console.log('updating value for max km')
+              console.log(typeof val)
+              tarifa1.get('maxKm').setValue(Number(val))
+              tarifa2.get('minKm').setValue(Number(val) + 0.1)
+              console.log(`Tarifa 2 minKm ${tarifa2.get('minKm').value}`)
+              console.log(Number(tarifa2.get('minKm').value) > Number(tarifa2.get('maxKm').value))
+              if (Number(tarifa2.get('minKm').value) > Number(tarifa2.get('maxKm').value)) {
+                tarifa2.get('maxKm').setValue(Number(tarifa2.get('minKm').value) + 0.9)
+                tarifa3.get('minKm').setValue(Number(tarifa2.get('minKm').value) + 1)
+              }
+            }))
+
+        this.subs.push(
+          tarifa2.get('maxKm').valueChanges
+            .debounceTime(500)
+
+            .subscribe(val => {
+              console.log('updating value for max km')
+              tarifa2.get('maxKm').setValue(Number(val))
+              tarifa3.get('minKm').setValue(Number(val) + 0.1)
+              console.log(Number(tarifa2.get('minKm').value) > Number(tarifa2.get('maxKm').value))
+              if (Number(tarifa2.get('minKm').value) > Number(tarifa2.get('maxKm').value)) {
+                tarifa2.get('maxKm').setValue(Number(tarifa2.get('minKm').value) + 0.9)
+                tarifa3.get('minKm').setValue(Number(tarifa2.get('minKm').value) + 1)
+              }
+            }))
 
         break;
       case 'Mensajeria':
@@ -118,7 +242,6 @@ export class UsuarioFormComponent implements OnInit {
       default:
         break;
     }
-
   }
 
   deleteControl(Ciudad, tipo) {
@@ -126,7 +249,7 @@ export class UsuarioFormComponent implements OnInit {
 
     cityGroup.removeControl(tipo);
     console.log(cityGroup.value)
-    if (Object.keys(cityGroup.value).length === 0){
+    if (Object.keys(cityGroup.value).length === 0) {
       this.Tarifas.removeControl(Ciudad)
     }
   }
@@ -159,19 +282,12 @@ export class UsuarioFormComponent implements OnInit {
 
         break;
       case ROLES.Cliente:
-        this.form.addControl('EsClienteDeIntegracion', this.formBuilder.control(null))
-        this.form.addControl('hasTarifasPersonalizadas', this.formBuilder.control(false))
+        this.addControlsCliente();
         break;
 
       case ROLES.Mensajero:
 
-        this.form.addControl('PlacaVehiculo', this.formBuilder.control(null, Validators.required))
-        this.form.addControl('FechaNacimiento', this.formBuilder.control(null, Validators.required))
-        this.form.addControl('TiempoDispParaHacerServicio', this.formBuilder.control(null, Validators.required))
-        this.form.addControl('ComoNosConocio', this.formBuilder.control(null, Validators.required))
-        this.form.addControl('TieneEPS', this.formBuilder.control(null, Validators.required))
-        this.form.addControl('TipoVehiculo', this.formBuilder.control(null, Validators.required))
-        this.form.addControl('TipoCelular', this.formBuilder.control(null, Validators.required))
+        this.addControlsMensajero();
 
         break;
       case ROLES.Operador:
@@ -180,6 +296,21 @@ export class UsuarioFormComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  addControlsCliente() {
+    this.form.addControl('EsClienteDeIntegracion', this.formBuilder.control(null))
+    this.form.addControl('hasTarifasPersonalizadas', this.formBuilder.control(false))
+  }
+
+  addControlsMensajero() {
+    this.form.addControl('PlacaVehiculo', this.formBuilder.control(null, Validators.required))
+    this.form.addControl('FechaNacimiento', this.formBuilder.control(null, Validators.required))
+    this.form.addControl('TiempoDispParaHacerServicio', this.formBuilder.control(null, Validators.required))
+    this.form.addControl('ComoNosConocio', this.formBuilder.control(null, Validators.required))
+    this.form.addControl('TieneEPS', this.formBuilder.control(null, Validators.required))
+    this.form.addControl('TipoVehiculo', this.formBuilder.control(null, Validators.required))
+    this.form.addControl('TipoCelular', this.formBuilder.control(null, Validators.required))
   }
 
   get Nombres() { return this.form.get('Nombres') }

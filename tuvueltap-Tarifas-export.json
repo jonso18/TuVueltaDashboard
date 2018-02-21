@@ -1,0 +1,27 @@
+{
+  "730001" : {
+    "Domicilios" : {
+      "ASD" : "SAD",
+      "Tarifas" : {
+        "Tarifa1" : {
+          "maxKm" : 3,
+          "minKm" : 0,
+          "rule" : "<3",
+          "value" : 3900
+        },
+        "Tarifa2" : {
+          "maxKm" : 5,
+          "minKm" : 3.1,
+          "rule" : ">3&&<5",
+          "value" : 600
+        },
+        "Tarifa3" : {
+          "maxKm" : "undefined",
+          "minKm" : 5.1,
+          "rule" : ">5",
+          "value" : 800
+        }
+      }
+    }
+  }
+}

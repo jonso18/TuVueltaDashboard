@@ -1,0 +1,92 @@
+<div class="container-fluid">
+  <mat-card>
+    <mat-table #table [dataSource]="dataSource" *ngIf="dataSource">
+      <!-- Id -->
+      <ng-container matColumnDef="Id">
+        <mat-header-cell *matHeaderCellDef> Id. </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.$key}} </mat-cell>
+      </ng-container>
+
+      <!-- Nombres -->
+      <ng-container matColumnDef="Nombres">
+        <mat-header-cell *matHeaderCellDef> Nombres </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.Nombres}} </mat-cell>
+      </ng-container>
+
+      <!-- Apellidos -->
+      <ng-container matColumnDef="Apellidos">
+        <mat-header-cell *matHeaderCellDef> Apellidos </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.Apellidos}} </mat-cell>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="Estado">
+        <mat-header-cell *matHeaderCellDef> Estado </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.Estado}} </mat-cell>
+      </ng-container>
+
+      <!-- Cedula -->
+      <ng-container matColumnDef="Cedula">
+        <mat-header-cell *matHeaderCellDef> Cédula </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.Cedula}} </mat-cell>
+      </ng-container>
+
+      <!-- Celular -->
+      <ng-container matColumnDef="Celular">
+        <mat-header-cell *matHeaderCellDef> Celular </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.Celular}} </mat-cell>
+      </ng-container>
+
+      <!-- CelularFijo -->
+      <ng-container matColumnDef="CelularFijo">
+        <mat-header-cell *matHeaderCellDef> CelularFijo </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.CelularFijo}} </mat-cell>
+      </ng-container>
+
+      <!-- Ciudad -->
+      <ng-container matColumnDef="Ciudad">
+        <mat-header-cell *matHeaderCellDef> Ciudad </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.Ciudad}} </mat-cell>
+      </ng-container>
+
+      <!-- Correo -->
+      <ng-container matColumnDef="Correo">
+        <mat-header-cell *matHeaderCellDef> Correo </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.Correo}} </mat-cell>
+      </ng-container>
+
+      <!-- TipoVehiculo -->
+      <ng-container matColumnDef="TipoVehiculo">
+        <mat-header-cell *matHeaderCellDef> Tipo Vehiculo </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.TipoVehiculo}} </mat-cell>
+      </ng-container>
+
+      <!-- PlacaVehiculo -->
+      <ng-container matColumnDef="PlacaVehiculo">
+        <mat-header-cell *matHeaderCellDef> Placa Vehiculo </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.PlacaVehiculo}} </mat-cell>
+      </ng-container>
+
+      <!-- PlacaVehiculo -->
+      <ng-container matColumnDef="Rol">
+        <mat-header-cell *matHeaderCellDef>Rol</mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.Rol}} </mat-cell>
+      </ng-container>
+
+      <!-- PlacaVehiculo -->
+      <ng-container matColumnDef="Acciones">
+          <mat-header-cell *matHeaderCellDef>Acciones</mat-header-cell>
+          <mat-cell *matCellDef="let element"> 
+            <button mat-button (click)="onUpdate(element)" color="primary">Actualizar</button>
+          </mat-cell>
+        </ng-container>
+      
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+    </mat-table>
+
+    <mat-paginator #paginator [length]="resultsLength" [pageSize]="5">
+    </mat-paginator>
+  </mat-card>
+</div>

@@ -14,7 +14,3 @@
 .text-center mat-spinner{
     margin:0 auto;
 }
-
-mat-card{
-    overflow: auto;
-}

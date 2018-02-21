@@ -1,6 +1,9 @@
 <div class="container-fluid">
   <mat-card>
     <h1>Nuevo Usuario</h1>
+    <div class="pull-right">
+      <button mat-raised-button routerLink="/dashboard/Usuarios/lista" color="accent">Ver Lista Usuarios</button>
+    </div>
     <ng-container *ngIf="form && Ciudades$ | async as Ciudades; else loading">
       <form [formGroup]="form">
         <!-- Nombres -->
@@ -185,126 +188,190 @@
           </mat-slide-toggle>
 
           <ng-container *ngIf="hasTarifasPersonalizadas.value">
-            <ng-container *ngIf="TiposServicio$ | async as TiposServicio">
+            <div class="col-sm-offset-1 col-sm-10">
+              <mat-card>
+                <h2>Tarifas</h2>
+                <ng-container *ngIf="TiposServicio$ | async as TiposServicio">
 
-              <ng-container formGroupName="Tarifas">
-                <ng-container *ngFor="let Ciudad of Ciudades">
-                  <ng-container *ngIf="Tarifas.get(Ciudad.Codigo)">
-                    <ng-container [formGroupName]="Ciudad.Codigo">
-                      <ng-container *ngFor="let tipo of TiposServicio">
-                        <ng-container *ngIf="Tarifas.get(Ciudad.Codigo).get(tipo.$key)">
-                          <ng-container [formGroupName]="tipo.$key">
-                            Hay una tarifa para la ciudad de {{ Ciudad.Nombre}} y servicio {{ tipo.Nombre}} {{Tarifas.get(Ciudad.Codigo).get(tipo.$key).Tavalue
-                            | json }}
-                            <ng-container *ngIf="Tarifas.get(Ciudad.Codigo).get(tipo.$key).get('Tarifas')">
-                              <ng-container formGroupName="Tarifas">
+                  <ng-container formGroupName="Tarifas">
+                    <ng-container *ngFor="let Ciudad of Ciudades">
+                      <ng-container *ngIf="Tarifas.get(Ciudad.Codigo)">
+                        <ng-container [formGroupName]="Ciudad.Codigo">
+                          <ng-container *ngFor="let tipo of TiposServicio">
+                            <ng-container *ngIf="Tarifas.get(Ciudad.Codigo).get(tipo.$key)">
+                              <ng-container [formGroupName]="tipo.$key">
+                                <h4 class="h4">
+                                  <small>Ciudad: </small>
+                                  <strong>{{ Ciudad.Nombre}}</strong>
+                                  <small>Servicio: </small>
+                                  <strong>{{ tipo.Nombre}}</strong>
+                                </h4>
+                                <!-- Hay una tarifa para la ciudad de {{ Ciudad.Nombre}} y servicio {{ tipo.Nombre}} {{Tarifas.get(Ciudad.Codigo).get(tipo.$key).Tavalue
+                                | json }} -->
+                                <ng-container *ngIf="Tarifas.get(Ciudad.Codigo).get(tipo.$key).get('Tarifas')">
+                                  <ng-container formGroupName="Tarifas">
 
-                                <!-- Domicilios -->
-                                <ng-container *ngIf="Tarifas.get(Ciudad.Codigo).get(tipo.$key).get('Tarifas').get('Tarifa1')">
-                                  <ng-container formGroupName="Tarifa1">
-                                    <mat-form-field>
-                                      <input matInput formControlName="maxKm" placeholder="Max Km">
-                                    </mat-form-field>
-                                    <mat-form-field>
-                                      <input matInput formControlName="minKm" placeholder="Max Km">
-                                    </mat-form-field>
-                                    <mat-form-field>
-                                      <input matInput formControlName="value" placeholder="Max Km">
-                                    </mat-form-field>
-                                  </ng-container>
-                                  <ng-container formGroupName="Tarifa2">
-                                    <mat-form-field>
-                                      <input matInput formControlName="maxKm" placeholder="Max Km">
-                                    </mat-form-field>
-                                    <mat-form-field>
-                                      <input matInput formControlName="minKm" placeholder="Max Km">
-                                    </mat-form-field>
-                                    <mat-form-field>
-                                      <input matInput formControlName="value" placeholder="Max Km">
-                                    </mat-form-field>
-                                  </ng-container>
-                                  <ng-container formGroupName="Tarifa3">
-                                    <mat-form-field>
-                                      <input matInput formControlName="minKm" placeholder="Max Km">
-                                    </mat-form-field>
-                                    <mat-form-field>
-                                      <input matInput formControlName="value" placeholder="Max Km">
-                                    </mat-form-field>
-                                  </ng-container>
-                                  <button (click)="deleteControl(Ciudad.Codigo, tipo.$key)">
-                                    <mat-icon>delete</mat-icon>
-                                  </button>
-                                </ng-container>
+                                    <!-- Domicilios -->
+                                    <ng-container *ngIf="Tarifas.get(Ciudad.Codigo).get(tipo.$key).get('Tarifas').get('Tarifa1') && Tarifas.get(Ciudad.Codigo).get(tipo.$key).get('Tarifas').get('Tarifa2') && Tarifas.get(Ciudad.Codigo).get(tipo.$key).get('Tarifas').get('Tarifa3')">
+                                      <mat-list>
+                                        <h3 mat-subheader>Tarifa 1</h3>
+                                        <mat-list-item>
+                                          <ng-container formGroupName="Tarifa1">
+                                            <mat-form-field>
+                                              <input matInput formControlName="minKm" placeholder="Min Km" readonly>
+                                              <mat-error>
+                                                Campo Númerico mayor a 0
+                                              </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field>
+                                              <input matInput formControlName="maxKm" placeholder="Max Km">
+                                              <mat-error>
+                                                Campo Númerico mayor a 0
+                                              </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field>
+                                              <input matInput formControlName="value" placeholder="Value">
+                                              <mat-error>
+                                                Campo Númerico mayor a 0
+                                              </mat-error>
+                                            </mat-form-field>
+                                          </ng-container>
+                                        </mat-list-item>
 
-                                <!-- Mensajeria -->
-                                <ng-container *ngIf="Tarifas.get(Ciudad.Codigo).get(tipo.$key).get('Tarifas').get('Cancelacion')">
-                                  <ng-container formGroupName="PrimerosKm">
-                                    <mat-form-field>
-                                      <input matInput formControlName="Costo" placeholder="Costo">
-                                    </mat-form-field>
-                                    <mat-form-field>
-                                      <input matInput formControlName="Km" placeholder="Max Km">
-                                    </mat-form-field>
+                                        <h3 mat-subheader>Tarifa 2</h3>
+                                        <mat-list-item>
+                                          <ng-container formGroupName="Tarifa2">
+
+                                            <mat-form-field>
+                                              <input matInput formControlName="minKm" placeholder="Min Km" readonly>
+                                              <mat-error>
+                                                Campo Númerico mayor a 0
+                                              </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field>
+                                              <input matInput formControlName="maxKm" placeholder="Max Km">
+                                              <mat-error>
+                                                Campo Númerico mayor a 0
+                                              </mat-error>
+                                            </mat-form-field>
+                                            <mat-form-field>
+                                              <input matInput formControlName="value" placeholder="Value">
+                                              <mat-error>
+                                                Campo Númerico mayor a 0
+                                              </mat-error>
+                                            </mat-form-field>
+                                          </ng-container>
+                                        </mat-list-item>
+
+                                        <h3 mat-subheader>Tarifa 3</h3>
+                                        <mat-list-item>
+                                          <ng-container formGroupName="Tarifa3">
+                                            <mat-form-field>
+                                              <input matInput formControlName="minKm" placeholder="Min Km" readonly>
+                                            </mat-form-field>
+                                            <mat-form-field>
+                                              <input matInput formControlName="value" placeholder="Value">
+                                            </mat-form-field>
+                                          </ng-container>
+                                        </mat-list-item>
+                                      </mat-list>
+                                      <div class="pull-right">
+                                        <button (click)="deleteControl(Ciudad.Codigo, tipo.$key)">
+                                          <mat-icon>delete</mat-icon>
+                                        </button>
+                                      </div>
+
+
+
+                                    </ng-container>
+
+                                    <!-- Mensajeria -->
+                                    <ng-container *ngIf="Tarifas.get(Ciudad.Codigo).get(tipo.$key).get('Tarifas').get('Cancelacion')">
+                                      <mat-list>
+                                        <h3 mat-subheader>Primeros Kmts</h3>
+                                        <mat-list-item>
+                                          <ng-container formGroupName="PrimerosKm">
+                                            <mat-form-field>
+                                              <input matInput formControlName="Costo" placeholder="Costo">
+                                            </mat-form-field>
+                                            <mat-form-field>
+                                              <input matInput formControlName="Km" placeholder="Max Km">
+                                            </mat-form-field>
+                                          </ng-container>
+                                        </mat-list-item>
+                                        <mat-list-item>
+                                          <mat-form-field>
+                                            <input matInput formControlName="Cancelacion" placeholder="Cancelacion">
+                                          </mat-form-field>
+                                        </mat-list-item>
+                                        <mat-list-item>
+                                          <mat-form-field>
+                                            <input matInput formControlName="KmAdicional" placeholder="Km Adicional">
+                                          </mat-form-field>
+                                        </mat-list-item>
+                                        <mat-list-item>
+                                          <mat-form-field>
+                                            <input matInput formControlName="ParadaAdicional" placeholder="Parada Adicional">
+                                          </mat-form-field>
+                                        </mat-list-item>
+                                        <mat-list-item>
+                                          <mat-form-field>
+                                            <input matInput formControlName="SobreCostoFueraCiudad" placeholder="Sobrecosto Fuera de Ciudad">
+                                          </mat-form-field>
+                                        </mat-list-item>
+                                      </mat-list>
+                                      <div class="pull-right">
+                                        <button (click)="deleteControl(Ciudad.Codigo, tipo.$key)">
+                                          <mat-icon>delete</mat-icon>
+                                        </button>
+                                      </div>
+                                    </ng-container>
                                   </ng-container>
-                                  <mat-form-field>
-                                    <input matInput formControlName="Cancelacion" placeholder="Cancelacion">
-                                  </mat-form-field>
-                                  <mat-form-field>
-                                    <input matInput formControlName="KmAdicional" placeholder="Km Adicional">
-                                  </mat-form-field>
-                                  <mat-form-field>
-                                    <input matInput formControlName="ParadaAdicional" placeholder="Parada Adicional">
-                                  </mat-form-field>
-                                  <mat-form-field>
-                                    <input matInput formControlName="SobreCostoFueraCiudad" placeholder="Sobrecosto Fuera de Ciudad">
-                                  </mat-form-field>
-                                  <button (click)="deleteControl(Ciudad.Codigo, tipo.$key)">
-                                    <mat-icon>delete</mat-icon>
-                                  </button>
                                 </ng-container>
                               </ng-container>
                             </ng-container>
                           </ng-container>
                         </ng-container>
+
                       </ng-container>
+
                     </ng-container>
-
                   </ng-container>
+                  <div class="row">
+                    <div class="col-sm-offset-3 col-sm-9">
+                      Agregar una nueva tarifa
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-offset-3 col-sm-3">
+                      <mat-form-field>
+                        <mat-select placeholder="Seleccione Ciudad" #City>
+                          <mat-option *ngFor="let Ciudad of Ciudades" [value]="Ciudad.Codigo">
+                            {{ Ciudad.Nombre}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-sm-3">
+                      <mat-form-field>
 
+                        <mat-select placeholder="Seleccione Servicio" #Service [disabled]="!City.value">
+                          <ng-container *ngFor="let tipo of TiposServicio">
+                            <mat-option *ngIf="!(Tarifas.value[City.value] && Tarifas.value[City.value][tipo.$key])" [value]="tipo.$key">
+                              {{ tipo.Nombre}}
+                            </mat-option>
+                          </ng-container>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-sm-3">
+                      <button mat-button [disabled]="!City.value || !Service.value" (click)="AddTarifa(City, Service)">Agregar Tarifa</button>
+                    </div>
+                  </div>
                 </ng-container>
-              </ng-container>
-              <div class="row">
-                <div class="col-sm-offset-3 col-sm-9">
-                  Agregar una nueva tarifa
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-sm-offset-3 col-sm-3">
-                  <mat-form-field>
-                    <mat-select placeholder="Seleccione Ciudad" #City>
-                      <mat-option *ngFor="let Ciudad of Ciudades" [value]="Ciudad.Codigo">
-                        {{ Ciudad.Nombre}}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-sm-3">
-                  <mat-form-field>
+              </mat-card>
+            </div>
 
-                    <mat-select placeholder="Seleccione Servicio" #Service [disabled]="!City.value">
-                      <ng-container *ngFor="let tipo of TiposServicio">
-                        <mat-option *ngIf="!(Tarifas.value[City.value] && Tarifas.value[City.value][tipo.$key])" [value]="tipo.$key">
-                          {{ tipo.Nombre}}
-                        </mat-option>
-                      </ng-container>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="col-sm-3">
-                  <button mat-button [disabled]="!City.value || !Service.value" (click)="AddTarifa(City, Service)">Agregar Tarifa</button>
-                </div>
-              </div>
-            </ng-container>
           </ng-container>
         </ng-container>
 
