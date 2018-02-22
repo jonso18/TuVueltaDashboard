@@ -6,11 +6,16 @@ import { DbService } from '../../services/db/db.service';
 import { ROLES } from '../../config/Roles';
 import { ICiudad } from '../../interfaces/ciudad.interface';
 import { IParamsRegistro } from '../../interfaces/params-registro.interface';
-import { MatSlideToggleChange, MatSelect } from '@angular/material';
+import { MatSlideToggleChange, MatSelect, MatSnackBar } from '@angular/material';
 import { ITipoServicio } from '../../interfaces/tipo-servicio.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IUser } from '../../interfaces/usuario.interface';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../services/auth/auth.service';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { IEstadoUsuario } from '../../interfaces/estadousuario.interface';
 
 @Component({
   selector: 'app-usuario-form',
@@ -19,6 +24,7 @@ import { Subscription } from 'rxjs';
 })
 export class UsuarioFormComponent implements OnInit, OnDestroy {
 
+  EstadosUsuario$: Observable<IEstadoUsuario[]>;
   form: FormGroup
   Roles$: Observable<IRol[]>;
   Ciudades$: Observable<ICiudad[]>;
@@ -28,37 +34,54 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
   public ParamsMensajero$: Observable<IParamsRegistro>
   public TiposServicio$: Observable<ITipoServicio[]>
   public userInfo: IUser;
+  public isUpdating: boolean = false;
+  public userId: string;
   constructor(
     private formBuilder: FormBuilder,
     private dbService: DbService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private authService: AuthService,
+    private http: HttpClient,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
     this.loadData();
-    this.buildForm();
+
     this.route.params.subscribe(params => {
       const id = params['id'];
-      console.log(`Id en nuevo ${id}`)
-      if (id == 'nuevo') {
-        return this.buildForm();
 
-      }
-      if (id) {
+      if (id == 'nuevo') {
+        console.log(`Id en nuevo ${id}`)
+
+        this.buildForm();
+        this.addControlToSignup();
+        return
+
+      } else if (id) {
+        this.userId = id;
+        console.log('hay id ')
         this.subs.push(
           this.dbService.objectUserInfoSnap(id)
             .subscribe(res => {
-              if (!res) {
-                alert("El usuario no se encontró")
-                return this.router.navigateByUrl(`/dashboard/Usuarios/lista`)
-              }
               this.userInfo = res;
+              this.isUpdating = true;
               this.loadFormToUpdate()
             }))
       }
     })
 
+  }
+
+  addControlToSignup() {
+    this.form.addControl('Password1', this.formBuilder.control(null, [
+      Validators.required,
+      Validators.minLength(6)
+    ]))
+    this.form.addControl('Password2', this.formBuilder.control(null, [
+      Validators.required
+    ]))
   }
 
   ngOnDestroy() {
@@ -88,7 +111,7 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
     if (ClienteIntegracion) {
       this.form.addControl('ClienteIntegracion', this.formBuilder.group({
         urls: this.formBuilder.group({
-          logSolicitud: [null]
+          logSolicitud: [null, [Validators.required, Validators.pattern('^(http[s]?:\\/\\/){0,1}(www\\.){0,1}[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,5}[\\.]{0,1}$')]]
         })
       }));
       this.EsClienteDeIntegracion.setValue(true);
@@ -101,6 +124,7 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
     this.Ciudades$ = this.dbService.listCiudades();
     this.ParamsMensajero$ = this.dbService.listParamsRegistro();
     this.TiposServicio$ = this.dbService.listTiposServicio();
+    this.EstadosUsuario$ = this.dbService.listEstadosUsuarioSnap();
   }
 
   buildForm() {
@@ -110,9 +134,14 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
       Cedula: [null, [Validators.required]],
       Celular: [null, [Validators.required]],
       Ciudad: [null, [Validators.required]],
-      Correo: [null, [Validators.required]],
+      Estado: [null, [Validators.required]],
+      Correo: [null, [Validators.required, Validators.email]],
       Rol: [null, [Validators.required]]
     })
+
+    if (!this.isUpdating) {
+      this.addControlToSignup();
+    }
   }
 
   toggleIsIntegratorClient(event: MatSlideToggleChange) {
@@ -156,7 +185,7 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
 
 
 
-    console.log(cityGroup)
+
     switch (_service) {
       case 'Domicilios':
         const tarifa1: FormGroup = this.formBuilder.group({
@@ -168,12 +197,12 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
 
         const tarifa2: FormGroup = this.formBuilder.group({
           maxKm: [null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]],
-          minKm: [null ],
+          minKm: [null],
           value: [null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]]
         })
         tarifasGroup.addControl('Tarifa2', tarifa2)
         const tarifa3: FormGroup = this.formBuilder.group({
-          minKm: [null ],
+          minKm: [null],
           value: [null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]]
         })
 
@@ -231,13 +260,13 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
 
         break;
       case 'Mensajeria':
-        tarifasGroup.addControl('Cancelacion', this.formBuilder.control(null, [Validators.required]))
-        tarifasGroup.addControl('KmAdicional', this.formBuilder.control(null, [Validators.required]))
-        tarifasGroup.addControl('ParadaAdicional', this.formBuilder.control(null, [Validators.required]))
-        tarifasGroup.addControl('SobreCostoFueraCiudad', this.formBuilder.control(null, [Validators.required]))
+        tarifasGroup.addControl('Cancelacion', this.formBuilder.control(null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]))
+        tarifasGroup.addControl('KmAdicional', this.formBuilder.control(null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]))
+        tarifasGroup.addControl('ParadaAdicional', this.formBuilder.control(null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]))
+        tarifasGroup.addControl('SobreCostoFueraCiudad', this.formBuilder.control(null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]))
         tarifasGroup.addControl('PrimerosKm', this.formBuilder.group({
-          Costo: this.formBuilder.control(null, [Validators.required]),
-          Km: this.formBuilder.control(null, [Validators.required])
+          Costo: this.formBuilder.control(null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]),
+          Km: this.formBuilder.control(null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')])
         }))
       default:
         break;
@@ -275,6 +304,7 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
 
   AddInputsByRol(key) {
     const formData = this.form.value;
+
     this.buildForm();
     this.form.patchValue(formData);
     switch (key) {
@@ -295,6 +325,84 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
         break;
       default:
         break;
+    }
+  }
+
+  onSubmitCreate() {
+    const isFormValid: boolean = this.form.valid;
+    if (isFormValid) {
+      const getToken: Promise<any> = this.authService.userState.getIdToken()
+      getToken.then(token => {
+        return this.createUser(token).then(res => {
+          const uid: string = res.uid;
+          let body = this.form.value;
+          delete body.Password1
+          delete body.Password2
+          return this.updateUser(uid, body, token)
+        })
+      }).then(res => {
+        console.log('user created', res)
+        return this.router.navigateByUrl('/dashboard/Usuarios/lista')
+      }).then(res =>{
+        this.snackBar.open("Usuario Creado Exitosamente", 'Ok', {
+          duration: 3000,
+          verticalPosition: 'top'
+        })
+        
+      }).catch(err=>{
+        this.snackBar.open("Error al crear usuario", 'Ok', {
+          duration: 3000,
+          verticalPosition: 'top'
+        })
+      });
+    }
+  }
+
+  updateUser(uid: string, body: IUser, token: string) {
+    const url: string = `${environment.firebase.databaseURL}/Administrativo/Usuarios/${uid}.json?auth=${token}`
+    return this.http.patch(url, body).toPromise();
+  }
+
+  createUser(token: string): Promise<any> {
+    const email: string = this.Correo.value;
+    const password: string = this.Password1.value;
+    const body = {
+      email: email,
+      password: password,
+      idToken: token
+    }
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      })
+    };
+    const url: string = `${environment.baseapi.tuvuelta}/api/usuarios/nuevo`
+    return this.http.post(url, body, httpOptions).toPromise();
+
+
+
+  }
+
+  onSubmitUpdate() {
+    const isFormValid: boolean = this.form.valid;
+    if (isFormValid) {
+      const getToken: Promise<any> = this.authService.userState.getIdToken()
+      getToken.then(token => {
+        const body: IUser = this.form.value;
+        const id: string = this.userId;
+        return this.updateUser(id, body, token)
+      }).then(res => {
+        this.snackBar.open("Usuario Actualizado Exitosamente", 'Ok', {
+          duration: 3000,
+          verticalPosition: 'top'
+        })
+        return this.router.navigateByUrl('/dashboard/Usuarios/lista')
+      }).catch(err => {
+        this.snackBar.open("Error al Actualizar", 'Ok', {
+          duration: 3000,
+          verticalPosition: 'top'
+        })
+      })
     }
   }
 
@@ -320,9 +428,11 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
   get Ciudad() { return this.form.get('Ciudad') }
   get Correo() { return this.form.get('Correo') }
   get Rol() { return this.form.get('Rol') }
+  get Estado() { return this.form.get('Estado') }
+  get Password1() { return this.form.get('Password1') }
+  get Password2() { return this.form.get('Password2') }
 
   /* Mensajero */
-
   get PlacaVehiculo() { return this.form.get('PlacaVehiculo') }
   get FechaNacimiento() { return this.form.get('FechaNacimiento') }
   get TiempoDispParaHacerServicio() { return this.form.get('TiempoDispParaHacerServicio') }

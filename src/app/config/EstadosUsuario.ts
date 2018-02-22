@@ -1,4 +1,5 @@
 export const ESTADOS_USUARIO = {
     Activo: 'Activo',
-    Bloqueado: 'Bloqueado'
+    Bloqueado: 'Bloqueado',
+    Inactivo: 'Inactivo'
 }

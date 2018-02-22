@@ -17,8 +17,11 @@ import { IGlobalConfig } from '../../interfaces/config-global.interface';
 import { IRol } from '../../interfaces/rol.interface';
 import { IParamsRegistro } from '../../interfaces/params-registro.interface';
 import { ITipoServicio } from '../../interfaces/tipo-servicio.interface';
+import { environment } from '../../../environments/environment';
+import { IEstadoUsuario } from '../../interfaces/estadousuario.interface';
 @Injectable()
 export class DbService {
+  
   public Ciudades: ICiudad[];
   constructor(
     private db: AngularFireDatabase,
@@ -113,6 +116,24 @@ export class DbService {
       }))
   }
 
+  listEstadosUsuario(){
+    return this.db.list(`/Administrativo/EstadosUsuario`);
+  }
+  listEstadosUsuarioSnap(): Observable<IEstadoUsuario[]> {
+    return this.listEstadosUsuario()
+    .snapshotChanges()
+    .map(changes => 
+      changes.map(change => {
+        const data = change.payload.val();
+        const estado: IEstadoUsuario = {
+          $key: change.payload.key,
+          Nombre: data.Nombre,
+          Descripcion: data.Descripcion
+        };
+        return estado;
+      }))
+  }
+
   public listTipoServicio() {
     return this.db.list(`/Administrativo/TipoServicio`)
   }
@@ -167,7 +188,7 @@ export class DbService {
   }
 
   public patchConfigGlobal(data: IGlobalConfig) {
-    return this.http.patch(`https://tuvueltap.firebaseio.com/Administrativo/ConfigGlobal.json`, data);
+    return this.http.patch(`${environment.firebase.databaseURL}/Administrativo/ConfigGlobal.json`, data);
   }
 
   public listRol(): Observable<IRol[]> {

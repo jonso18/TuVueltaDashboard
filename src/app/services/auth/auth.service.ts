@@ -22,10 +22,18 @@ export class AuthService {
     this.subUserInfo.unsubscribe();
     return this.authService.auth.signOut()
   }
+
   /**
    * test
    */
   public test() {
     return this.authService.idToken
+  }
+
+  public createUser(email:string, password:string): Promise<any>{
+    return this.authService.app.auth().createUserAndRetrieveDataWithEmailAndPassword(email,password)
+    /* return this.authService.auth.app.auth().createUserWithEmailAndPassword(email,password) */
+    /* return this.authService.auth.createUserAndRetrieveDataWithEmailAndPassword(email,password) */
+    /* return this.authService.auth.createUserWithEmailAndPassword(email,password) */
   }
 }

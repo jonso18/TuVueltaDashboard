@@ -26,7 +26,7 @@
 
         <!-- Cedula -->
         <mat-form-field>
-          <input matInput formControlName="Cedula" placeholder="Cedula">
+          <input matInput formControlName="Cedula" placeholder="Cedula" type="number">
           <mat-error *ngIf="Cedula.hasError('required')">
             Campo
             <strong>Obligatorio</strong>
@@ -35,8 +35,23 @@
 
         <!-- Celular -->
         <mat-form-field>
-          <input matInput formControlName="Celular" placeholder="Celular">
+          <input matInput formControlName="Celular" placeholder="Celular" type="number">
           <mat-error *ngIf="Celular.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Estado -->
+        <mat-form-field>
+          <mat-select formControlName="Estado" placeholder="Estado">
+            <ng-container *ngIf="EstadosUsuario$ | async as EstadosUsuario">
+              <mat-option *ngFor="let row of EstadosUsuario" [value]="row.$key" [matTooltip]="row.Descripcion">
+                {{ row.Nombre }}
+              </mat-option>
+            </ng-container>
+          </mat-select>
+          <mat-error *ngIf="Estado.hasError('required')">
             Campo
             <strong>Obligatorio</strong>
           </mat-error>
@@ -44,12 +59,10 @@
 
         <!-- Ciudad -->
         <mat-form-field>
-
           <mat-select formControlName="Ciudad" placeholder="Ciudad">
             <mat-option *ngFor="let row of Ciudades" [value]="row.Codigo" [matTooltip]="row.Prefijo">
               {{ row.Nombre }}
             </mat-option>
-
           </mat-select>
           <mat-error *ngIf="Ciudad.hasError('required')">
             Campo
@@ -64,7 +77,40 @@
             Campo
             <strong>Obligatorio</strong>
           </mat-error>
+          <mat-error *ngIf="Correo.hasError('email')">
+            Campo debe ser un
+            <strong>Correo</strong>
+          </mat-error>
         </mat-form-field>
+
+        <!-- Password1 -->
+        <mat-form-field *ngIf="Password1">
+          <input matInput formControlName="Password1" placeholder="Contraseña" type="password">
+          <mat-error *ngIf="Password1.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+          <mat-error *ngIf="Password1.hasError('minlength')">
+            Campo debe tener al menos
+            <strong>6 Caracteres</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Password2 -->
+        <mat-form-field *ngIf="Password2">
+          <input matInput formControlName="Password2" placeholder="Confirme Contraseña" type="password">
+          <mat-error *ngIf="Password2.hasError('required')">
+            Campo
+            <strong>Obligatorio</strong>
+          </mat-error>
+        </mat-form-field>
+        <ng-container *ngIf="Password1 && Password2">
+          <div class="alert alert-warning" *ngIf="Password1.valid && (Password1.dirty || Password1.touched) && Password2.valid && (Password2.dirty || Password2.touched) && Password1.value !== Password2.value">
+            Las contraseñas
+            <strong>no coinciden</strong>
+          </div>
+        </ng-container>
+
 
         <!-- Rol -->
         <mat-form-field>
@@ -178,6 +224,9 @@
             <ng-container formGroupName="urls">
               <mat-form-field>
                 <input matInput formControlName="logSolicitud" placeholder="Url integración Log Solicitud">
+                <mat-error>
+                  Campo debe ser una <strong>URL</strong>
+                </mat-error>
               </mat-form-field>
             </ng-container>
           </ng-container>
@@ -218,19 +267,19 @@
                                         <mat-list-item>
                                           <ng-container formGroupName="Tarifa1">
                                             <mat-form-field>
-                                              <input matInput formControlName="minKm" placeholder="Min Km" readonly>
+                                              <input matInput formControlName="minKm" placeholder="Min Km" readonly type="number">
                                               <mat-error>
                                                 Campo Númerico mayor a 0
                                               </mat-error>
                                             </mat-form-field>
                                             <mat-form-field>
-                                              <input matInput formControlName="maxKm" placeholder="Max Km">
+                                              <input matInput formControlName="maxKm" placeholder="Max Km" type="number">
                                               <mat-error>
                                                 Campo Númerico mayor a 0
                                               </mat-error>
                                             </mat-form-field>
                                             <mat-form-field>
-                                              <input matInput formControlName="value" placeholder="Value">
+                                              <input matInput formControlName="value" placeholder="Value" type="number">
                                               <mat-error>
                                                 Campo Númerico mayor a 0
                                               </mat-error>
@@ -249,13 +298,13 @@
                                               </mat-error>
                                             </mat-form-field>
                                             <mat-form-field>
-                                              <input matInput formControlName="maxKm" placeholder="Max Km">
+                                              <input matInput formControlName="maxKm" placeholder="Max Km" type="number">
                                               <mat-error>
                                                 Campo Númerico mayor a 0
                                               </mat-error>
                                             </mat-form-field>
                                             <mat-form-field>
-                                              <input matInput formControlName="value" placeholder="Value">
+                                              <input matInput formControlName="value" placeholder="Value" type="number">
                                               <mat-error>
                                                 Campo Númerico mayor a 0
                                               </mat-error>
@@ -270,7 +319,12 @@
                                               <input matInput formControlName="minKm" placeholder="Min Km" readonly>
                                             </mat-form-field>
                                             <mat-form-field>
-                                              <input matInput formControlName="value" placeholder="Value">
+                                              <input matInput formControlName="value" placeholder="Value" type="number">
+                                              <mat-error>
+                                                Campo
+                                                <strong>Obligatorio</strong> y
+                                                <strong>Numerico Positivo</strong>
+                                              </mat-error>
                                             </mat-form-field>
                                           </ng-container>
                                         </mat-list-item>
@@ -280,9 +334,6 @@
                                           <mat-icon>delete</mat-icon>
                                         </button>
                                       </div>
-
-
-
                                     </ng-container>
 
                                     <!-- Mensajeria -->
@@ -292,31 +343,61 @@
                                         <mat-list-item>
                                           <ng-container formGroupName="PrimerosKm">
                                             <mat-form-field>
-                                              <input matInput formControlName="Costo" placeholder="Costo">
+                                              <input matInput formControlName="Costo" placeholder="Costo" type="number">
+                                              <mat-error>
+                                                Campo
+                                                <strong>Obligatorio</strong> y
+                                                <strong>Numerico Positivo</strong>
+                                              </mat-error>
                                             </mat-form-field>
                                             <mat-form-field>
-                                              <input matInput formControlName="Km" placeholder="Max Km">
+                                              <input matInput formControlName="Km" placeholder="Max Km" type="number">
+                                              <mat-error>
+                                                Campo
+                                                <strong>Obligatorio</strong> y
+                                                <strong>Numerico Positivo</strong>
+                                              </mat-error>
                                             </mat-form-field>
                                           </ng-container>
                                         </mat-list-item>
                                         <mat-list-item>
                                           <mat-form-field>
-                                            <input matInput formControlName="Cancelacion" placeholder="Cancelacion">
+                                            <input matInput formControlName="Cancelacion" placeholder="Cancelacion" type="number">
+                                            <mat-error>
+                                              Campo
+                                              <strong>Obligatorio</strong> y
+                                              <strong>Numerico Positivo</strong>
+                                            </mat-error>
                                           </mat-form-field>
                                         </mat-list-item>
                                         <mat-list-item>
                                           <mat-form-field>
-                                            <input matInput formControlName="KmAdicional" placeholder="Km Adicional">
+                                            <input matInput formControlName="KmAdicional" placeholder="Km Adicional" type="number">
+                                            <mat-error>
+                                              Campo
+                                              <strong>Obligatorio</strong> y
+                                              <strong>Numerico Positivo</strong>
+                                            </mat-error>
                                           </mat-form-field>
                                         </mat-list-item>
                                         <mat-list-item>
                                           <mat-form-field>
-                                            <input matInput formControlName="ParadaAdicional" placeholder="Parada Adicional">
+                                            <input matInput formControlName="ParadaAdicional" placeholder="Parada Adicional" type="number">
+                                            <mat-error>
+                                              Campo
+                                              <strong>Obligatorio</strong> y
+                                              <strong>Numerico Positivo</strong>
+                                            </mat-error>
                                           </mat-form-field>
                                         </mat-list-item>
                                         <mat-list-item>
                                           <mat-form-field>
-                                            <input matInput formControlName="SobreCostoFueraCiudad" placeholder="Sobrecosto Fuera de Ciudad">
+                                            <input matInput formControlName="SobreCostoFueraCiudad" placeholder="Sobrecosto Fuera de Ciudad" type="number">
+                                            <mat-error>
+                                              Campo
+                                              <strong>Obligatorio</strong> y
+                                              <strong>Numerico Positivo</strong>
+                                            </mat-error>
                                           </mat-form-field>
                                         </mat-list-item>
                                       </mat-list>
@@ -375,6 +456,14 @@
           </ng-container>
         </ng-container>
 
+        <div class="text-center" *ngIf="form.get('Password1') && form.get('Password2'); else updateUser">
+          <button mat-raised-button color="primary" (click)="onSubmitCreate()" [disabled]="form.invalid || Password1.value != Password2.value">Crear Usuario</button>
+        </div>
+        <ng-template #updateUser>
+          <div class="text-center">
+            <button mat-raised-button color="primary" (click)="onSubmitUpdate()" [disabled]="form.invalid">Actualizar Usuario</button>
+          </div>
+        </ng-template>
 
       </form>
     </ng-container>
@@ -387,6 +476,6 @@
   </mat-card>
 </div>
 
-<pre>
+<pre *ngIf="form">
   {{ form.value | json }}
 </pre>
