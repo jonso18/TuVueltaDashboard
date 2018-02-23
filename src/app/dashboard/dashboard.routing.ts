@@ -106,7 +106,7 @@ export const DashboardRoutes: Routes = [
                         children:[
                             {
                                 path:'',
-                                redirectTo: 'nuevo',
+                                redirectTo: 'lista',
                                 pathMatch: 'full'
                             },
                             {

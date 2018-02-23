@@ -21,7 +21,7 @@ import { environment } from '../../../environments/environment';
 import { IEstadoUsuario } from '../../interfaces/estadousuario.interface';
 @Injectable()
 export class DbService {
-  
+
   public Ciudades: ICiudad[];
   constructor(
     private db: AngularFireDatabase,
@@ -116,22 +116,22 @@ export class DbService {
       }))
   }
 
-  listEstadosUsuario(){
+  listEstadosUsuario() {
     return this.db.list(`/Administrativo/EstadosUsuario`);
   }
   listEstadosUsuarioSnap(): Observable<IEstadoUsuario[]> {
     return this.listEstadosUsuario()
-    .snapshotChanges()
-    .map(changes => 
-      changes.map(change => {
-        const data = change.payload.val();
-        const estado: IEstadoUsuario = {
-          $key: change.payload.key,
-          Nombre: data.Nombre,
-          Descripcion: data.Descripcion
-        };
-        return estado;
-      }))
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(change => {
+          const data = change.payload.val();
+          const estado: IEstadoUsuario = {
+            $key: change.payload.key,
+            Nombre: data.Nombre,
+            Descripcion: data.Descripcion
+          };
+          return estado;
+        }))
   }
 
   public listTipoServicio() {
@@ -190,7 +190,11 @@ export class DbService {
   public patchConfigGlobal(data: IGlobalConfig) {
     return this.http.patch(`${environment.firebase.databaseURL}/Administrativo/ConfigGlobal.json`, data);
   }
-
+  /**
+   * Get a formated list of Roles who are supported by TuVuelta system.
+   * 
+   * @returns Observable<IRol[]>
+   */
   public listRol(): Observable<IRol[]> {
     return this.db.list(`/Administrativo/Roles`)
       .snapshotChanges()
@@ -207,7 +211,12 @@ export class DbService {
       .do(console.log)
       .distinctUntilChanged()
   }
-
+  /**
+   * Get Register params for a user.
+   * This is usually used with Mensajero rol
+   * 
+   * @returns Observable<IParamsRegistro>
+   */
   public listParamsRegistro(): Observable<IParamsRegistro> {
     return this.db.list(`/Administrativo/ParamsRegistro`)
       .snapshotChanges()
@@ -222,7 +231,12 @@ export class DbService {
       .distinctUntilChanged()
       .do(console.log)
   }
-
+  /**
+   * Get a list of services types who provide TuVuelta.
+   * This return a formated array according with ITipoServicio.
+   * 
+   * @returns Observable<ITipoServicio[]>
+   */
   public listTiposServicio(): Observable<ITipoServicio[]> {
     return this.db.list(`/Administrativo/ListaTipoServicios`)
       .snapshotChanges()
@@ -238,7 +252,14 @@ export class DbService {
       .do(console.log)
       .distinctUntilChanged()
   }
-
+  /**
+   * Look up in database for information of an specific user.
+   * This will return null if user doesnt exist in database or
+   * doesn't have information.
+   * 
+   * @param  {string} id Indentifier of user
+   * @returns Observable<IUser | null>
+   */
   objectUserInfoSnap(id: string): Observable<IUser | null> {
     return this.db.object(`/Administrativo/Usuarios/${id}`)
       .snapshotChanges()
@@ -250,7 +271,14 @@ export class DbService {
       .distinctUntilChanged()
       .do(console.log)
   }
-
+  /**
+   * Return an entire list of users who are stored in the database.
+   * But, doenst return list of users who are authenticated. Only in database.
+   * This return a formated Array according with structure of IUser interface.
+   * 
+   * 
+   * @returns Observable<IUser[]>
+   */
   listUsers(): Observable<IUser[]> {
     return this.db.list(`/Administrativo/Usuarios`)
       .snapshotChanges()
@@ -260,10 +288,14 @@ export class DbService {
           const _user: IUser = this.formatUser(user)
           return _user
         }))
-
-      .do(console.log)
   }
-
+  /**
+   * This method will give the structure of a user format object.
+   * So if some data doesnt' exisits this will complete it with null.
+   * 
+   * @param  {AngularFireAction<DataSnapshot>} dataSnapshot
+   * @returns IUser
+   */
   formatUser(dataSnapshot: AngularFireAction<DataSnapshot>): IUser | null {
     const data = dataSnapshot.payload.val()
     if (!data) return null

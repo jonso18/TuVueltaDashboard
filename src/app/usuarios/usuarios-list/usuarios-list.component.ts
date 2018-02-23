@@ -61,10 +61,8 @@ export class UsuariosListComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-
     this.subs.push(this.dbService.listUsers()
       .subscribe((res: IUser[]) => {
-        console.log("Inicializando data source")
         this.AllUsuarios = this.Usuarios = res;
         this.instanceTable();
       }));
