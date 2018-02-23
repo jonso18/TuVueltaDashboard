@@ -3,6 +3,7 @@ export interface IGlobalConfig {
     DistanciaActivarBotonEstadoSrvc: number;
     TiempoCambiarAInactivo: number;
     TiempoIntervaloRevisarUltimoCambioEstado: number;
+    Usuarios?: any;
 }
 
 

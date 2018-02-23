@@ -1,11 +1,12 @@
 <div class="container-fluid">
   <mat-card>
     <h1>Configuración Global</h1>
-    <ng-container *ngIf="form; else loading">
+    <ng-container *ngIf="form && Clientes$ | async as Clientes; else loading">
       <form [formGroup]="form">
         <!-- CantSrvcQuePuedeComprarMensajero -->
         <mat-form-field>
-          <input matInput formControlName="CantSrvcQuePuedeComprarMensajero" placeholder="Cantidad de Servicios que Puede Comprar un Mensajero">
+          <input matInput formControlName="CantSrvcQuePuedeComprarMensajero" placeholder="Cantidad de Servicios que Puede Comprar un Mensajero"
+            type="number">
           <span matSuffix>{{CantSrvcQuePuedeComprarMensajero.value }} Servicios</span>
           <mat-error *ngIf="CantSrvcQuePuedeComprarMensajero.hasError('required')">
             Campo
@@ -19,7 +20,8 @@
 
         <!-- DistanciaActivarBotonEstadoSrvc -->
         <mat-form-field>
-          <input matInput formControlName="DistanciaActivarBotonEstadoSrvc" placeholder="Distancia minima para activar el boton de cambiar estado de servicio">
+          <input matInput formControlName="DistanciaActivarBotonEstadoSrvc" placeholder="Distancia minima para activar el boton de cambiar estado de servicio"
+            type="number">
           <span matSuffix>{{DistanciaActivarBotonEstadoSrvc.value / 1000 }} Kmts</span>
           <mat-error *ngIf="DistanciaActivarBotonEstadoSrvc.hasError('required')">
             Campo
@@ -33,7 +35,7 @@
 
         <!-- TiempoCambiarAInactivo -->
         <mat-form-field>
-          <input matInput formControlName="TiempoCambiarAInactivo" placeholder="Tiempo para cambiar a estado Inactivo">
+          <input matInput formControlName="TiempoCambiarAInactivo" placeholder="Tiempo para cambiar a estado Inactivo" type="number">
           <span matSuffix>{{TiempoCambiarAInactivo.value / 60000 }} Minutos</span>
           <mat-error *ngIf="TiempoCambiarAInactivo.hasError('required')">
             Campo
@@ -47,7 +49,8 @@
 
         <!-- TiempoIntervaloRevisarUltimoCambioEstado -->
         <mat-form-field>
-          <input matInput formControlName="TiempoIntervaloRevisarUltimoCambioEstado" placeholder="Tiempo de intervalo para revisar cuando fue la ultima vez en la que el usuario se activó">
+          <input matInput formControlName="TiempoIntervaloRevisarUltimoCambioEstado" placeholder="Tiempo de intervalo para revisar cuando fue la ultima vez en la que el usuario se activó"
+            type="number">
           <span matSuffix>{{TiempoIntervaloRevisarUltimoCambioEstado.value / 1000 }} Segundos</span>
           <mat-error *ngIf="TiempoIntervaloRevisarUltimoCambioEstado.hasError('required')">
             Campo
@@ -59,10 +62,75 @@
           </mat-error>
         </mat-form-field>
 
+        <div class="row">
+          <div class="col-sm-offset-2 col-sm-10">
+            <mat-card>
+              <mat-list *ngIf="Usuarios">
+                <ng-container formGroupName="Usuarios">
+                  <ng-container *ngFor="let Cliente of Clientes">
+                    <ng-container *ngIf="Usuarios.get(Cliente.$key)">
+                      <ng-container [formGroupName]="Cliente.$key">
+                        <h3 mat-subheader>{{ Cliente.Nombres + ' ' + Cliente.Apellidos }} </h3>
+                        <mat-list-item>
+                          <mat-form-field>
+                            <input matInput formControlName="CantSrvcQuePuedeComprarMensajero" placeholder="Cantidad de Servicios que Puede Comprar un Mensajero"
+                              type="number">
+                            <span matSuffix>{{ Usuarios.get(Cliente.$key).get('CantSrvcQuePuedeComprarMensajero').value }} Servicios</span>
+                            <mat-error *ngIf="Usuarios.get(Cliente.$key).get('CantSrvcQuePuedeComprarMensajero').hasError('required')">
+                              Campo
+                              <strong>Obligatorio</strong>
+                            </mat-error>
+                            <mat-error *ngIf="!Usuarios.get(Cliente.$key).get('CantSrvcQuePuedeComprarMensajero').hasError('required') && Usuarios.get(Cliente.$key).get('CantSrvcQuePuedeComprarMensajero').hasError('pattern')">
+                              Campo debe ser
+                              <strong>Entero Positivo</strong>
+                            </mat-error>
+                          </mat-form-field>
+                          <button mat-button (click)="removeCustomUserConfig(Cliente.$key)">
+                            <mat-icon>
+                              delete
+                            </mat-icon>
+                          </button>
+                        </mat-list-item>
+                      </ng-container>
+
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </mat-list>
+              <div class="row">
+                <div class="col-sm-8">
+                  <mat-form-field>
+                    <mat-select #selectCliente placeholder="Seleccione Cliente">
+                      <ng-container *ngFor="let Cliente of Clientes">
+                        <ng-container *ngIf="Usuarios; else allClientesSelect">
+                          <ng-container *ngIf="!Usuarios.get(Cliente.$key)">
+                            <mat-option [value]="Cliente.$key">
+                              {{ Cliente.Nombres}}
+                            </mat-option>
+                          </ng-container>
+                        </ng-container>
+                        <ng-template #allClientesSelect>
+                          <mat-option [value]="Cliente.$key">
+                            {{ Cliente.Nombres}}
+                          </mat-option>
+                        </ng-template>
+                      </ng-container>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                  <button class="btn btn-block btn-success" [disabled]="!selectCliente.value" (click)="onClickaddCustomUserConfig(selectCliente)">Agregar Configuración
+                    <mat-icon>settings</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </div>
+
         <div class="text-center">
           <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">Actualizar</button>
         </div>
-
       </form>
     </ng-container>
 
@@ -71,5 +139,6 @@
         <mat-spinner></mat-spinner>
       </div>
     </ng-template>
+
   </mat-card>
 </div>
