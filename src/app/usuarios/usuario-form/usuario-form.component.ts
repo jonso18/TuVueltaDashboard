@@ -53,7 +53,7 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
       const id = params['id'];
 
       if (id == 'nuevo') {
-        console.log(`Id en nuevo ${id}`)
+        
 
         this.buildForm();
         this.addControlToSignup();
@@ -61,7 +61,6 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
 
       } else if (id) {
         this.userId = id;
-        console.log('hay id ')
         this.subs.push(
           this.dbService.objectUserInfoSnap(id)
             .subscribe(res => {
@@ -159,13 +158,10 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
   }
 
   AddTarifa(City: MatSelect, Service: MatSelect) {
-    console.log(City, Service)
     const _city: string = City.value;
     const _service: string = Service.value;
     City.value = false;
     Service.value = false;
-    console.log(typeof City)
-    console.log(_city)
     this.addCustomTarifa(_city, _service);
 
   }
@@ -231,12 +227,8 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
           tarifa1.get('maxKm').valueChanges
             .debounceTime(500)
             .subscribe(val => {
-              console.log('updating value for max km')
-              console.log(typeof val)
               tarifa1.get('maxKm').setValue(Number(val))
               tarifa2.get('minKm').setValue(Number(val) + 0.1)
-              console.log(`Tarifa 2 minKm ${tarifa2.get('minKm').value}`)
-              console.log(Number(tarifa2.get('minKm').value) > Number(tarifa2.get('maxKm').value))
               if (Number(tarifa2.get('minKm').value) > Number(tarifa2.get('maxKm').value)) {
                 tarifa2.get('maxKm').setValue(Number(tarifa2.get('minKm').value) + 0.9)
                 tarifa3.get('minKm').setValue(Number(tarifa2.get('minKm').value) + 1)
@@ -248,10 +240,8 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
             .debounceTime(500)
 
             .subscribe(val => {
-              console.log('updating value for max km')
               tarifa2.get('maxKm').setValue(Number(val))
               tarifa3.get('minKm').setValue(Number(val) + 0.1)
-              console.log(Number(tarifa2.get('minKm').value) > Number(tarifa2.get('maxKm').value))
               if (Number(tarifa2.get('minKm').value) > Number(tarifa2.get('maxKm').value)) {
                 tarifa2.get('maxKm').setValue(Number(tarifa2.get('minKm').value) + 0.9)
                 tarifa3.get('minKm').setValue(Number(tarifa2.get('minKm').value) + 1)
@@ -286,20 +276,12 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
 
 
   toggleTarifasPersonalizadas(event: MatSlideToggleChange, Ciudades: ICiudad[]) {
-
     const isChecked: boolean = event.checked;
     if (isChecked) {
       this.form.addControl('Tarifas', this.formBuilder.group({}))
-
-      /* setTimeout(() => {
-        const tarifas = this.form.get('Tarifas') as FormGroup;
-        tarifas.addControl('11001', this.formBuilder.control(null))
-      }, 5000); */
       return
     }
-
     this.form.removeControl('Tarifas')
-
   }
 
   AddInputsByRol(key) {
@@ -360,7 +342,7 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
 
   updateUser(uid: string, body: IUser, token: string) {
     const url: string = `${environment.firebase.databaseURL}/Administrativo/Usuarios/${uid}.json?auth=${token}`
-    return this.http.patch(url, body).toPromise();
+    return this.http.put(url, body).toPromise();
   }
 
   createUser(token: string): Promise<any> {
@@ -378,9 +360,6 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
     };
     const url: string = `${environment.baseapi.tuvuelta}/api/usuarios/nuevo`
     return this.http.post(url, body, httpOptions).toPromise();
-
-
-
   }
 
   onSubmitUpdate() {

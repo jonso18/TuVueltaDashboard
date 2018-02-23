@@ -184,12 +184,12 @@ export class DbService {
       .map(res => {
         return res.payload.val();
       })
-      .do(console.log)
   }
 
   public patchConfigGlobal(data: IGlobalConfig) {
     return this.http.patch(`${environment.firebase.databaseURL}/Administrativo/ConfigGlobal.json`, data);
   }
+
   /**
    * Get a formated list of Roles who are supported by TuVuelta system.
    * 
@@ -208,9 +208,9 @@ export class DbService {
           };
           return (_rol);
         }))
-      .do(console.log)
       .distinctUntilChanged()
   }
+
   /**
    * Get Register params for a user.
    * This is usually used with Mensajero rol
@@ -221,16 +221,17 @@ export class DbService {
     return this.db.list(`/Administrativo/ParamsRegistro`)
       .snapshotChanges()
       .map(changes => {
-        let params = {};
+        let params: any = {};
         changes.forEach(item => {
           params[item.key] = item.payload.val();
         })
-        return params
+        const _params: IParamsRegistro = params
+        return _params
       }
       )
       .distinctUntilChanged()
-      .do(console.log)
   }
+
   /**
    * Get a list of services types who provide TuVuelta.
    * This return a formated array according with ITipoServicio.
@@ -249,9 +250,9 @@ export class DbService {
           };
           return (_type)
         }))
-      .do(console.log)
       .distinctUntilChanged()
   }
+
   /**
    * Look up in database for information of an specific user.
    * This will return null if user doesnt exist in database or
@@ -269,8 +270,8 @@ export class DbService {
         return _user
       })
       .distinctUntilChanged()
-      .do(console.log)
   }
+
   /**
    * Return an entire list of users who are stored in the database.
    * But, doenst return list of users who are authenticated. Only in database.
@@ -289,6 +290,7 @@ export class DbService {
           return _user
         }))
   }
+
   /**
    * This method will give the structure of a user format object.
    * So if some data doesnt' exisits this will complete it with null.

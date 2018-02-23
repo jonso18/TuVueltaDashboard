@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
               if (info.Rol === ROLES.Administrador){
                 // Navigate to Administrator root url
 
-                return this.router.navigateByUrl('/dashboard/Usuarios/lista')/* OvWpO0SicvTPpXB3hpl10OU1m8h1 */
+                return this.router.navigateByUrl('/dashboard/parametros/Configuracion-global')
               }else if (info.Rol === ROLES.Cliente){
                 // Navigate to Cliente root url
                 return this.router.navigateByUrl('/dashboard')
