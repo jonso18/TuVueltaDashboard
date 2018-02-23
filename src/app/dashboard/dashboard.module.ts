@@ -30,6 +30,7 @@ import { environment } from '../../environments/environment';
 import { ConfigGlobalComponent } from '../parametros/config-global/config-global.component';
 import { UsuarioFormComponent } from '../usuarios/usuario-form/usuario-form.component';
 import { UsuariosComponent } from '../usuarios/usuarios/usuarios.component';
+import { UsuariosListComponent } from '../usuarios/usuarios-list/usuarios-list.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -69,7 +70,8 @@ import { UsuariosComponent } from '../usuarios/usuarios/usuarios.component';
         DialogOnClickMap,
         ConfigGlobalComponent,
         UsuarioFormComponent,
-        UsuariosComponent
+        UsuariosComponent,
+        UsuariosListComponent
     ],
     entryComponents: [
         DialogNewCity,

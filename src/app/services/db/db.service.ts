@@ -14,8 +14,14 @@ import { IEstadoServicio } from '../../interfaces/estadoservicio.interface';
 import { IUser } from '../../interfaces/usuario.interface';
 import { HttpClient } from '@angular/common/http';
 import { IGlobalConfig } from '../../interfaces/config-global.interface';
+import { IRol } from '../../interfaces/rol.interface';
+import { IParamsRegistro } from '../../interfaces/params-registro.interface';
+import { ITipoServicio } from '../../interfaces/tipo-servicio.interface';
+import { environment } from '../../../environments/environment';
+import { IEstadoUsuario } from '../../interfaces/estadousuario.interface';
 @Injectable()
 export class DbService {
+
   public Ciudades: ICiudad[];
   constructor(
     private db: AngularFireDatabase,
@@ -110,6 +116,24 @@ export class DbService {
       }))
   }
 
+  listEstadosUsuario() {
+    return this.db.list(`/Administrativo/EstadosUsuario`);
+  }
+  listEstadosUsuarioSnap(): Observable<IEstadoUsuario[]> {
+    return this.listEstadosUsuario()
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(change => {
+          const data = change.payload.val();
+          const estado: IEstadoUsuario = {
+            $key: change.payload.key,
+            Nombre: data.Nombre,
+            Descripcion: data.Descripcion
+          };
+          return estado;
+        }))
+  }
+
   public listTipoServicio() {
     return this.db.list(`/Administrativo/TipoServicio`)
   }
@@ -144,28 +168,7 @@ export class DbService {
   public listUsersByRol(Rol: string): Observable<IUser[]> {
     return this.db.list(`/Administrativo/Usuarios`, ref => ref.orderByChild('Rol').equalTo(Rol))
       .snapshotChanges().map(change => change.map(_user => {
-        const data = _user.payload.val();
-        const user: IUser = {
-          $key: _user.payload.key,
-          Apellidos: data.Apellidos ? data.Apellidos : null,
-          Estado: data.Estado ? data.Estado : null,
-          Rol: data.Rol ? data.Rol : null,
-          Cedula: data.Cedula ? data.Cedula : null,
-          Celular: data.Celular ? data.Celular : null,
-          CelularFijo: data.CelularFijo ? data.CelularFijo : null,
-          Ciudad: data.Ciudad ? data.Ciudad : null,
-          ComoNosConocio: data.ComoNosConocio ? data.ComoNosConocio : null,
-          Correo: data.Correo ? data.Correo : null,
-          Direccion: data.Direccion ? data.Direccion : null,
-          FechaNacimiento: data.FechaNacimiento ? data.FechaNacimiento : null,
-          Nombres: data.Nombres ? data.Nombres : null,
-          PlacaVehiculo: data.PlacaVehiculo ? data.PlacaVehiculo : null,
-          TiempoDispParaHacerServicio: data.TiempoDispParaHacerServicio ? data.TiempoDispParaHacerServicio : null,
-          TieneDatos: data.TieneDatos ? data.TieneDatos : null,
-          TieneEPS: data.TieneEPS ? data.TieneEPS : null,
-          TipoCelular: data.TipoCelular ? data.TipoCelular : null,
-          TipoVehiculo: data.TipoVehiculo ? data.TipoVehiculo : null,
-        }
+        const user: IUser = this.formatUser(_user)
         return (user)
       }))
   }
@@ -184,7 +187,140 @@ export class DbService {
       .do(console.log)
   }
 
-  public patchConfigGlobal(data: IGlobalConfig){
-    return this.http.patch(`https://tuvueltap.firebaseio.com/Administrativo/ConfigGlobal.json`, data);
+  public patchConfigGlobal(data: IGlobalConfig) {
+    return this.http.patch(`${environment.firebase.databaseURL}/Administrativo/ConfigGlobal.json`, data);
+  }
+  /**
+   * Get a formated list of Roles who are supported by TuVuelta system.
+   * 
+   * @returns Observable<IRol[]>
+   */
+  public listRol(): Observable<IRol[]> {
+    return this.db.list(`/Administrativo/Roles`)
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(rol => {
+          const data = rol.payload.val();
+          const _rol: IRol = {
+            $key: rol.payload.key,
+            Nombre: data.Nombre,
+            Descripcion: data.Descripcion ? data.Descripcion : null
+          };
+          return (_rol);
+        }))
+      .do(console.log)
+      .distinctUntilChanged()
+  }
+  /**
+   * Get Register params for a user.
+   * This is usually used with Mensajero rol
+   * 
+   * @returns Observable<IParamsRegistro>
+   */
+  public listParamsRegistro(): Observable<IParamsRegistro> {
+    return this.db.list(`/Administrativo/ParamsRegistro`)
+      .snapshotChanges()
+      .map(changes => {
+        let params = {};
+        changes.forEach(item => {
+          params[item.key] = item.payload.val();
+        })
+        return params
+      }
+      )
+      .distinctUntilChanged()
+      .do(console.log)
+  }
+  /**
+   * Get a list of services types who provide TuVuelta.
+   * This return a formated array according with ITipoServicio.
+   * 
+   * @returns Observable<ITipoServicio[]>
+   */
+  public listTiposServicio(): Observable<ITipoServicio[]> {
+    return this.db.list(`/Administrativo/ListaTipoServicios`)
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(type => {
+          const data = type.payload.val()
+          let _type: ITipoServicio = {
+            $key: type.payload.key,
+            Nombre: data.Nombre
+          };
+          return (_type)
+        }))
+      .do(console.log)
+      .distinctUntilChanged()
+  }
+  /**
+   * Look up in database for information of an specific user.
+   * This will return null if user doesnt exist in database or
+   * doesn't have information.
+   * 
+   * @param  {string} id Indentifier of user
+   * @returns Observable<IUser | null>
+   */
+  objectUserInfoSnap(id: string): Observable<IUser | null> {
+    return this.db.object(`/Administrativo/Usuarios/${id}`)
+      .snapshotChanges()
+      .map(user => {
+        const data = user.payload.val();
+        const _user: IUser | null = this.formatUser(user)
+        return _user
+      })
+      .distinctUntilChanged()
+      .do(console.log)
+  }
+  /**
+   * Return an entire list of users who are stored in the database.
+   * But, doenst return list of users who are authenticated. Only in database.
+   * This return a formated Array according with structure of IUser interface.
+   * 
+   * 
+   * @returns Observable<IUser[]>
+   */
+  listUsers(): Observable<IUser[]> {
+    return this.db.list(`/Administrativo/Usuarios`)
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(user => {
+          const data = user.payload.val();
+          const _user: IUser = this.formatUser(user)
+          return _user
+        }))
+  }
+  /**
+   * This method will give the structure of a user format object.
+   * So if some data doesnt' exisits this will complete it with null.
+   * 
+   * @param  {AngularFireAction<DataSnapshot>} dataSnapshot
+   * @returns IUser
+   */
+  formatUser(dataSnapshot: AngularFireAction<DataSnapshot>): IUser | null {
+    const data = dataSnapshot.payload.val()
+    if (!data) return null
+    return {
+      $key: dataSnapshot.key,
+      Apellidos: data.Apellidos ? data.Apellidos : null,
+      Estado: data.Estado ? data.Estado : null,
+      Rol: data.Rol ? data.Rol : null,
+      Cedula: data.Cedula ? data.Cedula : null,
+      Celular: data.Celular ? data.Celular : null,
+      CelularFijo: data.CelularFijo ? data.CelularFijo : null,
+      Ciudad: data.Ciudad ? data.Ciudad : null,
+      ComoNosConocio: data.ComoNosConocio ? data.ComoNosConocio : null,
+      Correo: data.Correo ? data.Correo : null,
+      Direccion: data.Direccion ? data.Direccion : null,
+      FechaNacimiento: data.FechaNacimiento ? data.FechaNacimiento : null,
+      Nombres: data.Nombres ? data.Nombres : null,
+      PlacaVehiculo: data.PlacaVehiculo ? data.PlacaVehiculo : null,
+      TiempoDispParaHacerServicio: data.TiempoDispParaHacerServicio ? data.TiempoDispParaHacerServicio : null,
+      TieneDatos: data.TieneDatos ? data.TieneDatos : null,
+      TieneEPS: data.TieneEPS ? data.TieneEPS : null,
+      TipoCelular: data.TipoCelular ? data.TipoCelular : null,
+      TipoVehiculo: data.TipoVehiculo ? data.TipoVehiculo : null,
+      Tarifas: data.Tarifas ? data.Tarifas : null,
+      ClienteIntegracion: data.ClienteIntegracion ? data.ClienteIntegracion : null
+    }
   }
 }

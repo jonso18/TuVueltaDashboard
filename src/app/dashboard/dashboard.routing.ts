@@ -19,6 +19,7 @@ import { MensajeriaFormComponent } from '../mensajeria/mensajeria-form/mensajeri
 import { ConfigGlobalComponent } from '../parametros/config-global/config-global.component';
 import { UsuariosComponent } from '../usuarios/usuarios/usuarios.component';
 import { UsuarioFormComponent } from '../usuarios/usuario-form/usuario-form.component';
+import { UsuariosListComponent } from '../usuarios/usuarios-list/usuarios-list.component';
 
 export const DashboardRoutes: Routes = [
     {
@@ -105,13 +106,23 @@ export const DashboardRoutes: Routes = [
                         children:[
                             {
                                 path:'',
-                                redirectTo: 'nuevo',
+                                redirectTo: 'lista',
                                 pathMatch: 'full'
                             },
                             {
+                                path: 'lista',
+                                component: UsuariosListComponent
+                            },
+                            {
                                 path: 'nuevo',
+                                component: UsuarioFormComponent,
+                                outlet: 'nuevo-usuario'
+                            },
+                            {
+                                path: ':id',
                                 component: UsuarioFormComponent
                             }
+                            
                         ]
                     },
                     {

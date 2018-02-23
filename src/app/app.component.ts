@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
         this.router.navigateByUrl('/pages/login')
       }else {
         // Get user info
-        this.subUserInfo = this.dbService.objectUserInfo().snapshotChanges().subscribe(_userInfo => {
+        this.authService.subUserInfo = this.dbService.objectUserInfo().snapshotChanges().subscribe(_userInfo => {
           const info = this.authService.userInfo = _userInfo.payload.val();
           //console.log(info)
           if (info){
@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
               if (info.Rol === ROLES.Administrador){
                 // Navigate to Administrator root url
 
-                return this.router.navigateByUrl('/dashboard/Usuarios/nuevo')
+                return this.router.navigateByUrl('/dashboard/Usuarios/lista')/* OvWpO0SicvTPpXB3hpl10OU1m8h1 */
               }else if (info.Rol === ROLES.Cliente){
                 // Navigate to Cliente root url
                 return this.router.navigateByUrl('/dashboard')

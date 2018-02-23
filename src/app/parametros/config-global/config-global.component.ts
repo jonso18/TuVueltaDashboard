@@ -3,6 +3,7 @@ import { DbService } from '../../services/db/db.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { IGlobalConfig } from '../../interfaces/config-global.interface';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-config-global',
@@ -55,7 +56,7 @@ export class ConfigGlobalComponent implements OnInit {
       TiempoIntervaloRevisarUltimoCambioEstado: Number(formData.TiempoIntervaloRevisarUltimoCambioEstado),
       TiempoCambiarAInactivo: Number(formData.TiempoCambiarAInactivo)
     };
-    this.http.patch(`https://tuvueltap.firebaseio.com/Administrativo/ConfigGlobal.json`, data).toPromise().then(res => {
+    this.http.patch(`${environment.firebase.databaseURL}/Administrativo/ConfigGlobal.json`, data).toPromise().then(res => {
       console.log(res)
     })
   }
