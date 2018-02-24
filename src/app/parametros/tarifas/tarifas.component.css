@@ -10,3 +10,11 @@ mat-card{
     margin-bottom: 44px;
 }
 
+.text-center mat-spinner{
+    margin:0 auto;
+}
+
+mat-expansion-panel {
+    overflow: auto;
+    padding-bottom: 1em;
+}

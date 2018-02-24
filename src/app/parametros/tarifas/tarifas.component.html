@@ -1,90 +1,226 @@
 <mat-card>
   <h1>Tarifas</h1>
-  <div *ngIf="TiposServicio && Ciudades && ListaTiposServicio">
+  <mat-form-field *ngIf="Cities$ | async as Ciudades">
+    <mat-select [(ngModel)]="citySelected" placeholder="Seleccione una Ciudad">
+      <mat-option *ngFor="let Ciudad of Ciudades" (click)="onClickCity(Ciudad)" [value]="Ciudad">
+        {{ Ciudad.Nombre }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
 
-    <mat-form-field>
-      <mat-select placeholder="Seleccione Ciudad" [(ngModel)]="citySelected">
-        <mat-option *ngFor="let tipoServicio of TiposServicio" [value]="tipoServicio.payload.val()" (click)="serviceTypeSelected=null; cityCodeSelected=tipoServicio.key">
-          {{ Ciudades[tipoServicio.key].Nombre }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field *ngIf="citySelected">
-      <mat-select placeholder="Seleccione Tipo de Servicio" [(ngModel)]="serviceTypeSelected">
-        <ng-container *ngFor="let type of ListaTiposServicio">
-          <mat-option *ngIf="citySelected[type.key]" [value]="type.key" (click)="buildForm()">
-            {{ type.payload.val().Nombre }}
-          </mat-option>
-        </ng-container>
-      </mat-select>
-    </mat-form-field>
-  </div>
+  <ng-container *ngIf="form; else loading">
 
-  <ng-container *ngIf="citySelected && serviceTypeSelected">
-    <h3>Tarifas</h3>
-    <form [formGroup]="form">
-      <mat-list>
-        <h3 mat-subheader>Tarifa 1</h3>
-        <mat-list-item>
-          <ng-container formGroupName="Tarifa1">
-            <mat-form-field>
-              <input matInput placeholder="min Km" formControlName="minKm" readonly>
-            </mat-form-field>
-            <!-- <mat-form-field>
-              <input matInput placeholder="max Km" formControlName="maxKm">
-            </mat-form-field> -->
-            <mat-form-field>
-              <input matInput placeholder="Valor" formControlName="value">
-            </mat-form-field>
+    <div [formGroup]="form">
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Domicilios
+              <span class="label label-primary">{{ citySelected.Nombre }} </span>
+            </mat-panel-title>
+            <mat-panel-description>
+              <span *ngIf="!hasDomicilios">No Hay Registro, ¡Crealos Ahora!</span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <form formGroupName="Domicilios">
+            <ng-container formGroupName="Tarifas">
+              <mat-list>
+                <h3 mat-subheader>Tarifa 1</h3>
+                <mat-list-item>
+                  <ng-container formGroupName="Tarifa1">
+                    <mat-form-field>
+                      <input matInput placeholder="min Km" formControlName="minKm" readonly>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput placeholder="max Km" formControlName="maxKm" type="number">
+                      <mat-error *ngIf="T1maxKm.hasError('pattern')">
+                        Debe ser
+                        <strong>Númerico Positivo</strong>
+                      </mat-error>
+                      <mat-error *ngIf="T1maxKm.hasError('min')">
+                        Debe ser
+                        <strong>superior a 1 Km</strong>
+                      </mat-error>
+                      <mat-error *ngIf="T1maxKm.hasError('required')">
+                        Campo
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput placeholder="Valor" formControlName="value" type="number">
+                      <mat-error *ngIf="T1value.hasError('required')">
+                        Campo
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                      <mat-error *ngIf="T1value.hasError('pattern')">
+                        Campo debe ser
+                        <strong>Númerico Positivo</strong>
+                      </mat-error>
+                    </mat-form-field>
+                  </ng-container>
+                </mat-list-item>
+                <h3 mat-subheader>Tarifa 2</h3>
+                <mat-list-item>
+                  <ng-container formGroupName="Tarifa2">
+                    <mat-form-field>
+                      <input matInput placeholder="min Km" formControlName="minKm" readonly>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput placeholder="max Km" formControlName="maxKm" type="number">
+                      <mat-error *ngIf="T2maxKm.hasError('required')">
+                        Campo
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                      <mat-error *ngIf="T2maxKm.hasError('pattern')">
+                        Campo
+                        <strong>Numerico Positivo</strong>
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput placeholder="Valor" formControlName="value" type="number">
+                      <mat-error *ngIf="T2value.hasError('required')">
+                        Campo
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                      <mat-error *ngIf="T2value.hasError('pattern')">
+                        Campo debe ser
+                        <strong>Númerico Positivo</strong>
+                      </mat-error>
+                    </mat-form-field>
+                  </ng-container>
+                </mat-list-item>
+                <h3 mat-subheader>Tarifa 3</h3>
+                <mat-list-item>
+                  <ng-container formGroupName="Tarifa3">
+                    <mat-form-field>
+                      <input matInput placeholder="min Km" formControlName="minKm" readonly>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput placeholder="Valor" formControlName="value" type="number">
+                      <mat-error *ngIf="T3value.hasError('required')">
+                        Campo
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                      <mat-error *ngIf="T3value.hasError('pattern')">
+                        Campo debe ser
+                        <strong>Númerico Positivo</strong>
+                      </mat-error>
+                    </mat-form-field>
+                  </ng-container>
+                </mat-list-item>
+              </mat-list>
+              <div class="pull-right">
+                <button type="submit" mat-raised-button color="primary" (click)="onUpdateDomicilios()">
+                  {{ hasDomicilios ? 'Actualizar' : 'Crear' }} Tarifas Domicilios
+                </button>
+                <button mat-raised-button color="warn" (click)="onRemove('Domicilios')" *ngIf="hasDomicilios">
+                    Eliminar Tarifas Domicilios
+                  </button>
+              </div>
+            </ng-container>
+          </form>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Mensajeria
+              <span class="label label-primary">{{ citySelected.Nombre }} </span>
+            </mat-panel-title>
+            <mat-panel-description>
+              <span *ngIf="!hasMensajeria">No Hay Registro, ¡Crealos Ahora!</span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <ng-container formGroupName="Mensajeria">
+            <form formGroupName="Tarifas">
+              <mat-list>
+                <h3 mat-subheader>Primeros Kmts</h3>
+                <mat-list-item>
+                  <ng-container formGroupName="PrimerosKm">
+                    <mat-form-field>
+                      <input matInput formControlName="Costo" placeholder="Costo" type="number">
+                      <mat-error>
+                        Campo
+                        <strong>Obligatorio</strong> y
+                        <strong>Numerico Positivo</strong>
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput formControlName="Km" placeholder="Max Km" type="number">
+                      <mat-error>
+                        Campo
+                        <strong>Obligatorio</strong> y
+                        <strong>Numerico Positivo</strong>
+                      </mat-error>
+                    </mat-form-field>
+                  </ng-container>
+                </mat-list-item>
+                <mat-list-item>
+                  <mat-form-field>
+                    <input matInput formControlName="Cancelacion" placeholder="Cancelacion" type="number">
+                    <mat-error>
+                      Campo
+                      <strong>Obligatorio</strong> y
+                      <strong>Numerico Positivo</strong>
+                    </mat-error>
+                  </mat-form-field>
+                </mat-list-item>
+                <mat-list-item>
+                  <mat-form-field>
+                    <input matInput formControlName="KmAdicional" placeholder="Km Adicional" type="number">
+                    <mat-error>
+                      Campo
+                      <strong>Obligatorio</strong> y
+                      <strong>Numerico Positivo</strong>
+                    </mat-error>
+                  </mat-form-field>
+                </mat-list-item>
+                <mat-list-item>
+                  <mat-form-field>
+                    <input matInput formControlName="ParadaAdicional" placeholder="Parada Adicional" type="number">
+                    <mat-error>
+                      Campo
+                      <strong>Obligatorio</strong> y
+                      <strong>Numerico Positivo</strong>
+                    </mat-error>
+                  </mat-form-field>
+                </mat-list-item>
+                <mat-list-item>
+                  <mat-form-field>
+                    <input matInput formControlName="SobreCostoFueraCiudad" placeholder="Sobrecosto Fuera de Ciudad" type="number">
+                    <mat-error>
+                      Campo
+                      <strong>Obligatorio</strong> y
+                      <strong>Numerico Positivo</strong>
+                    </mat-error>
+                  </mat-form-field>
+                </mat-list-item>
+              </mat-list>
+              <div class="pull-right">
+                <button type="submit" mat-raised-button color="primary" (click)="onUpdateMensajeria()">
+                  {{ hasMensajeria ? 'Actualizar' : 'Crear' }} Tarifas Mensajeria
+                </button>
+                <button mat-raised-button color="warn" (click)="onRemove('Mensajeria')" *ngIf="hasMensajeria">
+                  Eliminar Tarifas Mensajeria
+                </button>
+              </div>
+            </form>
           </ng-container>
-        </mat-list-item>
-        <h3 mat-subheader>Tarifa 2</h3>
-        <mat-list-item>
-          <ng-container formGroupName="Tarifa2">
-            <mat-form-field>
-              <input matInput placeholder="min Km" formControlName="minKm" >
-              <mat-error *ngIf="form.get('Tarifa2').get('minKm').hasError('max')">
-                El valor no puede ser superior al min Km de Tarifa 3
-              </mat-error>
-              <mat-error *ngIf="form.get('Tarifa2').get('minKm').hasError('pattern')">
-                Debe ser Númerico
-              </mat-error>
-              <mat-error *ngIf="form.get('Tarifa2').get('minKm').hasError('min')">
-                Debe ser superior a 1 Km
-              </mat-error>
-              <mat-error *ngIf="form.get('Tarifa2').get('minKm').hasError('required')">
-                Campo Obligatorio
-              </mat-error>
-            </mat-form-field>
-            <!-- <mat-form-field>
-              <input matInput placeholder="max Km" formControlName="maxKm">
-            </mat-form-field> -->
-            <mat-form-field>
-              <input matInput placeholder="Valor" formControlName="value">
-            </mat-form-field>
-          </ng-container>
-        </mat-list-item>
-        <h3 mat-subheader>Tarifa 3</h3>
-        <mat-list-item>
-          <ng-container formGroupName="Tarifa3">
-            <mat-form-field>
-              <input matInput placeholder="min Km" formControlName="minKm" (keyup)="addValidators('Tarifa2', 'Tarifa3')">
-            </mat-form-field>
-            <!-- <mat-form-field>
-              <input matInput placeholder="max Km" formControlName="maxKm">
-            </mat-form-field> -->
-            <mat-form-field>
-              <input matInput placeholder="Valor" formControlName="value">
-            </mat-form-field>
-          </ng-container>
-        </mat-list-item>
-      </mat-list>
-      <div class="text-center">
-        <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">
-          Actualizar
-        </button>
-      </div>
-    </form>
+        </mat-expansion-panel>
+
+      </mat-accordion>
+    </div>
   </ng-container>
 
+  <ng-template #loading>
+    <div class="text-center" *ngIf="citySelected">
+      <h3>Cargando tarifas de {{ citySelected.Nombre }}</h3>
+      <mat-spinner> </mat-spinner>
+    </div>
+  </ng-template>
+
 </mat-card>
+
+<pre *ngIf="form">
+  {{form.value | json }}
+</pre>

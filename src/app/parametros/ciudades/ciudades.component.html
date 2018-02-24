@@ -1,58 +1,58 @@
 <div class="main-content">
   <div class="container-fluid">
-      <div class="card">
-          <div class="card-header card-header-icon" data-background-color="orange">
-              <i class="material-icons">list</i>
-               Listado de ciudades
-            </div>
-            <div class="card-content">
-    <mat-card>
-      <br/>
-      <br/>
-      <div *ngIf="Ciudades; else loading">
-        <form *ngIf="form" [formGroup]="form">
-          <div formArrayName="Citys">
-            <div *ngFor="let city of Citys.controls; let i=index" [formGroupName]="i">
-              <div class="row">
-                <mat-form-field class="col-sm-3">
-                  <input matInput placeholder="Codigo" formControlName="Codigo">
-                </mat-form-field>
-                <mat-form-field class="col-sm-3">
-                  <input matInput placeholder="Nombre" formControlName="Nombre">
-                  <mat-error *ngIf="city.get('Nombre').hasError('required')">
-                    Nombre es
-                    <strong>Obligatorio</strong>
-                  </mat-error>
-                </mat-form-field>
-                <mat-form-field class="col-sm-3">
-                  <input matInput placeholder="Prefijo" formControlName="Prefijo">
-                  <mat-error *ngIf="city.get('Prefijo').hasError('required')">
-                    Prefijo es
-                    <strong>Obligatorio</strong>
-                  </mat-error>
-                </mat-form-field>
-                <div class="col-sm-3 text-center">
+    <div class="card">
+      <div class="card-header card-header-icon" data-background-color="orange">
+        <i class="material-icons">list</i>
+        Listado de ciudades
+      </div>
+      <div class="card-content">
+        <mat-card>
+          <br/>
+          <br/>
+          <div *ngIf="Ciudades; else loading">
+            <form *ngIf="form" [formGroup]="form">
+              <div formArrayName="Citys">
+                <div *ngFor="let city of Citys.controls; let i=index" [formGroupName]="i">
+                  <div class="row">
+                    <mat-form-field class="col-sm-3">
+                      <input matInput placeholder="Codigo" formControlName="Codigo" readonly>
+                    </mat-form-field>
+                    <mat-form-field class="col-sm-3">
+                      <input matInput placeholder="Nombre" formControlName="Nombre">
+                      <mat-error *ngIf="city.get('Nombre').hasError('required')">
+                        Nombre es
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="col-sm-3">
+                      <input matInput placeholder="Prefijo" formControlName="Prefijo">
+                      <mat-error *ngIf="city.get('Prefijo').hasError('required')">
+                        Prefijo es
+                        <strong>Obligatorio</strong>
+                      </mat-error>
+                    </mat-form-field>
+                    <div class="col-sm-3 text-center">
 
-                  <button mat-raised-button color="accent" [disabled]="city.invalid" (click)="update(city.value)">Actualizar</button>
-                  <button mat-raised-button color="warn" (click)="delete(city.value)">Eliminar</button>
+                      <button mat-raised-button color="accent" [disabled]="city.invalid" (click)="update(city.value)">Actualizar</button>
+                      <button mat-raised-button color="warn" (click)="delete(city.value)">Eliminar</button>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <!-- <div class="text-center">
+                <button class="btn btn-primary" (click)="openDialog()">Nueva Ciudad</button>
+              </div> -->
+            </form>
+          </div>
+          <ng-template #loading>
+            <div class="text-center">
+              <mat-spinner></mat-spinner>
             </div>
-          </div>
-          <div class="text-center">
-            <button class="btn btn-primary" (click)="openDialog()">Nueva Ciudad</button>
-          </div>
-        </form>
+          </ng-template>
+
+
+        </mat-card>
       </div>
-      <ng-template #loading>
-        <div class="text-center">
-          <mat-spinner></mat-spinner>
-        </div>
-      </ng-template>
-
-
-    </mat-card>
-  </div>
     </div>
   </div>
 </div>

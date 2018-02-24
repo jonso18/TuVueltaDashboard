@@ -78,6 +78,7 @@ export class DbService {
   }
 
   public objectCiudad(codigo) {
+
     const key = codigo;
     return this.db.object(`/Administrativo/ParamsRegistro/Ciudades/${key}`)
   }
@@ -144,6 +145,12 @@ export class DbService {
 
   public listListaTiposServicio() {
     return this.db.list(`/Administrativo/ListaTipoServicios`)
+  }
+
+  public objectTarifasByCitySnap(cityCode: string): Observable<any> {
+    return this.db.object(`/Administrativo/TipoServicio/${cityCode}`)
+      .snapshotChanges()
+      .map(res => res.payload.val())
   }
 
   public objectTarifas(cityCode: number, serviceType: string) {
