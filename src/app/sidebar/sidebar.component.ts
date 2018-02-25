@@ -6,7 +6,7 @@ import { ROLES } from '../config/Roles';
 
 declare const $: any;
 
-//Metadata
+// Metadata
 export interface RouteInfo {
     path: string;
     title: string;
@@ -25,7 +25,7 @@ export interface ChildrenItems {
     Rol?: any;
 }
 
-//Menu Items
+// Menu Items
 export const ROUTES: RouteInfo[] = [
     {
         path: '/dashboard/inicio',
@@ -46,7 +46,7 @@ export const ROUTES: RouteInfo[] = [
     },
     {
         path: '/dashboard/parametros',
-        title: 'Parametros',
+        title: 'Parámetros',
         Rol: {
             Administrador: true,
             Cliente: false
@@ -55,14 +55,13 @@ export const ROUTES: RouteInfo[] = [
         icontype: 'settings',
         collapse: 'parametros',
         children: [
+            { path: 'Configuracion-global', title: 'Configuración Global', ab: 'CG', Rol: { Administrador: true } },
+            { path: 'Reglas-activo', title: 'Reglas de Activo', ab: 'RA', Rol: { Administrador: true } },
             { path: 'ciudad', title: 'Ciudades', ab: 'CI', Rol: { Administrador: true } },
             { path: 'tarifas', title: 'Tarifas', ab: 'T', Rol: { Administrador: true } },
             { path: 'Ganacias', title: 'Ganacias', ab: 'G', Rol: { Administrador: true } },
             { path: 'Estados-Domicilios', title: 'Estados Domicilios', ab: 'ED', Rol: { Administrador: true } },
             { path: 'Equipamiento', title: 'Equipamiento', ab: 'EQ', Rol: { Administrador: true } },
-            { path: 'Reglas-activo', title: 'Reglas de Activo', ab: 'RA', Rol: { Administrador: true } },
-            { path: 'Configuracion-global', title: 'Configuración Global', ab: 'CG', Rol: { Administrador: true } },
-            
         ]
     },
     {

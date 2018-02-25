@@ -11,7 +11,7 @@ import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
 import { environment } from '../environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { 
+import {
   MatAutocompleteModule,
   MatButtonModule,
   MatButtonToggleModule,
@@ -51,11 +51,11 @@ import { AppComponent } from './app.component';
 import { AppRoutes } from './app.routing';
 
 
-//services
+// services
 import { AuthGuardService } from './services/auth-guard.service';
 
 
-//components
+// components
 
 import { SidebarModule } from './sidebar/sidebar.module';
 import { FooterModule } from './shared/footer/footer.module';
@@ -107,7 +107,6 @@ import { HttpClientModule } from '@angular/common/http';
     MatToolbarModule,
     MatTooltipModule
   ]
-  
 })
 export class MaterialModule {}
 
@@ -133,7 +132,7 @@ export class MaterialModule {}
     FixedpluginModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
-    AngularFireAuthModule 
+    AngularFireAuthModule
   ],
   providers: [
     AuthGuardService,

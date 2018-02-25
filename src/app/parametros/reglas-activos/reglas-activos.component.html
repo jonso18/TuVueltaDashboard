@@ -1,5 +1,12 @@
-<mat-card>
-  <h1>Reglas Activos</h1>
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header card-header-text" data-background-color="blue">
+                <h4 class="card-title">Parámetros de activos app</h4>
+            </div>
+            <br/>
+            <div class="card-content">
+
   <div class="row">
     <div class="col-sm-offset-1 col-sm-10">
       <form [formGroup]="form" *ngIf="form">
@@ -63,12 +70,14 @@
 
         </div>
         <div class="text-center">
-          <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">
+          <button class="btn btn-success" [disabled]="form.invalid" (click)="onSubmit()">
             Actualizar
           </button>
         </div>
       </form>
     </div>
   </div>
-
-</mat-card>
+</div>
+</div>
+</div>
+</div>

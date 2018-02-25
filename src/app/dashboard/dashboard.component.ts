@@ -13,8 +13,7 @@ declare const $: any;
 export class DashboardComponent implements OnInit, AfterViewInit {
   // constructor(private navbarTitleService: NavbarTitleService, private notificationService: NotificationService) { }
   public tableData: TableData;
- 
- 
+
   // constructor(private navbarTitleService: NavbarTitleService) { }
   public ngOnInit() {
 

@@ -1,6 +1,14 @@
-<div class="container-fluid">
-  <mat-card>
-    <h1>Configuración Global</h1>
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+  <!--<mat-card>-->
+      <div class="card">
+          <div class="card-header card-header-text" data-background-color="blue">
+              <h4 class="card-title">Parámetros Configuración Global App</h4>
+          </div>
+          <div class="card-content">
+            <br/>
     <ng-container *ngIf="form && Clientes$ | async as Clientes; else loading">
       <form [formGroup]="form">
         <!-- CantSrvcQuePuedeComprarMensajero -->
@@ -63,8 +71,12 @@
         </mat-form-field>
 
         <div class="row">
-          <div class="col-sm-offset-2 col-sm-10">
-            <mat-card>
+          <div class="col-sm-8 col-sm-offset-2">
+              <div class="card">
+              <div class="card-header card-header-text" data-background-color="blue">
+                  <h4 class="card-title">Compras Personalizadas por cliente</h4>
+              </div>
+            <!--<mat-card>-->
               <mat-list *ngIf="Usuarios">
                 <ng-container formGroupName="Usuarios">
                   <ng-container *ngFor="let Cliente of Clientes">
@@ -105,13 +117,13 @@
                         <ng-container *ngIf="Usuarios; else allClientesSelect">
                           <ng-container *ngIf="!Usuarios.get(Cliente.$key)">
                             <mat-option [value]="Cliente.$key">
-                              {{ Cliente.Nombres}}
+                              {{ Cliente.Nombres}} {{Cliente.Apellidos}}
                             </mat-option>
                           </ng-container>
                         </ng-container>
                         <ng-template #allClientesSelect>
                           <mat-option [value]="Cliente.$key">
-                            {{ Cliente.Nombres}}
+                            {{ Cliente.Nombres}} {{Cliente.Apellidos}}
                           </mat-option>
                         </ng-template>
                       </ng-container>
@@ -119,17 +131,18 @@
                   </mat-form-field>
                 </div>
                 <div class="col-sm-4">
-                  <button class="btn btn-block btn-success" [disabled]="!selectCliente.value" (click)="onClickaddCustomUserConfig(selectCliente)">Agregar Configuración
+                  <button class="btn btn-info" [disabled]="!selectCliente.value" (click)="onClickaddCustomUserConfig(selectCliente)">Agregar Configuración
                     <mat-icon>settings</mat-icon>
                   </button>
                 </div>
               </div>
-            </mat-card>
+            <!--</mat-card>-->
+          </div>
           </div>
         </div>
-
+        <br/>
         <div class="text-center">
-          <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">Actualizar</button>
+          <button class="btn btn-success" [disabled]="form.invalid" (click)="onSubmit()">Actualizar</button>
         </div>
       </form>
     </ng-container>
@@ -140,5 +153,10 @@
       </div>
     </ng-template>
 
-  </mat-card>
+  <!--</mat-card>-->
+              </div>
+          </div>
+        </div>
+    </div>
+  </div>
 </div>

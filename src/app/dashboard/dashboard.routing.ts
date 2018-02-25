@@ -30,7 +30,7 @@ export const DashboardRoutes: Routes = [
                 path: 'dashboard',
                 children: [
                     {
-                        path:'',
+                        path: '',
                         redirectTo: 'inicio',
                         pathMatch: 'full'
                     },
@@ -43,7 +43,7 @@ export const DashboardRoutes: Routes = [
                         component: SolicitudComponent,
                         children:[
                             {
-                                path:'',
+                                path: '',
                                 redirectTo: 'lista',
                                 pathMatch: 'full'
                             },
@@ -62,11 +62,15 @@ export const DashboardRoutes: Routes = [
                         ]
                     },
                     {
-                        path:'parametros',
+                        path: 'parametros',
                         component: ParametrosComponent,
                         children:[
                             {
-                                path:'',
+                                path: 'Configuracion-global',
+                                component: ConfigGlobalComponent
+                            },
+                            {
+                                path: '',
                                 redirectTo: 'ciudad',
                                 pathMatch: 'full'
                             },
@@ -93,19 +97,15 @@ export const DashboardRoutes: Routes = [
                             {
                                 path: 'Reglas-activo',
                                 component: ReglasActivosComponent
-                            },
-                            {
-                                path: 'Configuracion-global',
-                                component: ConfigGlobalComponent
                             }
                         ]
                     },
                     {
-                        path:'Usuarios',
+                        path: 'Usuarios',
                         component: UsuariosComponent,
                         children:[
                             {
-                                path:'',
+                                path: '',
                                 redirectTo: 'lista',
                                 pathMatch: 'full'
                             },
@@ -122,15 +122,14 @@ export const DashboardRoutes: Routes = [
                                 path: ':id',
                                 component: UsuarioFormComponent
                             }
-                            
                         ]
                     },
                     {
-                        path:'reportes',
+                        path: 'reportes',
                         component: ReportesComponent,
                         children:[
                             {
-                                path:'',
+                                path: '',
                                 redirectTo: 'clientes-servicios',
                                 pathMatch: 'full'
                             },
@@ -150,15 +149,13 @@ export const DashboardRoutes: Routes = [
                                 pathMatch: 'full'
                             },
                             {
-                                path:'nuevo',
+                                path: 'nuevo',
                                 component: MensajeriaFormComponent
                             }
                         ]
                     }
-                    
                 ]
             }
-            
         ]
     }
 ];

@@ -1,13 +1,20 @@
-<mat-card>
-  <h1>Tarifas</h1>
-  <mat-form-field *ngIf="Cities$ | async as Ciudades">
-    <mat-select [(ngModel)]="citySelected" placeholder="Seleccione una Ciudad">
-      <mat-option *ngFor="let Ciudad of Ciudades" (click)="onClickCity(Ciudad)" [value]="Ciudad">
-        {{ Ciudad.Nombre }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-text" data-background-color="orange">
+                        <h4 class="card-title">Listado de Tarifas</h4>
+                    </div>
+                    <div class="card-content">
+                        <mat-form-field *ngIf="Cities$ | async as Ciudades">
+                          <mat-select [(ngModel)]="citySelected" placeholder="Seleccione una Ciudad">
+                            <mat-option *ngFor="let Ciudad of Ciudades" (click)="onClickCity(Ciudad)" [value]="Ciudad">
+                              {{ Ciudad.Nombre }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        
   <ng-container *ngIf="form; else loading">
 
     <div [formGroup]="form">
@@ -15,7 +22,7 @@
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              Domicilios
+              Domicilios 
               <span class="label label-primary">{{ citySelected.Nombre }} </span>
             </mat-panel-title>
             <mat-panel-description>
@@ -110,11 +117,11 @@
                   </ng-container>
                 </mat-list-item>
               </mat-list>
-              <div class="pull-right">
-                <button type="submit" mat-raised-button color="primary" (click)="onUpdateDomicilios()">
+              <div class="text-center">
+                <button type="submit" class="btn btn-success" (click)="onUpdateDomicilios()">
                   {{ hasDomicilios ? 'Actualizar' : 'Crear' }} Tarifas Domicilios
                 </button>
-                <button mat-raised-button color="warn" (click)="onRemove('Domicilios')" *ngIf="hasDomicilios">
+                <button  class="btn btn-danger" (click)="onRemove('Domicilios')" *ngIf="hasDomicilios">
                     Eliminar Tarifas Domicilios
                   </button>
               </div>
@@ -196,11 +203,11 @@
                   </mat-form-field>
                 </mat-list-item>
               </mat-list>
-              <div class="pull-right">
-                <button type="submit" mat-raised-button color="primary" (click)="onUpdateMensajeria()">
+              <div class="text-center">
+                <button type="submit" class="btn btn-success" (click)="onUpdateMensajeria()">
                   {{ hasMensajeria ? 'Actualizar' : 'Crear' }} Tarifas Mensajeria
                 </button>
-                <button mat-raised-button color="warn" (click)="onRemove('Mensajeria')" *ngIf="hasMensajeria">
+                <button class="btn btn-danger" (click)="onRemove('Mensajeria')" *ngIf="hasMensajeria">
                   Eliminar Tarifas Mensajeria
                 </button>
               </div>
@@ -219,8 +226,14 @@
     </div>
   </ng-template>
 
-</mat-card>
+<!--</mat-card>-->
 
-<pre *ngIf="form">
+<!--<pre *ngIf="form">
   {{form.value | json }}
-</pre>
+</pre>-->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

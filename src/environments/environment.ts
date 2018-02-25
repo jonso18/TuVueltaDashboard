@@ -9,12 +9,19 @@ export const environment = {
     apiKey: "AIzaSyB_Shc3PWqhPr2JCC_GTCheczHMyyttNmY",
     authDomain: "tuvueltap.firebaseapp.com",
     databaseURL: "https://tuvueltap.firebaseio.com",
-    projectId: "tuvueltap",
-    storageBucket: "tuvueltap.appspot.com",
-    messagingSenderId: "565294870666"
+     projectId: "tuvueltap",
+     storageBucket: "tuvueltap.appspot.com",
+     messagingSenderId: "565294870666" 
   },
 
   baseapi: {
-    tuvuelta: 'https://us-central1-tuvuelta-produccion.cloudfunctions.net/'
+    tuvuelta: 'https://us-central1-tuvueltap.cloudfunctions.net/'
+  },
+
+  google: {
+    maps: 'AIzaSyBHn1FEQs5J0XARKMURUVf06DxDBbLWoOY',
+    distanceMatrix: 'AIzaSyDjPraTx4A9TO4UMKgE24rAu2YANT4WjsM',
+    geocoding: 'AIzaSyD1dKuGmWFb9HyQwO70k68j3W5suNDMQbc'
   }
+
 };

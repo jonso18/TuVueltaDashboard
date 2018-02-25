@@ -1,0 +1,18 @@
+@font-face{
+    font-family: Coolvetica;
+    src:url(coolvetica.ttf);
+}
+
+
+.sidebar .logo .simple-text {
+    padding: 5px 0px;
+    display: block;
+    font-size: 18px;
+    color: #3C4858;
+    text-align: center;
+    white-space: nowrap;
+    font-weight: 400;
+    line-height: 30px;
+    overflow: hidden;
+    font-family: coolvetica !important;
+}
