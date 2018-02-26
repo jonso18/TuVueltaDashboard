@@ -31,6 +31,7 @@ import { ConfigGlobalComponent } from '../parametros/config-global/config-global
 import { UsuarioFormComponent } from '../usuarios/usuario-form/usuario-form.component';
 import { UsuariosComponent } from '../usuarios/usuarios/usuarios.component';
 import { UsuariosListComponent } from '../usuarios/usuarios-list/usuarios-list.component';
+import { SeguimientoActivosComponent } from '../usuarios/seguimiento-activos/seguimiento-activos.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -71,7 +72,8 @@ import { UsuariosListComponent } from '../usuarios/usuarios-list/usuarios-list.c
         ConfigGlobalComponent,
         UsuarioFormComponent,
         UsuariosComponent,
-        UsuariosListComponent
+        UsuariosListComponent,
+        SeguimientoActivosComponent
     ],
     entryComponents: [
         DialogNewCity,

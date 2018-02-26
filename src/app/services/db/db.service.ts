@@ -19,6 +19,8 @@ import { IParamsRegistro } from '../../interfaces/params-registro.interface';
 import { ITipoServicio } from '../../interfaces/tipo-servicio.interface';
 import { environment } from '../../../environments/environment';
 import { IEstadoUsuario } from '../../interfaces/estadousuario.interface';
+import { ILogCreditoRetiroMensajero } from '../../interfaces/creditoretiro-mensajero.interface';
+import { ISeguimientoActivos } from '../../interfaces/seguimiento-activos.interface';
 @Injectable()
 export class DbService {
 
@@ -33,18 +35,6 @@ export class DbService {
     const id = this.authService.userState.uid;
     return this.db.object("/Administrativo/Usuarios/" + id);
   }
-
-  /* public newSolicitud(body){
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json',
-      })
-    };
-    const url = 'https://us-central1-tuvueltap.cloudfunctions.net/api/solicitudes'
-    const _body = body;
-
-    return this.http.post(url,_body, httpOptions)
-  } */
 
   public listSolicitudes() {
     const id: string = this.authService.userState.uid;
@@ -284,8 +274,8 @@ export class DbService {
    * But, doenst return list of users who are authenticated. Only in database.
    * This return a formated Array according with structure of IUser interface.
    * 
-   * 
-   * @returns Observable<IUser[]>
+   * @returns {Observable<IUser[]>} 
+   * @memberof DbService
    */
   listUsers(): Observable<IUser[]> {
     return this.db.list(`/Administrativo/Usuarios`)
@@ -296,6 +286,69 @@ export class DbService {
           const _user: IUser = this.formatUser(user)
           return _user
         }))
+  }
+  /**
+   * Get a retirement credits log list from an specific user.
+   * 
+   * @param {string} mensajeroId 
+   * @param {string} servicioId 
+   * @returns {Observable<ILogCreditoRetiroMensajero[]>} 
+   * @memberof DbService
+   */
+  listLogCreditoRetiroMensajeroByServicioId(mensajeroId: string, servicioId: string): Observable<ILogCreditoRetiroMensajero[]> {
+    return this.db
+      .list(`/Operativo/Logs/CreditosMensajero/CreditoRetiro/${mensajeroId}`,
+        ref =>
+          ref.orderByChild('servicio_id').equalTo(servicioId))
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(log => {
+          const data = log.payload.val();
+          const _log: ILogCreditoRetiroMensajero = {
+            $key: log.payload.key,
+            GananciaMensajero: data.GananciaMensajero,
+            servicio_id: data.servicio_id
+          };
+          return _log;
+        }))
+  }
+  /**
+   * Get an specific log from creditos retiro.
+   * 
+   * @param {string} mensajeroId 
+   * @param {string} key 
+   * @returns {AngularFireObject<any>} 
+   * @memberof DbService
+   */
+  objectLogCreditoRetiroMensajero(mensajeroId: string, key: string): AngularFireObject<any> {
+    return this.db.object(`/Operativo/Logs/CreditosMensajero/CreditoRetiro/${mensajeroId}/${key}`)
+  }
+
+  /**
+   * Get a list from db which containt the current position
+   * from Mensajeros who are active.
+   * 
+   * @returns {Observable<ISeguimientoActivos[]>} 
+   * @memberof DbService
+   */
+  listSeguimientoActivos(): Observable<ISeguimientoActivos[]> {
+    return this.db.list(`/Operativo/SeguimientoActivo`)
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(
+          log => {
+            const data = log.payload.val();
+            const _log: ISeguimientoActivos = {
+              $key: log.payload.key,
+              Nombre: data.Nombre,
+              TipoVehiculo: data.TipoVehiculo,
+              PlacaVehiculo: data.PlacaVehiculo,
+              Longitude: data.Longitude,
+              Latitude: data.Latitude
+            };
+
+            return _log;
+          }));
   }
 
   /**
