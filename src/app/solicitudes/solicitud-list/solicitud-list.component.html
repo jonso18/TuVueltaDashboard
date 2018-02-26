@@ -1,6 +1,6 @@
 <div>
   <div class="text-right" *ngIf="authService.userInfo.Rol == ROLES.Cliente">
-    <button class="btn btn-primary" (click)="_new()" >Nueva Solicitud</button>
+    <button class="btn btn-primary" (click)="_new()">Nueva Solicitud</button>
     <!--<button class="btn btn-oulet" (click)="_list()">Listado de solicitudes</button>-->
   </div>
   <div class="table-solicitudes">
@@ -38,12 +38,12 @@
       <!-- ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'Telefono', 'PagoConTarjeta', 'Distancia', 'Punto Inicio', 'Punto Final', 'Estado']; -->
       <!-- Position Column -->
       <!-- Fecha -->
-      
+
       <ng-container matColumnDef="Id">
         <mat-header-cell *matHeaderCellDef> Id. </mat-header-cell>
         <mat-cell *matCellDef="let element"> {{element.key}} </mat-cell>
       </ng-container>
-      
+
       <ng-container matColumnDef="Fecha">
         <mat-header-cell *matHeaderCellDef mat-sort-header="key"> Fecha. </mat-header-cell>
         <mat-cell *matCellDef="let element"> {{element.key | date:'d/M/yy, h:mm:ss a'}} </mat-cell>
@@ -137,10 +137,23 @@
       <ng-container matColumnDef="Acciones" *ngIf="authService.userInfo.Rol == ROLES.Administrador">
         <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
         <mat-cell *matCellDef="let element">
-          <span>
-            <button mat-raised-button color="primary" (click)="openDialogUpdate(element)">Actualizar</button>
-            <button mat-raised-button color="warn" (click)="openDialogDelete(element)">Eliminar</button>
-          </span>
+          <div class="text-center">
+            <a matTooltip="Reasignar" *ngIf="element.payload.val().EnProceso" (click)="openDialogReAsigancion(element.payload.key, element.payload.val().fechaCompra, element.payload.val().Motorratoner_id)">
+              <mat-icon>
+                swap_horiz
+              </mat-icon>
+            </a>
+            <a matTooltip="Actualizar" (click)="openDialogUpdate(element)">
+              <mat-icon>
+                update
+              </mat-icon>
+            </a>
+            <a matTooltip="Eliminar" (click)="openDialogDelete(element)">
+              <mat-icon>
+                remove
+              </mat-icon>
+            </a>
+          </div>
         </mat-cell>
       </ng-container>
 

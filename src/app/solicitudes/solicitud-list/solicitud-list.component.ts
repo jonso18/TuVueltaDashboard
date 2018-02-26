@@ -8,6 +8,10 @@ import { AuthService } from '../../services/auth/auth.service';
 import { ROLES } from '../../config/Roles';
 import { SolicitudFormDialog } from '../solicitud-form/solicitud-form.component';
 import { DialogDeleteCity } from '../../parametros/ciudades/ciudades.component';
+import { ILogCreditoRetiroMensajero } from '../../interfaces/creditoretiro-mensajero.interface';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { DialogReasignacion } from '../reasignaciones/reasignacion/reasignacion.component';
 
 @Component({
   selector: 'app-solicitud-list',
@@ -18,9 +22,9 @@ export class SolicitudListComponent implements OnInit {
 
   dateEnd: number;
   dateStart: number;
-  public displayedColumns = ['Id','Fecha', 'Nombres', 'Apellidos', 'Celular', 'TotalAPagar', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'MensajeroCelular'];
+  public displayedColumns = ['Id', 'Fecha', 'Nombres', 'Apellidos', 'Celular', 'TotalAPagar', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'MensajeroCelular'];
   public Clientes;
-  public dataSource: MatTableDataSource<any>;
+  public dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   public ROLES;
   resultsLength = 0;
   public allSolicitudes;
@@ -34,7 +38,8 @@ export class SolicitudListComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     public dialog: MatDialog,
-    public snackBar: MatSnackBar
+    public snackBar: MatSnackBar,
+    private http: HttpClient
   ) { }
 
   ngAfterViewInit() {
@@ -78,7 +83,6 @@ export class SolicitudListComponent implements OnInit {
   }
 
   loadAllSolicitudes() {
-
     this.dbService.listAllSolicitudes().subscribe(res => {
       this.solicitudes = this.allSolicitudes = res;
       this.instanceTable();
@@ -150,7 +154,7 @@ export class SolicitudListComponent implements OnInit {
     }
   }
 
-  openDialogDelete(element){
+  openDialogDelete(element) {
     console.log(element)
     const key = element.key;
     let dialogRef = this.dialog.open(DialogDeleteCity, {
@@ -160,11 +164,52 @@ export class SolicitudListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        this.snackBar.open("Solicitud Eliminada", 'Ok', {
+        const Motorratoner_id: string = element.payload.val().Motorratoner_id;
+        if (Motorratoner_id) {
+          this.dbService.listLogCreditoRetiroMensajeroByServicioId(Motorratoner_id, key)
+            .subscribe((logs: ILogCreditoRetiroMensajero[]): void => {
+              const p_delete = logs.map(_log => {
+                return this.dbService
+                  .objectLogCreditoRetiroMensajero(Motorratoner_id, _log.$key)
+                  .remove()
+              });
+              Promise.all(p_delete).then(res => {
+                this.notifySolicitudEliminada();
+              }).catch(err => {
+                console.log("Error eliminando los log de credito de retiro. ",err)
+              })
+
+            })
+        } else {
+          this.notifySolicitudEliminada();
+        }
+      }
+    })
+  }
+
+  openDialogReAsigancion(serviceId, fechaCompra, PrevioMotorratoner_id) {
+    const _serviceId = serviceId;
+    const _fechaCompra = fechaCompra;
+    const _PrevioMotorratoner_id = PrevioMotorratoner_id;
+    let dialogRef = this.dialog.open(DialogReasignacion, {
+      width: '250px',
+      data: { PrevioMotorratoner_id: _PrevioMotorratoner_id, fechaCompra: _fechaCompra, serviceId: _serviceId, Mensajeros: this.Mensajeros }
+    });
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        this.snackBar.open("Proceso Exitoso", 'Ok', {
           duration: 3000,
           verticalPosition: 'top'
         })
       }
+    })
+  }
+
+  notifySolicitudEliminada() {
+    this.snackBar.open("Solicitud Eliminada", 'Ok', {
+      duration: 3000,
+      verticalPosition: 'top'
     })
   }
 
@@ -177,7 +222,7 @@ export class SolicitudListComponent implements OnInit {
   }
 
   instanceTable() {
-    this.dataSource = new MatTableDataSource<any>(this.solicitudes)
+    this.dataSource.data = this.solicitudes;
     this.dataSource.paginator = this.paginator;
 
     this.dataSource.paginator.pageSizeOptions = [5, 10, 20];

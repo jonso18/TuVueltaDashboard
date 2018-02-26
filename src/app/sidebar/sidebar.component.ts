@@ -91,7 +91,7 @@ export const ROUTES: RouteInfo[] = [
         icontype: 'settings',
         collapse: 'Reasignaciones',
         children: [
-            { path: 'hacer-reasignacion', title: 'Reasignar Servicios', ab: 'RS', Rol: { Administrador: true } },
+            /* { path: 'hacer-reasignacion', title: 'Reasignar Servicios', ab: 'RS', Rol: { Administrador: true } }, */
             { path: 'lista', title: 'Reajustar Servicios', ab: 'RJS', Rol: { Administrador: true } },
         ]
     },
