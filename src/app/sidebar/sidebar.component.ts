@@ -75,8 +75,9 @@ export const ROUTES: RouteInfo[] = [
         icontype: 'settings',
         collapse: 'Usuarios',
         children: [
-            { path: 'nuevo', title: 'Nuevo', ab: 'CS', Rol: { Administrador: true } },
-            { path: 'lista', title: 'Lista', ab: 'CS', Rol: { Administrador: true } },
+            { path: 'nuevo', title: 'Nuevo', ab: 'N', Rol: { Administrador: true } },
+            { path: 'lista', title: 'Lista', ab: 'L', Rol: { Administrador: true } },
+            { path: 'seguimiento-activos', title: 'Seguimiento Activos', ab: 'SA', Rol: { Administrador: true } },
 
         ]
     },

@@ -1,0 +1,25 @@
+<div class="col-md-12 distance-top">
+  <div class="card">
+    <div class="card-header card-header-text" data-background-color="purple">
+      <h4 class="card-title">Mensajeros Activos</h4>
+      <!-- <p class="category">Category subtitle</p> -->
+    </div>
+    <div class="card-content">
+
+      <mat-form-field *ngIf="Ciudades$ | async as Ciudades">
+        <mat-select placeholder="Seleccione la Ciudad" [(ngModel)]="selectedCity">
+          <mat-option *ngFor="let city of Ciudades" [value]="city" (click)="onSelectedCity()">
+            {{city.Nombre}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <ng-container *ngIf="selectedCity && Activos$ | async as Activos">
+        <agm-map [latitude]="selectedCity.Coordenadas.Lat" [longitude]="selectedCity.Coordenadas.Lng" [zoom]="13">
+          <agm-marker *ngFor="let row of Activos" [latitude]="row.Latitude" [longitude]="row.Longitude" [label]="row.Nombre+': '+row.PlacaVehiculo+' - '+row.TipoVehiculo"
+            ></agm-marker>
+        </agm-map>
+      </ng-container>
+    </div>
+  </div>
+</div>

@@ -20,6 +20,7 @@ import { ConfigGlobalComponent } from '../parametros/config-global/config-global
 import { UsuariosComponent } from '../usuarios/usuarios/usuarios.component';
 import { UsuarioFormComponent } from '../usuarios/usuario-form/usuario-form.component';
 import { UsuariosListComponent } from '../usuarios/usuarios-list/usuarios-list.component';
+import { SeguimientoActivosComponent } from '../usuarios/seguimiento-activos/seguimiento-activos.component';
 
 export const DashboardRoutes: Routes = [
     {
@@ -112,6 +113,10 @@ export const DashboardRoutes: Routes = [
                             {
                                 path: 'lista',
                                 component: UsuariosListComponent
+                            },
+                            {
+                                path: 'seguimiento-activos',
+                                component: SeguimientoActivosComponent
                             },
                             {
                                 path: 'nuevo',

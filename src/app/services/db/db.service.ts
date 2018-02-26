@@ -20,6 +20,7 @@ import { ITipoServicio } from '../../interfaces/tipo-servicio.interface';
 import { environment } from '../../../environments/environment';
 import { IEstadoUsuario } from '../../interfaces/estadousuario.interface';
 import { ILogCreditoRetiroMensajero } from '../../interfaces/creditoretiro-mensajero.interface';
+import { ISeguimientoActivos } from '../../interfaces/seguimiento-activos.interface';
 @Injectable()
 export class DbService {
 
@@ -321,6 +322,33 @@ export class DbService {
    */
   objectLogCreditoRetiroMensajero(mensajeroId: string, key: string): AngularFireObject<any> {
     return this.db.object(`/Operativo/Logs/CreditosMensajero/CreditoRetiro/${mensajeroId}/${key}`)
+  }
+
+  /**
+   * Get a list from db which containt the current position
+   * from Mensajeros who are active.
+   * 
+   * @returns {Observable<ISeguimientoActivos[]>} 
+   * @memberof DbService
+   */
+  listSeguimientoActivos(): Observable<ISeguimientoActivos[]> {
+    return this.db.list(`/Operativo/SeguimientoActivo`)
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(
+          log => {
+            const data = log.payload.val();
+            const _log: ISeguimientoActivos = {
+              $key: log.payload.key,
+              Nombre: data.Nombre,
+              TipoVehiculo: data.TipoVehiculo,
+              PlacaVehiculo: data.PlacaVehiculo,
+              Longitude: data.Longitude,
+              Latitude: data.Latitude
+            };
+
+            return _log;
+          }));
   }
 
   /**
