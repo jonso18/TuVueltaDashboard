@@ -33,7 +33,8 @@ export const ROUTES: RouteInfo[] = [
         type: 'link',
         icontype: 'dashboard',
         Rol: {
-            Administrador: true
+            Administrador: true,
+            Operador: true
         }
     }, {
         path: '/dashboard/solicitud',
@@ -69,15 +70,16 @@ export const ROUTES: RouteInfo[] = [
         title: 'Usuarios',
         Rol: {
             Administrador: true,
-            Cliente: false
+            Cliente: false,
+            Operador: true
         },
         type: 'sub',
         icontype: 'settings',
         collapse: 'Usuarios',
         children: [
             { path: 'nuevo', title: 'Nuevo', ab: 'N', Rol: { Administrador: true } },
-            { path: 'lista', title: 'Lista', ab: 'L', Rol: { Administrador: true } },
-            { path: 'seguimiento-activos', title: 'Seguimiento Activos', ab: 'SA', Rol: { Administrador: true } },
+            { path: 'lista', title: 'Listado de usuarios', ab: 'L', Rol: { Administrador: true, Operador: true } },
+            { path: 'seguimiento-activos', title: 'Seguimiento Activos', ab: 'SA', Rol: { Administrador: true, Operador: true } },
 
         ]
     },
@@ -86,14 +88,15 @@ export const ROUTES: RouteInfo[] = [
         title: 'Solicitudes',
         Rol: {
             Administrador: true,
-            Cliente: false
+            Cliente: false,
+            Operador: true
         },
         type: 'sub',
         icontype: 'settings',
         collapse: 'Reasignaciones',
         children: [
             /* { path: 'hacer-reasignacion', title: 'Reasignar Servicios', ab: 'RS', Rol: { Administrador: true } }, */
-            { path: 'lista', title: 'Reajustar Servicios', ab: 'RJS', Rol: { Administrador: true } },
+            { path: 'lista', title: 'Reajustar Servicios', ab: 'RJS', Rol: { Administrador: true, Operador: true } },
         ]
     },
     {

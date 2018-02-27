@@ -46,11 +46,16 @@ export class AppComponent implements OnInit {
               if (info.Rol === ROLES.Administrador){
                 // Navigate to Administrator root url
 
-                return this.router.navigateByUrl('/dashboard/parametros/tarifas')
+                return this.router.navigateByUrl('/dashboard');
               }else if (info.Rol === ROLES.Cliente){
                 // Navigate to Cliente root url
-                return this.router.navigateByUrl('/dashboard')
-              }else {
+                return this.router.navigateByUrl('/dashboard');
+              }else if (info.Rol === ROLES.Operador){
+                // Navigate to Cliente root url
+                return this.router.navigateByUrl('/dashboard');
+              } 
+              
+              else {
                 // Navigate to No Authorized User
                 this.authService.logout().then(res => alert("Usuario no Autorizado"))
                 return this.router.navigateByUrl('/pages/login')

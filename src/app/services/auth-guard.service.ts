@@ -11,7 +11,7 @@ export class AuthGuardService implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {   
     if (this.authService.userInfo){
-      const hasPermission = this.authService.userInfo.Rol === ROLES.Administrador || this.authService.userInfo.Rol === ROLES.Cliente;
+      const hasPermission = this.authService.userInfo.Rol === ROLES.Administrador || this.authService.userInfo.Rol === ROLES.Cliente || this.authService.userInfo.Rol === ROLES.Operador;
       console.log("Su Rol es: " + this.authService.userInfo.Rol)
       return hasPermission;
     }
