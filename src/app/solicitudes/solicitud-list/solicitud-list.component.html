@@ -1,16 +1,24 @@
-<div>
-  <div class="text-right" *ngIf="authService.userInfo.Rol == ROLES.Cliente">
-    <button class="btn btn-primary" (click)="_new()">Nueva Solicitud</button>
-    <!--<button class="btn btn-oulet" (click)="_list()">Listado de solicitudes</button>-->
-  </div>
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header card-header-text" *ngIf="authService.userInfo.Rol == ROLES.Cliente" data-background-color="blue">
+                <button class="btn btn-primary" (click)="_new()">Nueva Solicitud</button>
+                <!--<button class="btn btn-oulet" (click)="_list()">Listado de solicitudes</button>-->
+              </div>
+              <div class="card-header card-header-text" *ngIf="authService.userInfo.Rol == ROLES.Operador || authService.userInfo.Rol == ROLES.Administrador" data-background-color="blue">
+                  <h4 class="card-title">Reajustar Servicios</h4>
+                </div>
+            <div class="card-content">
+
+
   <div class="table-solicitudes">
-    <div class="filtros" *ngIf="authService.userInfo.Rol == ROLES.Administrador">
+    <div class="filtros" *ngIf="authService.userInfo.Rol == ROLES.Administrador || authService.userInfo.Rol == ROLES.Operador">
       <div class="row">
         <div class="col-md-4" *ngIf="Clientes">
           <mat-form-field class="w-100" matTooltip="Realizar Filtro por Cliente">
             <mat-select placeholder="Cliente" [(ngModel)]="clientSelected">
               <mat-option *ngFor="let cliente of Clientes" [value]="cliente" (click)="this.applyFilter()">
-                {{ cliente.Nombres }}
+                {{ cliente.Nombres }} {{ cliente.Apellidos }}
               </mat-option>
               <mat-option [value]="null" (click)="this.applyFilter();">
                 Todos
@@ -49,46 +57,46 @@
         <mat-cell *matCellDef="let element"> {{element.key | date:'d/M/yy, h:mm:ss a'}} </mat-cell>
       </ng-container>
 
-      <!-- Nombres -->
+      <!-- Nombres 
       <ng-container matColumnDef="Nombres">
         <mat-header-cell *matHeaderCellDef> Nombres </mat-header-cell>
         <mat-cell *matCellDef="let element"> {{element.payload.val().Nombres }} </mat-cell>
-      </ng-container>
+      </ng-container>-->
 
-      <!-- Apellidos -->
+      <!-- Apellidos 
       <ng-container matColumnDef="Apellidos">
         <mat-header-cell *matHeaderCellDef> Apellidos </mat-header-cell>
         <mat-cell *matCellDef="let element"> {{element.payload.val().Apellidos }} </mat-cell>
-      </ng-container>
+      </ng-container>-->
 
-      <!-- Celular -->
+      <!-- Celular 
       <ng-container matColumnDef="Celular">
         <mat-header-cell *matHeaderCellDef> Celular </mat-header-cell>
         <mat-cell *matCellDef="let element"> {{element.payload.val().Celular }} </mat-cell>
-      </ng-container>
+      </ng-container> -->
 
-      <!-- Telefono -->
+      <!-- Telefono 
       <ng-container matColumnDef="Telefono">
         <mat-header-cell *matHeaderCellDef> Telefono </mat-header-cell>
         <mat-cell *matCellDef="let element"> {{element.payload.val().Telefono }} </mat-cell>
-      </ng-container>
+      </ng-container>-->
 
       <!-- PagoConTarjeta -->
       <ng-container matColumnDef="PagoConTarjeta">
-        <mat-header-cell *matHeaderCellDef> Pago Con Tarjeta </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.payload.val().esPagoConTarjeta ? 'Si':'No' }} </mat-cell>
+        <mat-header-cell class="text-center" *matHeaderCellDef> Pago Con Tarjeta </mat-header-cell>
+        <mat-cell class="text-center" *matCellDef="let element"> {{element.payload.val().esPagoConTarjeta ? 'Si':'No' }} </mat-cell>
       </ng-container>
 
       <!-- TotalAPagar -->
       <ng-container matColumnDef="TotalAPagar">
-        <mat-header-cell *matHeaderCellDef> Costo TuVuelta </mat-header-cell>
-        <mat-cell *matCellDef="let element"> $ {{element.payload.val().TotalAPagar | number }} </mat-cell>
+        <mat-header-cell class="text-center" *matHeaderCellDef> Costo TuVuelta </mat-header-cell>
+        <mat-cell class="text-center" *matCellDef="let element"> $ {{element.payload.val().TotalAPagar | number }} </mat-cell>
       </ng-container>
 
       <!-- DistanciaTotal -->
       <ng-container matColumnDef="Distancia">
-        <mat-header-cell *matHeaderCellDef>Distancia</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{(element.payload.val().DistanciaTotal / 1000) | number }} Km </mat-cell>
+        <mat-header-cell class="text-center" *matHeaderCellDef>Distancia</mat-header-cell>
+        <mat-cell class="text-center" *matCellDef="let element"> {{(element.payload.val().DistanciaTotal / 1000) | number }} Km </mat-cell>
       </ng-container>
 
       <!-- PuntoInicio -->
@@ -105,15 +113,15 @@
 
       <!-- Estado -->
       <ng-container matColumnDef="Estado">
-        <mat-header-cell *matHeaderCellDef>Estado</mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.payload.val().Estado}} </mat-cell>
+        <mat-header-cell class="text-center" *matHeaderCellDef>Estado</mat-header-cell>
+        <mat-cell class="text-center" *matCellDef="let element"> {{element.payload.val().Estado}} </mat-cell>
       </ng-container>
 
       <!-- Mensajero -->
       <ng-container matColumnDef="Mensajero">
-        <mat-header-cell *matHeaderCellDef> Mensajero </mat-header-cell>
-        <mat-cell *matCellDef="let element">
-          <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Nombres }}</span>
+        <mat-header-cell class="text-center" *matHeaderCellDef> Mensajero </mat-header-cell>
+        <mat-cell  class="text-center"*matCellDef="let element">
+          <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Nombres }} {{ Mensajeros[element.payload.val().Motorratoner_id].Apellidos }}</span>
         </mat-cell>
       </ng-container>
 
@@ -127,30 +135,30 @@
 
       <!-- MensajeroCelular -->
       <ng-container matColumnDef="MensajeroCelular">
-        <mat-header-cell *matHeaderCellDef> Mensajero Celular </mat-header-cell>
-        <mat-cell *matCellDef="let element">
+        <mat-header-cell class="text-center" *matHeaderCellDef> Mensajero Celular </mat-header-cell>
+        <mat-cell class="text-center" *matCellDef="let element">
           <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Celular }}</span>
         </mat-cell>
       </ng-container>
 
       <!-- MensajeroCelular -->
-      <ng-container matColumnDef="Acciones" *ngIf="authService.userInfo.Rol == ROLES.Administrador">
-        <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
-        <mat-cell *matCellDef="let element">
+      <ng-container  matColumnDef="Acciones" *ngIf="authService.userInfo.Rol == ROLES.Administrador ||authService.userInfo.Rol == ROLES.Operador">
+        <mat-header-cell class="text-center" *matHeaderCellDef> Acciones </mat-header-cell>
+        <mat-cell class="text-center" *matCellDef="let element">
           <div class="text-center">
             <a matTooltip="Reasignar" *ngIf="element.payload.val().EnProceso" (click)="openDialogReAsigancion(element.payload.key, element.payload.val().fechaCompra, element.payload.val().Motorratoner_id)">
               <mat-icon>
                 swap_horiz
               </mat-icon>
             </a>
-            <a matTooltip="Actualizar" (click)="openDialogUpdate(element)">
+            <a matTooltip="Reajustar" (click)="openDialogUpdate(element)">
               <mat-icon>
                 update
               </mat-icon>
             </a>
             <a matTooltip="Eliminar" (click)="openDialogDelete(element)">
               <mat-icon>
-                remove
+                delete
               </mat-icon>
             </a>
           </div>
@@ -161,8 +169,10 @@
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
 
-    <mat-paginator #paginator [length]="resultsLength" [pageSize]="5">
+    <mat-paginator #paginator [length]="resultsLength" [pageSize]="10">
     </mat-paginator>
   </div>
-
+  </div>
+  </div>
+</div>
 </div>

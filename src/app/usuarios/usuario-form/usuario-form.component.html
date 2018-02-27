@@ -1,8 +1,14 @@
-<div class="container-fluid">
-  <mat-card>
-    <h1>Nuevo Usuario</h1>
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header card-header-text" data-background-color="blue">
+                <h4 class="card-title">Nuevo Usuario</h4>
+            </div>
+            <div class="card-content">
+  <!--<mat-card>-->
+    
     <div class="pull-right">
-      <button mat-raised-button routerLink="/dashboard/Usuarios/lista" color="accent">Ver Lista Usuarios</button>
+      <button class="btn btn-warning" routerLink="/dashboard/Usuarios/lista">Ver Lista Usuarios</button>
     </div>
     <ng-container *ngIf="form && Ciudades$ | async as Ciudades; else loading">
       <form [formGroup]="form">
@@ -26,7 +32,7 @@
 
         <!-- Cedula -->
         <mat-form-field>
-          <input matInput formControlName="Cedula" placeholder="Cedula" type="number">
+          <input matInput formControlName="Cedula" placeholder="Número de Cédula" type="number">
           <mat-error *ngIf="Cedula.hasError('required')">
             Campo
             <strong>Obligatorio</strong>
@@ -72,7 +78,7 @@
 
         <!-- Correo -->
         <mat-form-field>
-          <input matInput formControlName="Correo" placeholder="Correo">
+          <input matInput formControlName="Correo" placeholder="Correo Electrónico">
           <mat-error *ngIf="Correo.hasError('required')">
             Campo
             <strong>Obligatorio</strong>
@@ -98,7 +104,7 @@
 
         <!-- Password2 -->
         <mat-form-field *ngIf="Password2">
-          <input matInput formControlName="Password2" placeholder="Confirme Contraseña" type="password">
+          <input matInput formControlName="Password2" placeholder="Confirmar Contraseña" type="password">
           <mat-error *ngIf="Password2.hasError('required')">
             Campo
             <strong>Obligatorio</strong>
@@ -457,11 +463,11 @@
         </ng-container>
 
         <div class="text-center" *ngIf="form.get('Password1') && form.get('Password2'); else updateUser">
-          <button mat-raised-button color="primary" (click)="onSubmitCreate()" [disabled]="form.invalid || Password1.value != Password2.value">Crear Usuario</button>
+          <button class="btn btn-success" (click)="onSubmitCreate()" [disabled]="form.invalid || Password1.value != Password2.value">Crear Usuario</button>
         </div>
         <ng-template #updateUser>
           <div class="text-center">
-            <button mat-raised-button color="primary" (click)="onSubmitUpdate()" [disabled]="form.invalid">Actualizar Usuario</button>
+            <button class="btn btn-success" (click)="onSubmitUpdate()" [disabled]="form.invalid">Actualizar Usuario</button>
           </div>
         </ng-template>
 
@@ -473,9 +479,8 @@
         <mat-spinner></mat-spinner>
       </div>
     </ng-template>
-  </mat-card>
+  <!--</mat-card>-->
 </div>
-
-<pre *ngIf="form">
-  {{ form.value | json }}
-</pre>
+</div>
+</div>
+</div>

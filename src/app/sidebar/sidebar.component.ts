@@ -74,11 +74,11 @@ export const ROUTES: RouteInfo[] = [
             Operador: true
         },
         type: 'sub',
-        icontype: 'settings',
+        icontype: 'account_box',
         collapse: 'Usuarios',
         children: [
-            { path: 'nuevo', title: 'Nuevo', ab: 'N', Rol: { Administrador: true } },
-            { path: 'lista', title: 'Listado de usuarios', ab: 'L', Rol: { Administrador: true, Operador: true } },
+            { path: 'nuevo', title: 'Crear Usuario', ab: 'NU', Rol: { Administrador: true } },
+            { path: 'lista', title: 'Listado de usuarios', ab: 'LU', Rol: { Administrador: true, Operador: true } },
             { path: 'seguimiento-activos', title: 'Seguimiento Activos', ab: 'SA', Rol: { Administrador: true, Operador: true } },
 
         ]
@@ -92,7 +92,7 @@ export const ROUTES: RouteInfo[] = [
             Operador: true
         },
         type: 'sub',
-        icontype: 'settings',
+        icontype: 'motorcycle',
         collapse: 'Reasignaciones',
         children: [
             /* { path: 'hacer-reasignacion', title: 'Reasignar Servicios', ab: 'RS', Rol: { Administrador: true } }, */
@@ -107,7 +107,7 @@ export const ROUTES: RouteInfo[] = [
             Cliente: false
         },
         type: 'sub',
-        icontype: 'settings',
+        icontype: 'equalizer',
         collapse: 'Reportes',
         children: [
             { path: 'clientes-servicios', title: 'Clientes Servicios', ab: 'CS', Rol: { Administrador: true } },
@@ -122,7 +122,7 @@ export const ROUTES: RouteInfo[] = [
             Cliente: false
         },
         type: 'sub',
-        icontype: 'settings',
+        icontype: 'mail',
         collapse: 'Mensajeria',
         children: [
             { path: 'nuevo', title: 'Mensajeria', ab: 'CS', Rol: { Administrador: true } },

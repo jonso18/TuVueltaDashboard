@@ -132,12 +132,14 @@ export class ReasignacionComponent implements OnInit {
   <mat-select placeholder="Seleccione Mensajero" [(ngModel)]="mensajeroSelected" *ngIf="Mensajeros">
   <ng-container *ngFor="let row of Mensajeros">
     <mat-option  [value]="row.key" *ngIf="row.key != prev">
-      {{ row.Nombres }}
+      {{ row.Nombres }} {{ row.Apellidos }}
     </mat-option>
   </ng-container>
   </mat-select>
+  <div class="text-center">
   <button mat-button (click)="onNoClick()">Cancelar</button>
   <button mat-button [disabled]="mensajeroSelected == null" color="primary" (click)="save()" >Guardar</button>
+  </div>
   `,
 })
 export class DialogReasignacion implements OnInit {
@@ -160,7 +162,8 @@ export class DialogReasignacion implements OnInit {
       console.log(key)
       return {
         key: key,
-        Nombres: Mensajeros[key].Nombres
+        Nombres: Mensajeros[key].Nombres,
+        Apellidos: Mensajeros[key].Apellidos
       }
     })
 

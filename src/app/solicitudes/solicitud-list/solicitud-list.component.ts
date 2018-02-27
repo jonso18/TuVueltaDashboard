@@ -20,9 +20,11 @@ import { DialogReasignacion } from '../reasignaciones/reasignacion/reasignacion.
 })
 export class SolicitudListComponent implements OnInit {
 
+  // 'Nombres', 'Apellidos', 'Celular' 'Telefono'
+
   dateEnd: number;
   dateStart: number;
-  public displayedColumns = ['Id', 'Fecha', 'Nombres', 'Apellidos', 'Celular', 'TotalAPagar', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'MensajeroCelular'];
+  public displayedColumns = ['Id', 'Fecha',  'TotalAPagar', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'MensajeroCelular'];
   public Clientes;
   public dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   public ROLES;
@@ -68,7 +70,7 @@ export class SolicitudListComponent implements OnInit {
     const Rol = this.authService.userInfo.Rol
     if (Rol == ROLES.Cliente) {
       this.loadSolicitudes();
-    } else if (Rol == ROLES.Administrador) {
+    } else if (Rol == ROLES.Administrador || Rol == ROLES.Operador) {
       this.displayedColumns.push("Acciones");
       this.loadAllSolicitudes()
     }
@@ -146,7 +148,7 @@ export class SolicitudListComponent implements OnInit {
     console.log(event)
     switch (event.active) {
       case 'key':
-        this.sortByDirection('key', event.direction)
+        this.sortByDirection('key', event.direction);
         break;
 
       default:
@@ -192,7 +194,7 @@ export class SolicitudListComponent implements OnInit {
     const _fechaCompra = fechaCompra;
     const _PrevioMotorratoner_id = PrevioMotorratoner_id;
     let dialogRef = this.dialog.open(DialogReasignacion, {
-      width: '250px',
+      width: '350px',
       data: { PrevioMotorratoner_id: _PrevioMotorratoner_id, fechaCompra: _fechaCompra, serviceId: _serviceId, Mensajeros: this.Mensajeros }
     });
 
