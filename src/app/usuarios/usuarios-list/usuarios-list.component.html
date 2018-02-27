@@ -81,7 +81,16 @@
         <ng-container matColumnDef="Acciones">
           <mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</mat-header-cell>
           <mat-cell *matCellDef="let element">
-            <button mat-button (click)="onUpdate(element)" color="primary">Actualizar</button>
+            <a matTooltip="Actualizar" [routerLink]="[element.$key]">
+              <mat-icon>
+                update
+              </mat-icon>
+            </a>
+            <a matTooltip="Ver Relanzamientos" [routerLink]="[element.$key, 'Estadodecuenta']">
+              <mat-icon>
+                cached
+              </mat-icon>
+            </a>
           </mat-cell>
         </ng-container>
 

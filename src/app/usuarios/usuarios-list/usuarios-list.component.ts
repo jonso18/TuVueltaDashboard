@@ -71,7 +71,7 @@ export class UsuariosListComponent implements OnInit, OnDestroy {
   }
 
   onUpdate(user: IUser) {
-    this.router.navigateByUrl(`/dashboard/Usuarios/${user.$key}`);
+    this.router.navigateByUrl(`/dashboard/Usuarios/${user.$key}/Actualizar`);
   }
 
   instanceTable(): void {
