@@ -1,0 +1,23 @@
+<div class="col-md-12 top-distance">
+  <div class="card">
+    <div class="card-header card-header-text" data-background-color="purple">
+      <h4 class="card-title">Estado de cuenta</h4>
+      <p *ngIf="User$ | async as user" class="category">Mensajero
+        <strong>{{ user.Nombres + ' ' + user.Apellidos}}</strong>
+      </p>
+    </div>
+    <div class="card-content">
+      <mat-tab-group #tabRelanzamiento>
+        <mat-tab label="Relanzamientos">
+          <app-relanzamientos [Relanzamientos]="Relanzamientos$ | async" [Id]="Id$ | async"></app-relanzamientos>
+        </mat-tab>
+        <mat-tab label="Retiros">
+          <app-retiros [Retiros]="Retiros$ | async" [Id]="Id$ | async"></app-retiros>
+        </mat-tab>
+        <mat-tab label="Equipamiento">
+          <app-log-equipamiento [Log]="LogEquipamiento$ | async" [Id]="Id$ | async"></app-log-equipamiento>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

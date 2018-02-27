@@ -32,6 +32,11 @@ import { UsuarioFormComponent } from '../usuarios/usuario-form/usuario-form.comp
 import { UsuariosComponent } from '../usuarios/usuarios/usuarios.component';
 import { UsuariosListComponent } from '../usuarios/usuarios-list/usuarios-list.component';
 import { SeguimientoActivosComponent } from '../usuarios/seguimiento-activos/seguimiento-activos.component';
+import { RelanzamientosComponent } from '../usuarios/relanzamientos/relanzamientos.component';
+import { EstadodecuentaComponent } from '../usuarios/estadodecuenta/estadodecuenta.component';
+import { RetirosComponent } from '../usuarios/retiros/retiros.component';
+import { LogEquipamientoComponent } from '../usuarios/log-equipamiento/log-equipamiento.component';
+
 @NgModule({
     imports: [
         CommonModule,
@@ -73,7 +78,11 @@ import { SeguimientoActivosComponent } from '../usuarios/seguimiento-activos/seg
         UsuarioFormComponent,
         UsuariosComponent,
         UsuariosListComponent,
-        SeguimientoActivosComponent
+        SeguimientoActivosComponent,
+        RelanzamientosComponent,
+        EstadodecuentaComponent,
+        RetirosComponent,
+        LogEquipamientoComponent
     ],
     entryComponents: [
         DialogNewCity,

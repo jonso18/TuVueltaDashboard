@@ -21,6 +21,9 @@ import { environment } from '../../../environments/environment';
 import { IEstadoUsuario } from '../../interfaces/estadousuario.interface';
 import { ILogCreditoRetiroMensajero } from '../../interfaces/creditoretiro-mensajero.interface';
 import { ISeguimientoActivos } from '../../interfaces/seguimiento-activos.interface';
+import { IRelanzamiento } from '../../interfaces/relanzamiento.interface';
+import { IRetiros } from '../../interfaces/retiros.interface';
+import { ILogEquipamiento } from '../../interfaces/logequipamiento.interface';
 @Injectable()
 export class DbService {
 
@@ -349,6 +352,80 @@ export class DbService {
 
             return _log;
           }));
+  }
+  /**
+   * Get entire Relanzamiento's list from an specific user.
+   * 
+   * @param {string} id 
+   * @returns {Observable<IRelanzamiento[]>} 
+   * @memberof DbService
+   */
+  listRelanzamientos(id: string): Observable<IRelanzamiento[]> {
+    return this.db.list(`/Operativo/Logs/CreditosMensajero/Relanzamientos/${id}`)
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(item => {
+          const data = item.payload.val();
+          const _relanzamiento: IRelanzamiento = {
+            $key: item.payload.key,
+            GananciaMensajero: data.GananciaMensajero,
+            servicio_id: data.servicio_id,
+            Multa: data.Multa
+          };
+          return _relanzamiento;
+        }))
+  }
+
+  /**
+   * Get an entire Retiro's list from an specific user.
+   * 
+   * @param {string} id Mensajero id
+   * @returns {Observable<IRetiros[]>} 
+   * @memberof DbService
+   */
+  listRetiros(id: string): Observable<IRetiros[]> {
+    return this.db.list(`/Operativo/Logs/CreditosMensajero/Retiros/${id}`)
+      .snapshotChanges()
+      .map(changes =>
+        changes.map(item => {
+          const data = item.payload.val();
+          const _retiro: IRetiros = {
+            $key: item.payload.key,
+            Estado: data.Estado,
+            MontoARetirar: data.MontoARetirar
+          };
+
+          return _retiro;
+        }));
+  }
+
+
+  objectRelanzamiento(id: string, key: string): AngularFireObject<IRelanzamiento> {
+    return this.db.object(`/Operativo/Logs/CreditosMensajero/Relanzamientos/${id}/${key}`)
+  }
+
+  objectRetiro(id: string, key: string): AngularFireObject<IRetiros> {
+    return this.db.object(`/Operativo/Logs/CreditosMensajero/Retiros/${id}/${key}`)
+  }
+
+  listLogEquipamiento(id: string): Observable<ILogEquipamiento[]> {
+    return this.db.list(`/Operativo/Logs/EquipamientoMotorratoner/${id}`)
+      .snapshotChanges()
+      .map(changes =>
+        changes
+          .map(log => {
+            const data = log.payload.val();
+            const _log: ILogEquipamiento = {
+              $key: log.payload.key,
+              ChaquetaMensajero: data.ChaquetaMensajero,
+              EquipoMensajero: data.EquipoMensajero,
+              EquipoMoto: data.EquipoMoto,
+              LatLng: data.LatLng,
+              MontoParaTrabajarHoy: data.MontoParaTrabajarHoy,
+            };
+
+            return _log;
+          }))
   }
 
   /**

@@ -114,7 +114,7 @@
                         <div id="{{menuitem.collapse}}" class="collapse" *ngIf="menuitem.type === 'sub' && menuitem.Rol[authService.userInfo.Rol]">
                             <ul class="nav">
                                 <li routerLinkActive="active" *ngFor="let childitem of menuitem.children">
-                                    <a [routerLink]="[menuitem.path, childitem.path]" *ngIf="childitem.Rol[authService.userInfo.Rol]">
+                                    <a  [routerLink]="childitem.path ? [menuitem.path, childitem.path]: [menuitem.path]" *ngIf="childitem.Rol[authService.userInfo.Rol]">
                                         <span class="sidebar-mini">{{childitem.ab}}</span>
                                         <span class="sidebar-normal">{{childitem.title}}</span>
                                     </a>
