@@ -22,6 +22,8 @@ import { UsuarioFormComponent } from '../usuarios/usuario-form/usuario-form.comp
 import { UsuariosListComponent } from '../usuarios/usuarios-list/usuarios-list.component';
 import { SeguimientoActivosComponent } from '../usuarios/seguimiento-activos/seguimiento-activos.component';
 
+import { EstadodecuentaComponent } from '../usuarios/estadodecuenta/estadodecuenta.component';
+
 export const DashboardRoutes: Routes = [
     {
 
@@ -107,12 +109,12 @@ export const DashboardRoutes: Routes = [
                         children:[
                             {
                                 path: '',
-                                redirectTo: 'lista',
-                                pathMatch: 'full'
+                                component: UsuariosListComponent
                             },
                             {
                                 path: 'lista',
-                                component: UsuariosListComponent
+                                redirectTo: '',
+                                pathMatch: 'full'
                             },
                             {
                                 path: 'seguimiento-activos',
@@ -125,8 +127,22 @@ export const DashboardRoutes: Routes = [
                             },
                             {
                                 path: ':id',
-                                component: UsuarioFormComponent
-                            }
+                                children: [
+                                    {
+                                        path:'',
+                                        redirectTo: 'Actualizar',
+                                        pathMatch: 'full'
+                                    },
+                                    {
+                                        path: 'Actualizar',
+                                        component: UsuarioFormComponent
+                                    },
+                                    {
+                                        path: 'Estadodecuenta',
+                                        component: EstadodecuentaComponent
+                                    }
+                                ]
+                            },
                         ]
                     },
                     {
