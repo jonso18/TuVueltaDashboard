@@ -16,7 +16,7 @@
 
       <ng-container *ngIf="selectedCity && Activos$ | async as Activos">
         <agm-map [latitude]="selectedCity.Coordenadas.Lat" [longitude]="selectedCity.Coordenadas.Lng" [zoom]="15">
-          <agm-marker *ngFor="let row of Activos" [latitude]="row.Latitude" [longitude]="row.Longitude" [label]="row.Nombre +': '+row.PlacaVehiculo+' - '+row.TipoVehiculo"
+          <agm-marker *ngFor="let row of Activos" [iconUrl]="'../../../assets/img/moto.png'"  [latitude]="row.Latitude" [longitude]="row.Longitude" [label]="row.Nombre +': '+row.PlacaVehiculo+' - '+row.TipoVehiculo"
             ></agm-marker>
         </agm-map>
       </ng-container>
