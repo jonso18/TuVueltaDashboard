@@ -1,0 +1,13 @@
+<div class="text-center">
+  <h2 mat-dialog-title>{{ title }}</h2>
+</div>
+
+<mat-dialog-content>¿{{ question }}?</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="text-center">
+    <button mat-button mat-dialog-close>No</button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button mat-raised-button color="primary" [mat-dialog-close]="true">Yes</button>
+  </div>
+</mat-dialog-actions>

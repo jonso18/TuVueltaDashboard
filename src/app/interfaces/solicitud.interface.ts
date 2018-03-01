@@ -1,4 +1,5 @@
-export interface Solicitud {
+export interface ISolicitud {
+    $key: string;
     Apellidos?: string
     Celular?: string | number
     Ciudad?: string
@@ -24,4 +25,5 @@ export interface Solicitud {
     puntoInicialCoors?: string
     puntoInicio?: string
     user_id?: string
+    BonoRelanzamiento?: number;
 }

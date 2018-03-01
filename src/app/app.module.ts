@@ -71,6 +71,11 @@ import { ReportesComponent } from './reportes/reportes/reportes.component';
 import { HttpClientModule } from '@angular/common/http';
 
 
+import { ToastrModule } from 'ngx-toastr';
+import { ToastConfig } from './config/Toast';
+import { GlobalTasksService } from './services/global-tasks/global-tasks.service';
+import { MessagesService } from './services/messages/messages.service';
+
 
 
 @NgModule({
@@ -107,6 +112,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatToolbarModule,
     MatTooltipModule
   ]
+  
 })
 export class MaterialModule {}
 
@@ -132,12 +138,15 @@ export class MaterialModule {}
     FixedpluginModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    ToastrModule.forRoot(ToastConfig)
   ],
   providers: [
     AuthGuardService,
     AuthService,
-    DbService
+    DbService,
+    GlobalTasksService,
+    MessagesService
   ],
   bootstrap: [AppComponent]
 })
