@@ -40,6 +40,8 @@ import { ConfirmationComponent } from '../dialogs/confirmation/confirmation.comp
 import { TransaccionesComponent } from '../solicitudes/transacciones/transacciones.component';
 import { ComprarServicioComponent } from '../solicitudes/comprar-servicio/comprar-servicio.component';
 import { DataTransaccionServicioComponent } from '../solicitudes/data-transaccion-servicio/data-transaccion-servicio.component';
+import { CambiarEstadoServicioComponent } from '../solicitudes/cambiar-estado-servicio/cambiar-estado-servicio.component';
+import { NoRetirementCreditDialogComponent } from '../dialogs/no-retirement-credit-dialog/no-retirement-credit-dialog.component';
 
 @NgModule({
     imports: [
@@ -90,7 +92,9 @@ import { DataTransaccionServicioComponent } from '../solicitudes/data-transaccio
         ConfirmationComponent,
         TransaccionesComponent,
         ComprarServicioComponent,
-        DataTransaccionServicioComponent
+        DataTransaccionServicioComponent,
+        CambiarEstadoServicioComponent,
+        NoRetirementCreditDialogComponent
     ],
     entryComponents: [
         DialogNewCity,
@@ -98,7 +102,8 @@ import { DataTransaccionServicioComponent } from '../solicitudes/data-transaccio
         DialogReasignacion,
         SolicitudFormDialog,
         DialogOnClickMap,
-        ConfirmationComponent
+        ConfirmationComponent,
+        NoRetirementCreditDialogComponent
     ]
 })
 

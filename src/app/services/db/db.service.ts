@@ -181,6 +181,10 @@ export class DbService {
     return this.db.object(`/Operativo/Logs/Solicitud/${key}`)
   }
 
+  public objectLogDateSolicitud(key: string, date: string) {
+    return this.db.object(`/Operativo/Logs/Solicitud/${key}/${date}`)
+  }
+
   public listUsersByRol(Rol: string): Observable<IUser[]> {
     return this.db.list(`/Administrativo/Usuarios`, ref => ref.orderByChild('Rol').equalTo(Rol))
       .snapshotChanges().map(change => change.map(_user => {
@@ -286,7 +290,7 @@ export class DbService {
         return _user
       })
       .distinctUntilChanged()
-      
+
   }
 
   /**
@@ -423,6 +427,10 @@ export class DbService {
 
   objectRetiro(id: string, key: string): AngularFireObject<IRetiros> {
     return this.db.object(`/Operativo/Logs/CreditosMensajero/Retiros/${id}/${key}`)
+  }
+
+  objectLogCompraServicio(adminId: string, date: string) {
+    return this.db.object(`/Operativo/Logs/CompraServicios/${adminId}/${date}`);
   }
 
   listLogEquipamiento(id: string): Observable<ILogEquipamiento[]> {

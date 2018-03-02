@@ -1,11 +1,22 @@
-<mat-form-field>
-  <input matInput [matDatepicker]="dp3" placeholder="Fecha" disabled>
-  <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
-  <mat-datepicker #dp3 disabled="false"></mat-datepicker>
-</mat-form-field>
-<mat-form-field>
-  <input matInput type="number" placeholder="Hora">
-</mat-form-field>
-<mat-form-field>
-  <input matInput type="number" placeholder="Minutos">
-</mat-form-field>
+<form [formGroup]="form">
+  <div class="col-sm-offset-1 col-sm-2">
+    <mat-form-field>
+      <input formControlName="Fecha" matInput [matDatepicker]="dp3" placeholder="Fecha" readonly>
+      <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+      <mat-datepicker #dp3 disabled="false"></mat-datepicker>
+      <mat-error *ngIf="Fecha.invalid" [innerHTML]=" getErrorMessage(Fecha)"></mat-error>
+    </mat-form-field>
+  </div>
+  <div class="col-sm-2">
+    <mat-form-field>
+      <input matInput formControlName="Hora" type="number" placeholder="Hora">
+      <mat-error *ngIf="Hora.invalid" [innerHTML]=" getErrorMessage(Hora)"></mat-error>
+    </mat-form-field>
+  </div>
+  <div class="col-sm-2">
+    <mat-form-field>
+      <input matInput formControlName="Minutos" type="number" placeholder="Minutos">
+      <mat-error *ngIf="Minutos.invalid" [innerHTML]=" getErrorMessage(Minutos)"></mat-error>
+    </mat-form-field>
+  </div>
+</form>

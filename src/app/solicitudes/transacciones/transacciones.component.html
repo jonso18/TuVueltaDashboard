@@ -170,13 +170,20 @@
           </div>
 
         </div>
-        <mat-tab-group #tabRelanzamiento>
-          <mat-tab label="Comprar un Servcio">
-            <app-comprar-servicio></app-comprar-servicio>
+        <mat-tab-group #tabRelanzamiento *ngIf="Mensajeros$ | async as Mensajeros" [dynamicHeight]="true">
+          <mat-tab label="Comprar un Servcio" *ngIf="Data[0].Estado == 'Pendiente'; else noPendingService">
+            <app-comprar-servicio [Mensajeros]="Mensajeros" [Id]="Id$ | async"></app-comprar-servicio>
           </mat-tab>
-          <mat-tab label="Cambio de Estado">
-            Cambio de estado
-          </mat-tab>
+          <ng-template #noPendingService>
+            <ng-container *ngIf="Data[0].Estado != ESTADOS_SERVICIO.Finalizado">
+              <ng-container *ngIf="EstadosServicio$ | async as EstadosServicio ">
+                <mat-tab label="Cambio de Estado">
+                  <app-cambiar-estado-servicio [Solicitud]="Data[0]" [Estados]="EstadosServicio" [Id]="Id$ | async"></app-cambiar-estado-servicio>
+                </mat-tab>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+
         </mat-tab-group>
       </ng-container>
 

@@ -2,13 +2,14 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { IUser } from '../../interfaces/usuario.interface';
 import { DbService } from '../../services/db/db.service';
-import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
+import { MatTableDataSource, MatPaginator, MatSort, MatDialog, MatSnackBar } from '@angular/material';
 import { DataSource } from '@angular/cdk/table';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth/auth.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { ESTADOS_USUARIO } from '../../config/EstadosUsuario';
+import { NoRetirementCreditDialogComponent } from '../../dialogs/no-retirement-credit-dialog/no-retirement-credit-dialog.component';
 
 @Component({
   selector: 'app-usuarios-list',
@@ -33,11 +34,14 @@ export class UsuariosListComponent implements OnInit, OnDestroy {
   public EU = ESTADOS_USUARIO;
   public subs: Subscription[] = [];
   @ViewChild(MatSort) sort: MatSort;
+
   constructor(
     private dbService: DbService,
     private authService: AuthService,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
@@ -66,8 +70,6 @@ export class UsuariosListComponent implements OnInit, OnDestroy {
         this.AllUsuarios = this.Usuarios = res;
         this.instanceTable();
       }));
-
-
   }
 
   onUpdate(user: IUser) {
@@ -75,12 +77,30 @@ export class UsuariosListComponent implements OnInit, OnDestroy {
   }
 
   instanceTable(): void {
-    this.dataSource.data = this.Usuarios.filter((user: IUser)=>{
+    this.dataSource.data = this.Usuarios.filter((user: IUser) => {
       if (user.$key != this.authService.userState.uid) return user
     });
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
     this.dataSource.paginator.pageSizeOptions = [5, 10, 20];
+  }
+
+  onClickNoRetirementCredit(user: IUser) {
+    console.log('opening Dialog para creditos de no retiro del usuario', user)
+    let dialogRef = this.dialog.open(NoRetirementCreditDialogComponent, {
+      width: '300px',
+      data: { user }
+    });
+
+    this.subs.push(dialogRef.afterClosed()
+      .subscribe(res => {
+        if (res) {
+          this.snackBar.open('Creditos de NO Retiro aumentados exitosamente', 'Ok', {
+            verticalPosition: 'top',
+            duration: 3000
+          })
+        }
+      }))
 
   }
 

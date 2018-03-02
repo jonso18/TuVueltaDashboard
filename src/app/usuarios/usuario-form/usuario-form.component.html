@@ -1,8 +1,12 @@
-<div class="main-content">
+<div class="main-content" >
     <div class="container-fluid">
         <div class="card">
-            <div class="card-header card-header-text" data-background-color="blue">
-                <h4 class="card-title">Nuevo Usuario</h4>
+            <div class="card-header card-header-text" data-background-color="blue" *ngIf="form">
+                <h4 class="card-title" *ngIf="form.get('Password1') && form.get('Password2'); else newUserTitle">Nuevo Usuario</h4>
+                <ng-template #newUserTitle>
+                    <h4 class="card-title">Actualizar Usuario</h4> 
+                </ng-template>
+                
             </div>
             <div class="card-content">
   <!--<mat-card>-->
