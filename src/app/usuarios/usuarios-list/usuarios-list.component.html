@@ -91,6 +91,11 @@
                 cached
               </mat-icon>
             </a>
+            <a matTooltip="Agregar Creditos de No Retiro" *ngIf="element.Rol == 'Mensajero'" (click)="onClickNoRetirementCredit(element)">
+              <mat-icon>
+                my_library_add
+              </mat-icon>
+            </a>
           </mat-cell>
         </ng-container>
 

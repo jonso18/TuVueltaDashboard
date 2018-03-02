@@ -1,0 +1,22 @@
+<form [formGroup]="form" class="top-distance" (ngSubmit)="onSubmit()">
+
+  <!-- <div class="col-sm-offset-1 col-sm-6"> -->
+  <app-data-transaccion-servicio (onValid)="onDateValid($event)"></app-data-transaccion-servicio>
+  <!-- </div> -->
+  <div class="col-sm-2">
+    <mat-form-field>
+      <mat-select placeholder="Mensajero" formControlName="Mensajero">
+        <mat-option *ngFor="let Mensajero of Mensajeros" [value]="Mensajero.$key">
+          {{ Mensajero.Nombres + ' ' + Mensajero.Apellidos}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="Mensajero.invalid" [innerHTML]="getErrorMessage(Mensajero)"></mat-error>
+    </mat-form-field>
+  </div>
+  <div class="col-sm-2">
+    <button class="btn btn-block btn-primary" type="submit">
+      Realizar Compra
+    </button>
+  </div>
+
+</form>

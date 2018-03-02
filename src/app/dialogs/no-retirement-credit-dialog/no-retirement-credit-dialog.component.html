@@ -1,0 +1,26 @@
+<div class="text-center">
+  <h2 mat-dialog-title [innerHTML]="title"></h2>
+</div>
+<form [formGroup]="form">
+  <mat-dialog-content>
+    <div>
+      ¿
+      <span [innerHTML]="question"></span>?
+    </div>
+
+    <mat-form-field>
+      <input matInput formControlName="Amount" placeholder="Ingrese cantidad" type="number">
+      <mat-error *ngIf="Amount.invalid" [innerHTML]="getErrorMessage(Amount)"></mat-error>
+    </mat-form-field>
+
+  </mat-dialog-content>
+
+
+  <mat-dialog-actions>
+
+    <button mat-button mat-dialog-close type="button">Cancelar</button>
+    <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+    <button mat-raised-button color="primary" type="submit" (click)="onSubmit()">Continuar</button>
+
+  </mat-dialog-actions>
+</form>

@@ -24,6 +24,7 @@ import { ISeguimientoActivos } from '../../interfaces/seguimiento-activos.interf
 import { IRelanzamiento } from '../../interfaces/relanzamiento.interface';
 import { IRetiros } from '../../interfaces/retiros.interface';
 import { ILogEquipamiento } from '../../interfaces/logequipamiento.interface';
+import { ISolicitud } from '../../interfaces/solicitud.interface';
 @Injectable()
 export class DbService {
 
@@ -161,8 +162,27 @@ export class DbService {
     return this.db.object(`/Operativo/Solicitud/${key}`)
   }
 
+  public objectSolicitudSnap(key: string): Observable<ISolicitud> {
+    return this.objectSolicitud(key)
+      .snapshotChanges()
+      .map(change => {
+        let data: ISolicitud = change.payload.val();
+        data.$key = change.payload.key;
+        return data;
+      })
+      .do(console.log)
+  }
+
   public listLogSolicitud() {
     return this.db.list(`/Operativo/Logs/Solicitud`)
+  }
+
+  public objectLogSolicitud(key: string) {
+    return this.db.object(`/Operativo/Logs/Solicitud/${key}`)
+  }
+
+  public objectLogDateSolicitud(key: string, date: string) {
+    return this.db.object(`/Operativo/Logs/Solicitud/${key}/${date}`)
   }
 
   public listUsersByRol(Rol: string): Observable<IUser[]> {
@@ -270,6 +290,7 @@ export class DbService {
         return _user
       })
       .distinctUntilChanged()
+
   }
 
   /**
@@ -406,6 +427,10 @@ export class DbService {
 
   objectRetiro(id: string, key: string): AngularFireObject<IRetiros> {
     return this.db.object(`/Operativo/Logs/CreditosMensajero/Retiros/${id}/${key}`)
+  }
+
+  objectLogCompraServicio(adminId: string, date: string) {
+    return this.db.object(`/Operativo/Logs/CompraServicios/${adminId}/${date}`);
   }
 
   listLogEquipamiento(id: string): Observable<ILogEquipamiento[]> {

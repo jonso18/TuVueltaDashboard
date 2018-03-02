@@ -1,0 +1,37 @@
+<form [formGroup]="form" class="top-distance" (ngSubmit)="onSubmit()">
+
+  <!-- <div class="col-sm-offset-1 col-sm-6"> -->
+  <app-data-transaccion-servicio (onValid)="onDateValid($event)"></app-data-transaccion-servicio>
+  <!-- </div> -->
+  <div class="col-sm-2">
+    <mat-form-field>
+      <mat-select placeholder="Estado" formControlName="Estado">
+
+        <ng-container *ngIf="!Solicitud.esPagoConTarjeta">
+          <ng-container *ngFor="let Estado of Estados">
+            <mat-option [value]="Estado.$key" matTooltip="Estado.Descripcion" *ngIf="Estado.$key != ESTADOS_SERVICIO.Pendiente && Estado.$key != ESTADOS_SERVICIO.DevolucionDatafono">
+              {{ Estado.Nombre }}
+            </mat-option>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="Solicitud.esPagoConTarjeta">
+          <ng-container *ngFor="let Estado of Estados">
+            <mat-option [value]="Estado.$key" matTooltip="Estado.Descripcion" *ngIf="Estado.$key != ESTADOS_SERVICIO.Pendiente">
+              {{ Estado.Nombre }}
+            </mat-option>
+          </ng-container>
+        </ng-container>
+
+      </mat-select>
+      <mat-error *ngIf="Estado.invalid" [innerHTML]="getErrorMessage(Estado)"></mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="col-sm-2">
+    <button class="btn btn-block btn-primary" type="submit">
+      Cambiar Estado
+    </button>
+  </div>
+
+</form>

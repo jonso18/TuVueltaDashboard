@@ -36,6 +36,12 @@ import { RelanzamientosComponent } from '../usuarios/relanzamientos/relanzamient
 import { EstadodecuentaComponent } from '../usuarios/estadodecuenta/estadodecuenta.component';
 import { RetirosComponent } from '../usuarios/retiros/retiros.component';
 import { LogEquipamientoComponent } from '../usuarios/log-equipamiento/log-equipamiento.component';
+import { ConfirmationComponent } from '../dialogs/confirmation/confirmation.component';
+import { TransaccionesComponent } from '../solicitudes/transacciones/transacciones.component';
+import { ComprarServicioComponent } from '../solicitudes/comprar-servicio/comprar-servicio.component';
+import { DataTransaccionServicioComponent } from '../solicitudes/data-transaccion-servicio/data-transaccion-servicio.component';
+import { CambiarEstadoServicioComponent } from '../solicitudes/cambiar-estado-servicio/cambiar-estado-servicio.component';
+import { NoRetirementCreditDialogComponent } from '../dialogs/no-retirement-credit-dialog/no-retirement-credit-dialog.component';
 
 @NgModule({
     imports: [
@@ -82,14 +88,22 @@ import { LogEquipamientoComponent } from '../usuarios/log-equipamiento/log-equip
         RelanzamientosComponent,
         EstadodecuentaComponent,
         RetirosComponent,
-        LogEquipamientoComponent
+        LogEquipamientoComponent,
+        ConfirmationComponent,
+        TransaccionesComponent,
+        ComprarServicioComponent,
+        DataTransaccionServicioComponent,
+        CambiarEstadoServicioComponent,
+        NoRetirementCreditDialogComponent
     ],
     entryComponents: [
         DialogNewCity,
         DialogDeleteCity,
         DialogReasignacion,
         SolicitudFormDialog,
-        DialogOnClickMap
+        DialogOnClickMap,
+        ConfirmationComponent,
+        NoRetirementCreditDialogComponent
     ]
 })
 

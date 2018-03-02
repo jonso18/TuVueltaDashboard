@@ -110,7 +110,7 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
     if (ClienteIntegracion) {
       this.form.addControl('ClienteIntegracion', this.formBuilder.group({
         urls: this.formBuilder.group({
-          logSolicitud: [null, [Validators.required, Validators.pattern('^(http[s]?:\\/\\/){0,1}(www\\.){0,1}[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,5}[\\.]{0,1}$')]]
+          logSolicitud: [null, [Validators.required]]
         })
       }));
       this.EsClienteDeIntegracion.setValue(true);
@@ -148,7 +148,7 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
     if (isChecked) {
       this.form.addControl('ClienteIntegracion', this.formBuilder.group({
         urls: this.formBuilder.group({
-          logSolicitud: [null]
+          logSolicitud: [null, [Validators.required]]
         })
       }))
       return

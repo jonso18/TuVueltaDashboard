@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DbService } from '../../services/db/db.service';
-import { MatPaginator, MatTableDataSource, MatDialog, MatDatepickerInputEvent, MatSnackBar } from '@angular/material';
+import { MatPaginator, MatTableDataSource, MatDialog, MatDatepickerInputEvent, MatSnackBar, MatSort } from '@angular/material';
 import { DataSource } from '@angular/cdk/collections';
-import { Solicitud } from '../../interfaces/solicitud.interface';
+/* import { Solicitud } from '../../interfaces/solicitud.interface'; */
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { ROLES } from '../../config/Roles';
@@ -12,6 +12,10 @@ import { ILogCreditoRetiroMensajero } from '../../interfaces/creditoretiro-mensa
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { DialogReasignacion } from '../reasignaciones/reasignacion/reasignacion.component';
+import { FormBuilder, FormControl } from '@angular/forms';
+import { MessagesService } from '../../services/messages/messages.service';
+import { ConfirmationComponent } from '../../dialogs/confirmation/confirmation.component';
+import { dataConfirmation } from '../../config/dialogs.data';
 
 @Component({
   selector: 'app-solicitud-list',
@@ -24,24 +28,27 @@ export class SolicitudListComponent implements OnInit {
 
   dateEnd: number;
   dateStart: number;
-  public displayedColumns = ['Id', 'Fecha',  'TotalAPagar', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'MensajeroCelular'];
+  public displayedColumns = ['Id', 'Fecha', 'TotalAPagar', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'MensajeroCelular'];
   public Clientes;
   public dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   public ROLES;
   resultsLength = 0;
   public allSolicitudes;
   public solicitudes;
-  public Mensajeros;
+  public Mensajeros = {};
   public clientSelected;
+  public inputFilter: FormControl;
   @ViewChild('paginator') paginator: MatPaginator;
-
+  @ViewChild(MatSort) sort: MatSort;
   constructor(
     public dbService: DbService,
     private router: Router,
     private authService: AuthService,
     public dialog: MatDialog,
     public snackBar: MatSnackBar,
-    private http: HttpClient
+    private http: HttpClient,
+    private formBuilder: FormBuilder,
+    private messages: MessagesService
   ) { }
 
   ngAfterViewInit() {
@@ -62,6 +69,7 @@ export class SolicitudListComponent implements OnInit {
   ngOnInit() {
     this.ROLES = ROLES;
     this.loadInfo();
+    this.loadFilter();
   }
 
   loadInfo() {
@@ -156,15 +164,59 @@ export class SolicitudListComponent implements OnInit {
     }
   }
 
+  removeCreditosRetiro(element) {
+    const key = element.key;
+    const Motorratoner_id: string = element.payload.val().Motorratoner_id;
+    if (Motorratoner_id) {
+      this.dbService.listLogCreditoRetiroMensajeroByServicioId(Motorratoner_id, key)
+        .subscribe((logs: ILogCreditoRetiroMensajero[]): void => {
+          const p_delete = logs.map(_log => {
+            return this.dbService
+              .objectLogCreditoRetiroMensajero(Motorratoner_id, _log.$key)
+              .remove()
+          });
+          Promise.all(p_delete).then(res => {
+            this.notifySolicitudEliminada();
+          }).catch(err => {
+            console.log("Error eliminando los log de credito de retiro. ", err)
+          })
+
+        })
+    } else {
+      this.notifySolicitudEliminada();
+    }
+  }
+
+  removeLogsSolicitud(element) {
+    const key: string = element.key;
+    this.dbService.objectLogSolicitud(key).remove();
+  }
+
   openDialogDelete(element) {
     console.log(element)
     const key = element.key;
-    let dialogRef = this.dialog.open(DialogDeleteCity, {
-      width: '250px',
-      data: { action: this.dbService.objectSolicitud(key) }
-    })
+    const title: string = `Eliminar Servicio`;
+    const question: string = `Desea Eliminar el servicio ${key}`;
+    let dialogRef = this.dialog.open(ConfirmationComponent,
+      dataConfirmation(title, question));
 
     dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        this.dbService.objectSolicitud(key)
+          .remove()
+          .then(res => {
+            this.removeCreditosRetiro(element);
+            this.removeLogsSolicitud(element);
+          })
+
+      }
+    })
+    /* let dialogRef = this.dialog.open(DialogDeleteCity, {
+      width: '250px',
+      data: { action: this.dbService.objectSolicitud(key) }
+    }) */
+
+    /* dialogRef.afterClosed().subscribe(res => {
       if (res) {
         const Motorratoner_id: string = element.payload.val().Motorratoner_id;
         if (Motorratoner_id) {
@@ -178,7 +230,7 @@ export class SolicitudListComponent implements OnInit {
               Promise.all(p_delete).then(res => {
                 this.notifySolicitudEliminada();
               }).catch(err => {
-                console.log("Error eliminando los log de credito de retiro. ",err)
+                console.log("Error eliminando los log de credito de retiro. ", err)
               })
 
             })
@@ -186,7 +238,7 @@ export class SolicitudListComponent implements OnInit {
           this.notifySolicitudEliminada();
         }
       }
-    })
+    }) */
   }
 
   openDialogReAsigancion(serviceId, fechaCompra, PrevioMotorratoner_id) {
@@ -226,9 +278,20 @@ export class SolicitudListComponent implements OnInit {
   instanceTable() {
     this.dataSource.data = this.solicitudes;
     this.dataSource.paginator = this.paginator;
-
+    this.dataSource.sort = this.sort;
     this.dataSource.paginator.pageSizeOptions = [5, 10, 20];
     this.resultsLength = this.solicitudes.length;
+  }
+
+  loadFilter(): any {
+    this.inputFilter = this.formBuilder.control(null);
+
+    this.inputFilter.valueChanges
+      .debounceTime(500)
+      .distinctUntilChanged()
+      .subscribe((val: string) => {
+        this.dataSource.filter = val.trim().toLowerCase();
+      })
   }
 
   sortByDirection(key, direction) {
