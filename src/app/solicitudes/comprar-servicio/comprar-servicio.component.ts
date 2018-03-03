@@ -88,12 +88,6 @@ export class ComprarServicioComponent implements OnInit, OnDestroy {
                 Motorratoner_id: _uid
               })
             })
-            .then(()=> {
-              return this.dbService.objectLogCompraServicio(currentUserId, now).update({
-                servicio_id: _key,
-                Motorratoner_id: _uid
-              })
-            })
             .then(res => {
               this.snackBar.open('Compra Exitosa', 'Ok', {
                 verticalPosition: 'top',
