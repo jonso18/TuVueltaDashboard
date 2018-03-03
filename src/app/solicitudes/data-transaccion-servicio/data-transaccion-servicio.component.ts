@@ -22,7 +22,7 @@ export class DataTransaccionServicioComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.buildForm();
     this.emmiter();
-    this.onValid.emit(this.form.value)
+    this.onValid.emit(this.form.value);
   }
 
   ngOnDestroy(): void {
@@ -43,7 +43,7 @@ export class DataTransaccionServicioComponent implements OnInit, OnDestroy {
         Validators.min(0),
         Validators.max(60)
       ]]
-    })
+    });
   }
 
   private emmiter(): void {
@@ -52,7 +52,7 @@ export class DataTransaccionServicioComponent implements OnInit, OnDestroy {
       .distinctUntilChanged()
       .subscribe(val => {
         this.onValid.emit(this.form.value);
-      }))
+      }));
   }
 
   public getErrorMessage(Control: FormControl): string {

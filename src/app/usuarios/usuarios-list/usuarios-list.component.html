@@ -93,7 +93,7 @@
             </a>
             <a matTooltip="Agregar Creditos de No Retiro" *ngIf="element.Rol == 'Mensajero'" (click)="onClickNoRetirementCredit(element)">
               <mat-icon>
-                my_library_add
+                money_off
               </mat-icon>
             </a>
           </mat-cell>
@@ -104,7 +104,7 @@
 
       </mat-table>
     </ng-container>
-    <mat-paginator #paginator [length]="resultsLength" [pageSize]="5">
+    <mat-paginator #paginator [length]="resultsLength" [pageSize]="15">
     </mat-paginator>
   </mat-card>
 

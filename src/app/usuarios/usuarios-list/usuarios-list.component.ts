@@ -82,7 +82,7 @@ export class UsuariosListComponent implements OnInit, OnDestroy {
     });
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
-    this.dataSource.paginator.pageSizeOptions = [5, 10, 20];
+    this.dataSource.paginator.pageSizeOptions = [15, 20 , 30];
   }
 
   onClickNoRetirementCredit(user: IUser) {
@@ -98,7 +98,7 @@ export class UsuariosListComponent implements OnInit, OnDestroy {
           this.snackBar.open('Creditos de NO Retiro aumentados exitosamente', 'Ok', {
             verticalPosition: 'top',
             duration: 3000
-          })
+          });
         }
       }))
 

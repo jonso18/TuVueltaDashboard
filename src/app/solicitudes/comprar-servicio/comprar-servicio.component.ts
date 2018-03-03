@@ -34,25 +34,25 @@ export class ComprarServicioComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log("Destroying compra servicio")
+    console.log("Destroying compra servicio");
   }
 
-  buildForm(): void { 
+  buildForm(): void {
     this.form = this.formBuilder.group({
       Fecha: [null],
       Minutos: [null],
       Hora: [null],
       Mensajero: [null, [Validators.required]]
-    })
+    });
   }
 
   public onDateValid(event): void {
     console.log(event);
-    this.form.patchValue(event)
+    this.form.patchValue(event);
   }
 
   public getErrorMessage(Control: FormControl) {
-    return this.messageService.getErrorMessage(Control)
+    return this.messageService.getErrorMessage(Control);
   }
 
   public onSubmit(): void {
@@ -65,7 +65,7 @@ export class ComprarServicioComponent implements OnInit, OnDestroy {
       const _key: string = this.Id;
       const currentUserId: string = this.authService.userState.uid;
       const _uid: string = data.Mensajero;
-      const now: string = new Date().getTime().toString()
+      const now: string = new Date().getTime().toString();
       const nameMensajero: string = this.Mensajeros.filter(mensajero => {
         if (mensajero.$key == _uid) return mensajero;
       }).map(mensajero => mensajero.Nombres + ' ' + mensajero.Apellidos)[0];
