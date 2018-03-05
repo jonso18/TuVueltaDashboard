@@ -1,0 +1,51 @@
+<mat-form-field>
+    <input matInput [formControl]="inputFilter" placeholder="Filtrar">
+</mat-form-field>
+<mat-table #table [dataSource]="dataSource" matSort>
+    <!-- Id -->
+    <ng-container matColumnDef="Id">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Id. </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.$key}} </mat-cell>
+    </ng-container>
+
+    <!-- Fecha -->
+    <ng-container matColumnDef="Fecha">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Fecha </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.$key | date:'short'}} </mat-cell>
+    </ng-container>
+
+    <!-- GananciaMensajero -->
+    <ng-container matColumnDef="GananciaMensajero">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Ganancia Mensajero </mat-header-cell>
+        <mat-cell *matCellDef="let element">$ {{element.GananciaMensajero | number}} </mat-cell>
+    </ng-container>
+
+    <!-- servicio_id -->
+    <ng-container matColumnDef="servicio_id">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> servicio_id </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.servicio_id}} </mat-cell>
+    </ng-container>
+
+    <!-- Multa -->
+    <ng-container matColumnDef="Multa">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Multa </mat-header-cell>
+        <mat-cell *matCellDef="let element">$ {{element.Multa | number}} </mat-cell>
+    </ng-container>
+
+    <!-- Multa -->
+    <ng-container matColumnDef="Acciones">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Acciones </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+            <a (click)="onRemove(element)">
+                <mat-icon matTooltip="Eliminar">remove</mat-icon>
+            </a>
+        </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row [ngClass]="row.isDeleting ? 'is-deleting' : ''" *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+</mat-table>
+
+<mat-paginator #paginator [length]="resultsLength" [pageSize]="5">
+</mat-paginator>

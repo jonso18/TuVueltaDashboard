@@ -14,6 +14,16 @@ import { ReglasActivosComponent } from '../parametros/reglas-activos/reglas-acti
 import { ReasignacionComponent } from '../solicitudes/reasignaciones/reasignacion/reasignacion.component';
 import { ReportesComponent } from '../reportes/reportes/reportes.component';
 import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/reporte-clientes-servicios/reporte-clientes-servicios.component';
+import { MensajeriaComponent } from '../mensajeria/mensajeria/mensajeria.component';
+import { MensajeriaFormComponent } from '../mensajeria/mensajeria-form/mensajeria-form.component';
+import { ConfigGlobalComponent } from '../parametros/config-global/config-global.component';
+import { UsuariosComponent } from '../usuarios/usuarios/usuarios.component';
+import { UsuarioFormComponent } from '../usuarios/usuario-form/usuario-form.component';
+import { UsuariosListComponent } from '../usuarios/usuarios-list/usuarios-list.component';
+import { SeguimientoActivosComponent } from '../usuarios/seguimiento-activos/seguimiento-activos.component';
+
+import { EstadodecuentaComponent } from '../usuarios/estadodecuenta/estadodecuenta.component';
+import { TransaccionesComponent } from '../solicitudes/transacciones/transacciones.component';
 
 export const DashboardRoutes: Routes = [
     {
@@ -24,7 +34,7 @@ export const DashboardRoutes: Routes = [
                 path: 'dashboard',
                 children: [
                     {
-                        path:'',
+                        path: '',
                         redirectTo: 'inicio',
                         pathMatch: 'full'
                     },
@@ -35,10 +45,14 @@ export const DashboardRoutes: Routes = [
                     {
                         path: 'solicitud',
                         component: SolicitudComponent,
-                        children:[
+                        children: [
                             {
-                                path:'',
-                                redirectTo: 'lista',
+                                path: '',
+                                component: SolicitudListComponent
+                            },
+                            {
+                                path: 'lista',
+                                redirectTo: '',
                                 pathMatch: 'full'
                             },
                             {
@@ -46,21 +60,35 @@ export const DashboardRoutes: Routes = [
                                 component: SolicitudFormComponent
                             },
                             {
-                                path: 'lista',
-                                component: SolicitudListComponent
-                            },
-                            {
                                 path: 'hacer-reasignacion',
                                 component: ReasignacionComponent
-                            }
+                            },
+                            {
+                                path: ':id',
+                                children: [
+                                    {
+                                        path:'',
+                                        redirectTo: 'transacciones',
+                                        pathMatch: 'full'
+                                    },
+                                    {
+                                        path: 'transacciones',
+                                        component: TransaccionesComponent
+                                    }
+                                ]
+                            },
                         ]
                     },
                     {
-                        path:'parametros',
+                        path: 'parametros',
                         component: ParametrosComponent,
-                        children:[
+                        children: [
                             {
-                                path:'',
+                                path: 'Configuracion-global',
+                                component: ConfigGlobalComponent
+                            },
+                            {
+                                path: '',
                                 redirectTo: 'ciudad',
                                 pathMatch: 'full'
                             },
@@ -91,11 +119,53 @@ export const DashboardRoutes: Routes = [
                         ]
                     },
                     {
-                        path:'reportes',
-                        component: ReportesComponent,
-                        children:[
+                        path: 'Usuarios',
+                        component: UsuariosComponent,
+                        children: [
                             {
-                                path:'',
+                                path: '',
+                                component: UsuariosListComponent
+                            },
+                            {
+                                path: 'lista',
+                                redirectTo: '',
+                                pathMatch: 'full'
+                            },
+                            {
+                                path: 'seguimiento-activos',
+                                component: SeguimientoActivosComponent
+                            },
+                            {
+                                path: 'nuevo',
+                                component: UsuarioFormComponent,
+                                outlet: 'nuevo-usuario'
+                            },
+                            {
+                                path: ':id',
+                                children: [
+                                    {
+                                        path: '',
+                                        redirectTo: 'Actualizar',
+                                        pathMatch: 'full'
+                                    },
+                                    {
+                                        path: 'Actualizar',
+                                        component: UsuarioFormComponent
+                                    },
+                                    {
+                                        path: 'Estadodecuenta',
+                                        component: EstadodecuentaComponent
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        path: 'reportes',
+                        component: ReportesComponent,
+                        children: [
+                            {
+                                path: '',
                                 redirectTo: 'clientes-servicios',
                                 pathMatch: 'full'
                             },
@@ -104,11 +174,24 @@ export const DashboardRoutes: Routes = [
                                 component: ReporteClientesServiciosComponent
                             }
                         ]
+                    },
+                    {
+                        path: 'mensajeria',
+                        component: MensajeriaComponent,
+                        children: [
+                            {
+                                path: '',
+                                redirectTo: 'nuevo',
+                                pathMatch: 'full'
+                            },
+                            {
+                                path: 'nuevo',
+                                component: MensajeriaFormComponent
+                            }
+                        ]
                     }
-                    
                 ]
             }
-            
         ]
     }
 ];

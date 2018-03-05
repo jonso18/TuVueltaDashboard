@@ -14,6 +14,8 @@ import { environment } from '../../../environments/environment';
   templateUrl: './solicitud-form.component.html',
   styleUrls: ['./solicitud-form.component.css']
 })
+
+// tslint:disable-next-line:component-class-suffix
 export class SolicitudFormDialog implements OnInit {
 
   form: FormGroup;
@@ -26,21 +28,21 @@ export class SolicitudFormDialog implements OnInit {
     private http: HttpClient,
     private router: Router,
     private dbService: DbService,
-    public dialogRef: MatDialogRef<SolicitudFormDialog>, 
+    public dialogRef: MatDialogRef<SolicitudFormDialog>,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) { }
 
   ngOnInit() {
-    const isUpdating = this.isUpdating = this.data.update
-    if (!isUpdating){
+    const isUpdating = this.isUpdating = this.data.update;
+    if (!isUpdating) {
       this.loadCitys();
     }
     this.buildForm();
-    
-    console.log(this.data)
+
+    console.log(this.data);
   }
 
-  loadCitys(){
+  loadCitys() {
     this.dbService.listCiudades().subscribe(res => {
       this.Ciudades = res;
     })
@@ -62,11 +64,11 @@ export class SolicitudFormDialog implements OnInit {
       EsCotizacion: [false]
     })
 
-    if (this.isUpdating){
+    if (this.isUpdating) {
       const data = this.solicitud = this.data.snap.payload.val();
-      this.form.patchValue(data)
-      console.log(data.puntoInicio)
-      console.log(data)
+      this.form.patchValue(data);
+      console.log(data.puntoInicio);
+      console.log(data);
     }
   }
 
@@ -81,25 +83,26 @@ export class SolicitudFormDialog implements OnInit {
     data.user_id = this.isUpdating ? this.solicitud.user_id : this.authProvider.userState.uid;
     data.EsActualizacion = this.isUpdating ? true: false;
     data.servicioId = this.isUpdating ? this.data.snap.payload.key : null;
-    console.log(data)
-    const getToken = this.authProvider.userState.getIdToken()
+    console.log(data);
+    const getToken = this.authProvider.userState.getIdToken();
     const newSolicitud = getToken.then(token => {
       data.idToken = token;
-      console.log(token)
-      //alert(data)
+      console.log(token);
+      // alert(data)
       return this.newSolicitud(data).toPromise();
-    })
+    });
     const response = newSolicitud.then(response => {
-      // alert('Servicio recibido exitosamente,' + ' ' + 'Codigo de la solicitud: ' + response.servicio_id + ' ' + ', El costo del servicio es de ' + response.servicio.TotalAPagar);
-      //console.log(response)
-      this.router.navigateByUrl("/dashboard/solicitud/lista");
+      alert('Servicio recibido exitosamente,' + ' ' + 'Codigo de la solicitud: '
+      + response.servicio_id + ' ' + ', El costo del servicio es de ' + response.servicio.TotalAPagar);
+      // console.log(response)
+      this.router.navigateByUrl('/dashboard/solicitud/lista');
       console.log(response);
-      
-      if (this.isUpdating){
+
+      if (this.isUpdating) {
         this.dialogRef.close(response);
       }
     }).catch(err => {
-      if (this.isUpdating){
+      if (this.isUpdating) {
         this.dialogRef.close(err);
       }
       console.log(err)
@@ -116,21 +119,21 @@ export class SolicitudFormDialog implements OnInit {
 
     const _body = body;
 
-    return this.http.post(url, _body, httpOptions)
+    return this.http.post(url, _body, httpOptions);
   }
 
-  get puntoInicio() { return this.form.get('puntoInicio') }
-  get puntoFinal() { return this.form.get('puntoFinal') }
-  get esPagoConTarjeta() { return this.form.get('esPagoConTarjeta') }
-  get Nombres() { return this.form.get('Nombres') }
-  get Apellidos() { return this.form.get('Apellidos') }
-  get Telefono() { return this.form.get('Telefono') }
-  get Celular() { return this.form.get('Celular') }
-  get ValorDomicilio() { return this.form.get('ValorDomicilio') }
-  get codigoCiudad() { return this.form.get('codigoCiudad') }
-  get Descripcion() { return this.form.get('Descripcion') }
-  get DescripcionDomicilio() { return this.form.get('DescripcionDomicilio') }
-  get EsCotizacion() { return this.form.get('EsCotizacion') }
+  get puntoInicio() { return this.form.get('puntoInicio'); }
+  get puntoFinal() { return this.form.get('puntoFinal'); }
+  get esPagoConTarjeta() { return this.form.get('esPagoConTarjeta'); }
+  get Nombres() { return this.form.get('Nombres'); }
+  get Apellidos() { return this.form.get('Apellidos'); }
+  get Telefono() { return this.form.get('Telefono'); }
+  get Celular() { return this.form.get('Celular'); }
+  get ValorDomicilio() { return this.form.get('ValorDomicilio'); }
+  get codigoCiudad() { return this.form.get('codigoCiudad'); }
+  get Descripcion() { return this.form.get('Descripcion'); }
+  get DescripcionDomicilio() { return this.form.get('DescripcionDomicilio'); }
+  get EsCotizacion() { return this.form.get('EsCotizacion'); }
 }
 
 
@@ -145,7 +148,7 @@ export class SolicitudFormComponent implements OnInit {
 
   form: FormGroup;
   public Ciudades: ICiudad[];
-  
+
   public solicitud;
   constructor(
     private formBuilder: FormBuilder,
@@ -160,10 +163,10 @@ export class SolicitudFormComponent implements OnInit {
     this.buildForm();
   }
 
-  loadCitys(){
+  loadCitys() {
     this.dbService.listCiudades().subscribe(res => {
       this.Ciudades = res;
-    })
+    });
   }
 
   buildForm() {
@@ -180,7 +183,7 @@ export class SolicitudFormComponent implements OnInit {
       Descripcion: ['sin descripcion', [Validators.required]],
       DescripcionDomicilio: ['sin descripcion', [Validators.required]],
       EsCotizacion: [false]
-    })
+    });
   }
 
   onSubmit() {
@@ -192,23 +195,24 @@ export class SolicitudFormComponent implements OnInit {
   doRequest() {
     let data = this.form.value;
     data.user_id = this.authProvider.userState.uid;
-    console.log(data)
-    const getToken = this.authProvider.userState.getIdToken()
+    console.log(data);
+    const getToken = this.authProvider.userState.getIdToken();
     const newSolicitud = getToken.then(token => {
       data.idToken = token;
       console.log(token)
-      //alert(data)
+      // alert(data)
       return this.newSolicitud(data).toPromise();
-    })
+    });
     const response = newSolicitud.then(response => {
-      // alert('Servicio recibido exitosamente,' + ' ' + 'Codigo de la solicitud: ' + response.servicio_id + ' ' + ', El costo del servicio es de ' + response.servicio.TotalAPagar);
-      //console.log(response)
-      this.router.navigateByUrl("/dashboard/solicitud/lista");
+      alert('Servicio recibido exitosamente,' + ' ' + 'Codigo de la solicitud: ' 
+      + response.servicio_id + ' ' + ', El costo del servicio es de ' + response.servicio.TotalAPagar);
+      // console.log(response)
+      this.router.navigateByUrl('/dashboard/solicitud/lista');
       console.log(response);
-      
+
     }).catch(err => {
-      console.log(err)
-    })
+      console.log(err);
+    });
   }
 
   public newSolicitud(body) {
@@ -217,23 +221,23 @@ export class SolicitudFormComponent implements OnInit {
         'Content-Type': 'application/json',
       })
     };
-    const url = environment.baseapi.tuvuelta+ 'api/solicitudes';
+    const url = environment.baseapi.tuvuelta + 'api/solicitudes';
 
     const _body = body;
 
-    return this.http.post(url, _body, httpOptions)
+    return this.http.post(url, _body, httpOptions);
   }
 
-  get puntoInicio() { return this.form.get('puntoInicio') }
-  get puntoFinal() { return this.form.get('puntoFinal') }
-  get esPagoConTarjeta() { return this.form.get('esPagoConTarjeta') }
-  get Nombres() { return this.form.get('Nombres') }
-  get Apellidos() { return this.form.get('Apellidos') }
-  get Telefono() { return this.form.get('Telefono') }
-  get Celular() { return this.form.get('Celular') }
-  get ValorDomicilio() { return this.form.get('ValorDomicilio') }
-  get codigoCiudad() { return this.form.get('codigoCiudad') }
-  get Descripcion() { return this.form.get('Descripcion') }
-  get DescripcionDomicilio() { return this.form.get('DescripcionDomicilio') }
-  get EsCotizacion() { return this.form.get('EsCotizacion') }
+  get puntoInicio() { return this.form.get('puntoInicio'); }
+  get puntoFinal() { return this.form.get('puntoFinal'); }
+  get esPagoConTarjeta() { return this.form.get('esPagoConTarjeta'); }
+  get Nombres() { return this.form.get('Nombres'); }
+  get Apellidos() { return this.form.get('Apellidos'); }
+  get Telefono() { return this.form.get('Telefono'); }
+  get Celular() { return this.form.get('Celular'); }
+  get ValorDomicilio() { return this.form.get('ValorDomicilio'); }
+  get codigoCiudad() { return this.form.get('codigoCiudad'); }
+  get Descripcion() { return this.form.get('Descripcion'); }
+  get DescripcionDomicilio() { return this.form.get('DescripcionDomicilio'); }
+  get EsCotizacion() { return this.form.get('EsCotizacion'); }
 }

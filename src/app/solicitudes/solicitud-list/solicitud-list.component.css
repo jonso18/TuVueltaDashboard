@@ -1,0 +1,18 @@
+.w-100{
+    width: 100%;
+}
+.table-solicitudes{
+    display: flex;
+  flex-direction: column;
+  min-width: 300px;
+}
+
+.filtros{
+    min-height: 64px;
+  padding: 8px 24px 0;
+  background: white;
+}
+.mat-table {
+    overflow: auto;
+    max-height: 500px;
+  }

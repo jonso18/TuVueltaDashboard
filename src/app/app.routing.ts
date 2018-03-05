@@ -12,7 +12,7 @@ export const AppRoutes: Routes = [
   {
       path: '',
       component: AdminLayoutComponent,
-      canActivate: [AuthGuardService], //added canActivate and AuthGuard service
+      canActivate: [AuthGuardService], // added canActivate and AuthGuard service
       children: [
           {
               path: '',
@@ -24,7 +24,7 @@ export const AppRoutes: Routes = [
       path: '',
       component: AuthLayoutComponent,
       children: [{
-          path: 'pages', //login page still under "pages" folder as the original code
+          path: 'pages', // login page still under "pages" folder as the original code
           loadChildren: './pages/pages.module#PagesModule'
         }]
     }

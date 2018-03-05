@@ -1,0 +1,26 @@
+agm-map {
+    height: 245px;
+}
+
+:host{
+    position: relative;
+    top: 50px
+}
+
+mat-form-field{
+    width: 100%
+}
+
+.remove-point-button{
+    position: absolute;
+    float: right;
+    right: 23px;
+    margin-top: -16px;
+    z-index: 1;
+}
+
+.card-summary,
+.card-form{
+    margin-top: 0.5em; 
+    margin-bottom: 1.5em;
+}

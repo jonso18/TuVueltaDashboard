@@ -23,6 +23,25 @@ import { ParametrosComponent } from '../parametros/parametros/parametros.compone
 import { ReasignacionComponent, DialogReasignacion } from '../solicitudes/reasignaciones/reasignacion/reasignacion.component';
 import { ReportesComponent } from '../reportes/reportes/reportes.component';
 import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/reporte-clientes-servicios/reporte-clientes-servicios.component';
+import { MensajeriaFormComponent, DialogOnClickMap } from '../mensajeria/mensajeria-form/mensajeria-form.component';
+import { MensajeriaComponent } from '../mensajeria/mensajeria/mensajeria.component';
+import { AgmCoreModule } from '@agm/core';
+import { environment } from '../../environments/environment';
+import { ConfigGlobalComponent } from '../parametros/config-global/config-global.component';
+import { UsuarioFormComponent } from '../usuarios/usuario-form/usuario-form.component';
+import { UsuariosComponent } from '../usuarios/usuarios/usuarios.component';
+import { UsuariosListComponent } from '../usuarios/usuarios-list/usuarios-list.component';
+import { SeguimientoActivosComponent } from '../usuarios/seguimiento-activos/seguimiento-activos.component';
+import { RelanzamientosComponent } from '../usuarios/relanzamientos/relanzamientos.component';
+import { EstadodecuentaComponent } from '../usuarios/estadodecuenta/estadodecuenta.component';
+import { RetirosComponent } from '../usuarios/retiros/retiros.component';
+import { LogEquipamientoComponent } from '../usuarios/log-equipamiento/log-equipamiento.component';
+import { ConfirmationComponent } from '../dialogs/confirmation/confirmation.component';
+import { TransaccionesComponent } from '../solicitudes/transacciones/transacciones.component';
+import { ComprarServicioComponent } from '../solicitudes/comprar-servicio/comprar-servicio.component';
+import { DataTransaccionServicioComponent } from '../solicitudes/data-transaccion-servicio/data-transaccion-servicio.component';
+import { CambiarEstadoServicioComponent } from '../solicitudes/cambiar-estado-servicio/cambiar-estado-servicio.component';
+import { NoRetirementCreditDialogComponent } from '../dialogs/no-retirement-credit-dialog/no-retirement-credit-dialog.component';
 
 @NgModule({
     imports: [
@@ -33,7 +52,10 @@ import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/
         MdModule,
         MaterialModule,
         HttpClientModule,
-        NgHttpLoaderModule
+        NgHttpLoaderModule,
+        AgmCoreModule.forRoot({
+            apiKey: environment.google.maps
+        })
     ],
 
     declarations: [
@@ -41,26 +63,47 @@ import { ReporteClientesServiciosComponent } from '../reportes/reporte-clientes/
         SolicitudComponent,
         SolicitudFormComponent,
         SolicitudListComponent,
-        ParametrosComponent, 
-        CiudadesComponent, 
-        TarifasComponent, 
-        GananciasComponent, 
-        EstadosDomiciliosComponent, 
-        EquipamientoComponent, 
+        ParametrosComponent,
+        CiudadesComponent,
+        TarifasComponent,
+        GananciasComponent,
+        EstadosDomiciliosComponent,
+        EquipamientoComponent,
         ReglasActivosComponent,
         DialogNewCity,
         DialogDeleteCity,
         ReasignacionComponent,
         DialogReasignacion,
-        ReporteClientesServiciosComponent, 
+        ReporteClientesServiciosComponent,
         ReportesComponent,
-        SolicitudFormDialog
+        SolicitudFormDialog,
+        MensajeriaFormComponent,
+        MensajeriaComponent,
+        DialogOnClickMap,
+        ConfigGlobalComponent,
+        UsuarioFormComponent,
+        UsuariosComponent,
+        UsuariosListComponent,
+        SeguimientoActivosComponent,
+        RelanzamientosComponent,
+        EstadodecuentaComponent,
+        RetirosComponent,
+        LogEquipamientoComponent,
+        ConfirmationComponent,
+        TransaccionesComponent,
+        ComprarServicioComponent,
+        DataTransaccionServicioComponent,
+        CambiarEstadoServicioComponent,
+        NoRetirementCreditDialogComponent
     ],
-    entryComponents:[
+    entryComponents: [
         DialogNewCity,
         DialogDeleteCity,
         DialogReasignacion,
-        SolicitudFormDialog
+        SolicitudFormDialog,
+        DialogOnClickMap,
+        ConfirmationComponent,
+        NoRetirementCreditDialogComponent
     ]
 })
 

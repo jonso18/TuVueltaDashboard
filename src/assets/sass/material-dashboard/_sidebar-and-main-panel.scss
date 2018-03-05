@@ -244,10 +244,10 @@
         }
 
         .simple-text{
-            text-transform: uppercase;
+            // text-transform: uppercase;
             padding: $padding-small-vertical $padding-zero;
             display: block;
-            font-size: $font-size-large;
+            font-size: 42px;
             color: $black-color;
             text-align: center;
             white-space: nowrap;
@@ -255,7 +255,24 @@
             line-height: 30px;
             overflow: hidden;
             @extend .animation-transition-general;
+            font-family: coolvetica Rg;
         }
+
+        .simple-text2{
+            // text-transform: uppercase;
+            padding: $padding-small-vertical $padding-zero;
+            display: block;
+            font-size: 14px;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            font-weight: $font-weight-default;
+            line-height: 30px;
+            overflow: hidden;
+            @extend .animation-transition-general;
+            font-family: coolvetica Rg;
+        }
+        
 
         .logo-normal{
             @extend .animation-transition-general;
@@ -415,7 +432,7 @@
     @include transition (0.33s, cubic-bezier(0.685, 0.0473, 0.346, 1));
 
     .main-content{
-        margin-top: 70px;
+        margin-top: 10px;
         padding: 30px 15px;
         min-height: calc(100vh - 123px);
 

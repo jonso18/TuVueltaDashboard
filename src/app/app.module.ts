@@ -11,7 +11,7 @@ import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
 import { environment } from '../environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { 
+import {
   MatAutocompleteModule,
   MatButtonModule,
   MatButtonToggleModule,
@@ -51,11 +51,11 @@ import { AppComponent } from './app.component';
 import { AppRoutes } from './app.routing';
 
 
-//services
+// services
 import { AuthGuardService } from './services/auth-guard.service';
 
 
-//components
+// components
 
 import { SidebarModule } from './sidebar/sidebar.module';
 import { FooterModule } from './shared/footer/footer.module';
@@ -68,7 +68,13 @@ import { DbService } from './services/db/db.service';
 import { ReasignacionComponent } from './solicitudes/reasignaciones/reasignacion/reasignacion.component';
 import { ReporteClientesServiciosComponent } from './reportes/reporte-clientes/reporte-clientes-servicios/reporte-clientes-servicios.component';
 import { ReportesComponent } from './reportes/reportes/reportes.component';
+import { HttpClientModule } from '@angular/common/http';
 
+
+import { ToastrModule } from 'ngx-toastr';
+import { ToastConfig } from './config/Toast';
+import { GlobalTasksService } from './services/global-tasks/global-tasks.service';
+import { MessagesService } from './services/messages/messages.service';
 
 
 
@@ -123,6 +129,7 @@ export class MaterialModule {}
     FormsModule,
     RouterModule.forRoot(AppRoutes),
     HttpModule,
+    HttpClientModule,
     MaterialModule,
     MatNativeDateModule,
     SidebarModule,
@@ -131,12 +138,15 @@ export class MaterialModule {}
     FixedpluginModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
-    AngularFireAuthModule 
+    AngularFireAuthModule,
+    ToastrModule.forRoot(ToastConfig)
   ],
   providers: [
     AuthGuardService,
     AuthService,
-    DbService
+    DbService,
+    GlobalTasksService,
+    MessagesService
   ],
   bootstrap: [AppComponent]
 })

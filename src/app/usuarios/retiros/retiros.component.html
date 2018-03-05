@@ -1,0 +1,50 @@
+<mat-form-field>
+    <input matInput [formControl]="inputFilter" placeholder="Filtrar">
+</mat-form-field>
+<mat-table #table [dataSource]="dataSource" matSort>
+    <!-- Id -->
+    <ng-container matColumnDef="Id">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Id. </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.$key}} </mat-cell>
+    </ng-container>
+
+    <!-- Fecha -->
+    <ng-container matColumnDef="Fecha">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Fecha </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.$key | date:'short'}} </mat-cell>
+    </ng-container>
+
+    <!-- Estado -->
+    <ng-container matColumnDef="Estado">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Estado </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.Estado}} </mat-cell>
+    </ng-container>
+
+    <!-- MontoARetirar -->
+    <ng-container matColumnDef="MontoARetirar">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Monto a Retirar </mat-header-cell>
+        <mat-cell *matCellDef="let element">$ {{element.MontoARetirar | number}} </mat-cell>
+    </ng-container>
+
+    <!-- Multa -->
+    <ng-container matColumnDef="Acciones">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Acciones </mat-header-cell>
+        <mat-cell *matCellDef="let element">
+            <div class="text-center" *ngIf="element.Estado == 'Pendiente'">
+                <a (click)="onPass(element)">
+                    <mat-icon matTooltip="Aprobar">check_circle</mat-icon>
+                </a>
+                <a (click)="onCancel(element)">
+                    <mat-icon matTooltip="Cancelar">cancel</mat-icon>
+                </a>
+            </div>
+        </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row [ngClass]="row.isDeleting ? 'is-deleting' : ''" *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+</mat-table>
+
+<mat-paginator #paginator [length]="resultsLength" [pageSize]="5">
+</mat-paginator>
