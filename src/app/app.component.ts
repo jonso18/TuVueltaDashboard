@@ -5,6 +5,7 @@ import { DbService } from './services/db/db.service';
 import { ROLES } from './config/Roles';
 import { Router } from '@angular/router';
 import { ESTADOS_USUARIO } from './config/EstadosUsuario';
+import { GlobalTasksService } from './services/global-tasks/global-tasks.service';
 
 declare var $: any;
 
@@ -19,7 +20,8 @@ export class AppComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private dbService: DbService,
-    private router: Router
+    private router: Router,
+    private globalTasksService: GlobalTasksService
   ) {  }
 
   ngOnInit(){
@@ -30,6 +32,7 @@ export class AppComponent implements OnInit {
   private loadUserData():void {
     // Suscripcion al estado actual del login
     this.authService.authState().subscribe(_authState => {
+      this.globalTasksService.stopTasks();
       const isLoggin = _authState ? true : false;
       this.authService.userState = _authState;
       if (!isLoggin) {
@@ -37,7 +40,8 @@ export class AppComponent implements OnInit {
         this.router.navigateByUrl('/pages/login')
       }else {
         // Get user info
-        this.subUserInfo = this.dbService.objectUserInfo().snapshotChanges().subscribe(_userInfo => {
+        this.authService.subUserInfo = this.dbService.objectUserInfo().snapshotChanges().subscribe(_userInfo => {
+          this.globalTasksService.stopTasks();
           const info = this.authService.userInfo = _userInfo.payload.val();
           //console.log(info)
           if (info){
@@ -45,12 +49,17 @@ export class AppComponent implements OnInit {
             if (info.Estado === ESTADOS_USUARIO.Activo){
               if (info.Rol === ROLES.Administrador){
                 // Navigate to Administrator root url
-
-                return this.router.navigateByUrl('/dashboard/reportes/clientes-servicios')
+                this.globalTasksService.startTasks();
+                return this.router.navigateByUrl('/dashboard');
               }else if (info.Rol === ROLES.Cliente){
                 // Navigate to Cliente root url
-                return this.router.navigateByUrl('/dashboard')
-              }else {
+                return this.router.navigateByUrl('/dashboard');
+              }else if (info.Rol === ROLES.Operador){
+                // Navigate to Cliente root url
+                return this.router.navigateByUrl('/dashboard');
+              } 
+              
+              else {
                 // Navigate to No Authorized User
                 this.authService.logout().then(res => alert("Usuario no Autorizado"))
                 return this.router.navigateByUrl('/pages/login')

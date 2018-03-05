@@ -14,6 +14,13 @@
   <mat-table #table [dataSource]="dataSource" *ngIf="dataSource && Mensajeros" matSort (matSortChange)="sortData($event)">
     <!-- ['Fecha', 'Nombres', 'Apellidos', 'Celular', 'Telefono', 'PagoConTarjeta', 'Distancia', 'Punto Inicio', 'Punto Final', 'Estado']; -->
     <!-- Position Column -->
+    
+     <!-- Fecha -->
+     <ng-container matColumnDef="Id">
+      <mat-header-cell *matHeaderCellDef> Id. </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.key}} </mat-cell>
+    </ng-container>
+   
     <!-- Fecha -->
     <ng-container matColumnDef="Fecha">
       <mat-header-cell *matHeaderCellDef mat-sort-header="key"> Fecha. </mat-header-cell>
@@ -70,13 +77,13 @@
       </mat-cell>
     </ng-container>
 
-    <!-- PlacaVehiculo -->
+    <!-- PlacaVehiculo 
     <ng-container matColumnDef="PlacaVehiculo">
       <mat-header-cell *matHeaderCellDef> Placa Vehiculo </mat-header-cell>
       <mat-cell *matCellDef="let element">
         <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].PlacaVehiculo }}</span>
       </mat-cell>
-    </ng-container>
+    </ng-container>-->
 
     <!-- MensajeroCelular -->
     <ng-container matColumnDef="MensajeroCelular">
@@ -92,6 +99,7 @@
       <mat-cell *matCellDef="let element">
         <span>
           <button mat-raised-button color="primary" (click)="openDialog(element.payload.key, element.payload.val().fechaCompra, element.payload.val().Motorratoner_id)">Reasignar</button>
+          <button mat-raised-button color="warn" (click)="openDialogDelete(element)">Eliminar</button>
         </span>
       </mat-cell>
     </ng-container>
@@ -100,6 +108,6 @@
     <mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="row.payload.val().Reasignando? 'reasignando': ''"></mat-row>
   </mat-table>
 
-  <mat-paginator #paginator [length]="resultsLength" [pageSize]="5">
+  <mat-paginator #paginator [length]="resultsLength" [pageSize]="10">
   </mat-paginator>
 </div>

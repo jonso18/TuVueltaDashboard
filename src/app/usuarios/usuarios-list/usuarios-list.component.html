@@ -1,0 +1,111 @@
+<div class="container-fluid">
+  <mat-card>
+    <ng-container *ngIf="dataSource">
+      <mat-form-field>
+        <input matInput [formControl]="inputFilter" placeholder="Filtrar">
+      </mat-form-field>
+      <mat-table #table [dataSource]="dataSource" matSort>
+        <!-- Id -->
+        <ng-container matColumnDef="Id">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Id. </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.$key}} </mat-cell>
+        </ng-container>
+
+        <!-- Nombres -->
+        <ng-container matColumnDef="Nombres">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Nombres </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.Nombres}} </mat-cell>
+        </ng-container>
+
+        <!-- Apellidos -->
+        <ng-container matColumnDef="Apellidos">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Apellidos </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.Apellidos}} </mat-cell>
+        </ng-container>
+
+        <!-- Estado -->
+        <ng-container matColumnDef="Estado">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Estado </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.Estado}} </mat-cell>
+        </ng-container>
+
+        <!-- Cedula -->
+        <ng-container matColumnDef="Cedula">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Cédula </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.Cedula}} </mat-cell>
+        </ng-container>
+
+        <!-- Celular -->
+        <ng-container matColumnDef="Celular">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Celular </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.Celular}} </mat-cell>
+        </ng-container>
+
+        <!-- CelularFijo -->
+        <ng-container matColumnDef="CelularFijo">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> CelularFijo </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.CelularFijo}} </mat-cell>
+        </ng-container>
+
+        <!-- Ciudad -->
+        <ng-container matColumnDef="Ciudad">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Ciudad </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.Ciudad}} </mat-cell>
+        </ng-container>
+
+        <!-- Correo -->
+        <ng-container matColumnDef="Correo">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Correo </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.Correo}} </mat-cell>
+        </ng-container>
+
+        <!-- TipoVehiculo -->
+        <ng-container matColumnDef="TipoVehiculo">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Tipo Vehiculo </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.TipoVehiculo}} </mat-cell>
+        </ng-container>
+
+        <!-- PlacaVehiculo -->
+        <ng-container matColumnDef="PlacaVehiculo">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Placa Vehiculo </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.PlacaVehiculo}} </mat-cell>
+        </ng-container>
+
+        <!-- PlacaVehiculo -->
+        <ng-container matColumnDef="Rol">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Rol</mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.Rol}} </mat-cell>
+        </ng-container>
+
+        <!-- PlacaVehiculo -->
+        <ng-container matColumnDef="Acciones">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            <a matTooltip="Actualizar" [routerLink]="[element.$key]">
+              <mat-icon>
+                update
+              </mat-icon>
+            </a>
+            <a matTooltip="Ver Relanzamientos" [routerLink]="[element.$key, 'Estadodecuenta']">
+              <mat-icon>
+                cached
+              </mat-icon>
+            </a>
+            <a matTooltip="Agregar Creditos de No Retiro" *ngIf="element.Rol == 'Mensajero'" (click)="onClickNoRetirementCredit(element)">
+              <mat-icon>
+                money_off
+              </mat-icon>
+            </a>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row [ngClass]="{'user-active': (row.Estado == EU.Activo), 'user-inactive': (row.Estado == EU.Inactivo), 'user-block': (row.Estado == EU.Bloqueado)}" *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+      </mat-table>
+    </ng-container>
+    <mat-paginator #paginator [length]="resultsLength" [pageSize]="15">
+    </mat-paginator>
+  </mat-card>
+
+</div>

@@ -1,0 +1,17 @@
+:host{
+    top: 100px;
+    position: relative;
+}
+
+.text-center{
+    text-align: center;
+}
+
+.mat-form-field{
+    width: 100%
+}
+
+
+mat-card{
+    overflow: auto;
+}

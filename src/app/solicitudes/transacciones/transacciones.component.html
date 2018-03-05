@@ -1,0 +1,192 @@
+<div class="col-md-12">
+  <div class="card">
+    <div class="card-header card-header-text" data-background-color="blue">
+      <h4 class="card-title">Transacciones de Solicitud</h4>
+      <p class="category">
+        Solicitud
+        <strong>{{ Id$ | async }}</strong>
+      </p>
+    </div>
+    <div class="card-content">
+      <ng-container *ngIf="Data$ | async as Data">
+        <div>
+          <h3>Detalles de la Solicitud</h3>
+
+          <div class="row">
+            <div class="col-sm-8">
+              <div>
+                <mat-list>
+                  <h3 mat-subheader>Detalles Generales</h3>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon>person</mat-icon>
+                    <h4 mat-line>Nombres y Apellidos</h4>
+                    <p mat-line> {{Data[0].Nombres + ' ' + Data[0].Apellidos}} </p>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon>settings_phone</mat-icon>
+                    <h4 mat-line>Contacto</h4>
+                    <p mat-line>
+                      <strong>Telefono: </strong> {{Data[0].Telefono}} </p>
+                    <p mat-line>
+                      <strong>Celular: </strong> {{Data[0].Celular}} </p>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon>description</mat-icon>
+                    <h4 mat-line>Descripcion</h4>
+                    <p class="no-trim-text" mat-line> {{Data[0].Descripcion}} </p>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon>find_in_page</mat-icon>
+                    <h4 mat-line>Descripcion del Domicilio</h4>
+                    <p class="no-trim-text" mat-line> {{Data[0].DescripcionDomicilio}} </p>
+                  </mat-list-item>
+                </mat-list>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <mat-list>
+                    <h3 mat-subheader>Informacion de localizacion</h3>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>location_on</mat-icon>
+                      <h4 mat-line>Punto de Inicio</h4>
+                      <p mat-line>
+                        {{Data[0].puntoInicio}}
+                      </p>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>location_on</mat-icon>
+                      <h4 mat-line>Punto Final</h4>
+                      <p mat-line>
+                        {{Data[0].puntoFinal}}
+                      </p>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>location_city</mat-icon>
+                      <h4 mat-line>Ciudad</h4>
+                      <p mat-line> {{Data[0].Ciudad}} </p>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>directions_bike</mat-icon>
+                      <h4 mat-line>Distancia Ida</h4>
+                      <p mat-line *ngIf="Data[0].distanciaIda">
+                        {{Data[0].distanciaIda.text }}
+                      </p>
+                    </mat-list-item>
+                  </mat-list>
+                </div>
+                <div class="col-sm-6">
+                  <mat-list>
+                    <h3 mat-subheader>Informacion del Pedido</h3>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>date_range</mat-icon>
+                      <h4 mat-line>Fecha de Solicitud</h4>
+                      <p mat-line>
+                        {{Data[0].$key | date:'short' }}
+                      </p>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>credit_card</mat-icon>
+                      <h4 mat-line>Es pago con Tarjeta</h4>
+                      <p mat-line>
+                        {{Data[0].esPagoConTarjeta ? 'Si' : 'No' }}
+                      </p>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>menu</mat-icon>
+                      <h4 mat-line>Valor Domicilio</h4>
+                      <p mat-line>
+                        $ {{Data[0].ValorDomicilio | number }}
+                      </p>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>attach_money</mat-icon>
+                      <h4 mat-line>Total A Pagar</h4>
+                      <p mat-line>$ {{Data[0].TotalAPagar | number}} </p>
+                    </mat-list-item>
+                  </mat-list>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <mat-list>
+                <h3 mat-subheader>Informacion del servicio</h3>
+                <mat-list-item>
+                  <mat-icon mat-list-icon>linear_scale</mat-icon>
+                  <h4 mat-line>Estado</h4>
+                  <p mat-line> {{Data[0].Estado}} </p>
+                </mat-list-item>
+                <mat-list-item *ngIf="Data[0].BonoRelanzamiento">
+                  <mat-icon mat-list-icon>attach_money</mat-icon>
+                  <h4 mat-line>Bono Relanzamiento</h4>
+                  <p mat-line> $ {{Data[0].BonoRelanzamiento | number}} </p>
+                </mat-list-item>
+
+
+                <!-- Info Cliente -->
+                <ng-container *ngIf="Data[1]">
+                  <h3 mat-subheader>Informacion del Cliente</h3>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon>person</mat-icon>
+                    <h4 mat-line>Nombres y APellidos</h4>
+                    <p mat-line> {{Data[1].Nombres + ' ' + Data[1].Apellidos}} </p>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon>settings_phone</mat-icon>
+                    <h4 mat-line>Contacto</h4>
+                    <p mat-line>
+                      <strong>Celular: </strong> {{Data[1].Celular}} </p>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon>mail</mat-icon>
+                    <h4 mat-line>Correo</h4>
+                    <p mat-line>{{Data[1].Correo}} </p>
+                  </mat-list-item>
+                </ng-container>
+
+
+                <!-- Info Mensajero -->
+                <ng-container *ngIf="Data[2]">
+                  <h3 mat-subheader>Informacion del Mensajero</h3>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon>person</mat-icon>
+                    <h4 mat-line>Nombres y APellidos</h4>
+                    <p mat-line> {{Data[2].Nombres + ' ' + Data[2].Apellidos}} </p>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon>settings_phone</mat-icon>
+                    <h4 mat-line>Contacto</h4>
+                    <p mat-line>
+                      <strong>Celular: </strong> {{Data[2].Celular}} </p>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-icon mat-list-icon>mail</mat-icon>
+                    <h4 mat-line>Correo</h4>
+                    <p mat-line>{{Data[2].Correo}} </p>
+                  </mat-list-item>
+                </ng-container>
+
+              </mat-list>
+            </div>
+          </div>
+
+        </div>
+        <mat-tab-group #tabRelanzamiento *ngIf="Mensajeros$ | async as Mensajeros" [dynamicHeight]="true">
+          <mat-tab label="Comprar un Servcio" *ngIf="Data[0].Estado == 'Pendiente'; else noPendingService">
+            <app-comprar-servicio [Mensajeros]="Mensajeros" [Id]="Id$ | async"></app-comprar-servicio>
+          </mat-tab>
+          <ng-template #noPendingService>
+            <ng-container *ngIf="Data[0].Estado != ESTADOS_SERVICIO.Finalizado">
+              <ng-container *ngIf="EstadosServicio$ | async as EstadosServicio ">
+                <mat-tab label="Cambio de Estado">
+                  <app-cambiar-estado-servicio [Solicitud]="Data[0]" [Estados]="EstadosServicio" [Id]="Id$ | async"></app-cambiar-estado-servicio>
+                </mat-tab>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+
+        </mat-tab-group>
+      </ng-container>
+
+    </div>
+  </div>
+</div>

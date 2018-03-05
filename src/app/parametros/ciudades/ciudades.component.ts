@@ -44,14 +44,16 @@ export class CiudadesComponent implements OnInit, OnDestroy {
   }
 
   addCity(city) {
+    console.log('Adding city', city)
     this.Citys.push(this.formBuilder.group({
-      Codigo:   [{value: city.Codigo, disabled: true}],
+      Codigo:   [city.Codigo],
       Nombre:   [city.Nombre, Validators.required],
       Prefijo:  [city.Prefijo, Validators.required]
     }))
   }
 
   update(city: ICiudad) {
+    console.log(city)
     const key = city.Codigo;
     const data: ICiudad = city;
     delete data.Codigo;
@@ -66,6 +68,7 @@ export class CiudadesComponent implements OnInit, OnDestroy {
   }
 
   delete(city: ICiudad) {
+    
     const key = city.Codigo;
     let dialogRef = this.dialog.open(DialogDeleteCity, {
       width: '250px',
