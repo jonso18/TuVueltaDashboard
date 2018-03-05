@@ -51,9 +51,6 @@ export class SolicitudListComponent implements OnInit {
     private messages: MessagesService
   ) { }
 
-  ngAfterViewInit() {
-
-  }
 
   loadClients() {
     const rol = ROLES.Cliente
@@ -87,25 +84,25 @@ export class SolicitudListComponent implements OnInit {
 
   loadSolicitudes() {
     this.dbService.listSolicitudes().subscribe(res => {
-      this.solicitudes = this.allSolicitudes = res;
+      this.solicitudes = res.reverse();
       this.instanceTable();
-    })
+    });
   }
 
   loadAllSolicitudes() {
     this.dbService.listAllSolicitudes().subscribe(res => {
-      this.solicitudes = this.allSolicitudes = res;
+      this.solicitudes = this.allSolicitudes = res.reverse();
       this.instanceTable();
     })
   }
 
   applyFilter() {
     if (!this.clientSelected) {
-      this.solicitudes = this.allSolicitudes
+      this.solicitudes = this.allSolicitudes;
     } else {
       this.solicitudes = this.allSolicitudes.filter(item => {
-        if (item.payload.val().user_id == this.clientSelected.$key) {
-          return item
+        if (item.payload.val().user_id === this.clientSelected.$key) {
+          return item.reverse();
         }
       })
     }
@@ -113,7 +110,7 @@ export class SolicitudListComponent implements OnInit {
     if (this.dateStart) {
       this.solicitudes = this.solicitudes.filter(item => {
         if (item.key > this.dateStart) {
-          return item
+          return item.reverse();
         }
       })
     }
@@ -121,7 +118,7 @@ export class SolicitudListComponent implements OnInit {
     if (this.dateEnd) {
       this.solicitudes = this.solicitudes.filter(item => {
         if (item.key < this.dateEnd) {
-          return item
+          return item.reverse();
         }
       })
     }
@@ -130,13 +127,13 @@ export class SolicitudListComponent implements OnInit {
   }
 
   pickerStart(type: string, event: MatDatepickerInputEvent<Date>) {
-    console.log(new Date(event.value))
+    // console.log(new Date(event.value))
     this.dateStart = new Date(event.value).getTime();
     this.applyFilter();
   }
 
   pickerEnd(type: string, event: MatDatepickerInputEvent<Date>) {
-    console.log(new Date(event.value))
+    // console.log(new Date(event.value))
     this.dateEnd = new Date(event.value).getTime();
     this.applyFilter();
   }
@@ -153,7 +150,7 @@ export class SolicitudListComponent implements OnInit {
   }
 
   sortData(event) {
-    console.log(event)
+    // console.log(event)
     switch (event.active) {
       case 'key':
         this.sortByDirection('key', event.direction);
@@ -193,7 +190,7 @@ export class SolicitudListComponent implements OnInit {
   }
 
   openDialogDelete(element) {
-    console.log(element)
+    // console.log(element)
     const key = element.key;
     const title: string = `Eliminar Servicio`;
     const question: string = `Desea Eliminar el servicio ${key}`;
@@ -268,7 +265,7 @@ export class SolicitudListComponent implements OnInit {
   }
 
   openDialogUpdate(element) {
-    console.log(element)
+    // console.log(element)
     let dialogRef = this.dialog.open(SolicitudFormDialog, {
       width: '600px',
       data: { update: true, snap: element }
@@ -298,14 +295,14 @@ export class SolicitudListComponent implements OnInit {
 
     switch (direction) {
       case 'asc':
-        console.log("sorting by key asc")
+        // console.log("sorting by key asc")
         this.solicitudes = this.solicitudes.sort((a, b) => {
           return a.key - b.key
         })
         this.instanceTable();
         break;
       case 'desc':
-        console.log("sorting by key desc")
+        //console.log("sorting by key desc")
         this.solicitudes = this.solicitudes.sort((a, b) => {
           return b.key - a.key
         })

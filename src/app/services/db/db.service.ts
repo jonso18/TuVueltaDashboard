@@ -47,7 +47,7 @@ export class DbService {
 
   public listAllSolicitudes() {
     const id: string = this.authService.userState.uid;
-    return this.db.list("/Operativo/Solicitud/").snapshotChanges();
+    return this.db.list("/Operativo/Solicitud/", ref => ref.orderByKey().limitToLast(150)).snapshotChanges();
   }
 
   public listMensajeros() {

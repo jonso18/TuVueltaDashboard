@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
               if (info.Rol === ROLES.Administrador){
                 // Navigate to Administrator root url
                 this.globalTasksService.startTasks();
-                return this.router.navigateByUrl('/dashboard/solicitud/1518535322851/transacciones');
+                return this.router.navigateByUrl('/dashboard');
               }else if (info.Rol === ROLES.Cliente){
                 // Navigate to Cliente root url
                 return this.router.navigateByUrl('/dashboard');

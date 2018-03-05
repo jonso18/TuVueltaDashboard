@@ -53,13 +53,13 @@
             <!-- Position Column -->
             <!-- Fecha -->
 
-            <ng-container matColumnDef="Id">
-              <mat-header-cell *matHeaderCellDef mat-sort-header> Id. </mat-header-cell>
+            <ng-container matColumnDef="Id" >
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> Id. </mat-header-cell>
               <mat-cell *matCellDef="let element"> {{element.key}} </mat-cell>
             </ng-container>
 
-            <ng-container matColumnDef="Fecha">
-              <mat-header-cell *matHeaderCellDef mat-sort-header> Fecha. </mat-header-cell>
+            <ng-container matColumnDef="Fecha" >
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> Fecha. </mat-header-cell>
               <mat-cell *matCellDef="let element"> {{element.key | date:'d/M/yy, h:mm:ss a'}} </mat-cell>
             </ng-container>
 
@@ -88,44 +88,44 @@
       </ng-container>-->
 
             <!-- PagoConTarjeta -->
-            <ng-container matColumnDef="PagoConTarjeta">
-              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header> Pago Con Tarjeta </mat-header-cell>
+            <ng-container matColumnDef="PagoConTarjeta" >
+              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header class="text-center"> Pago Con Tarjeta </mat-header-cell>
               <mat-cell class="text-center" *matCellDef="let element"> {{element.payload.val().esPagoConTarjeta ? 'Si':'No' }} </mat-cell>
             </ng-container>
 
             <!-- TotalAPagar -->
-            <ng-container matColumnDef="TotalAPagar">
-              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header> Costo TuVuelta </mat-header-cell>
+            <ng-container matColumnDef="TotalAPagar" >
+              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header class="text-center"> Costo TuVuelta </mat-header-cell>
               <mat-cell class="text-center" *matCellDef="let element"> $ {{element.payload.val().TotalAPagar | number }} </mat-cell>
             </ng-container>
 
             <!-- DistanciaTotal -->
-            <ng-container matColumnDef="Distancia">
-              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header>Distancia</mat-header-cell>
+            <ng-container matColumnDef="Distancia" class="text-center">
+              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header class="text-center">Distancia</mat-header-cell>
               <mat-cell class="text-center" *matCellDef="let element"> {{(element.payload.val().DistanciaTotal / 1000) | number }} Km </mat-cell>
             </ng-container>
 
             <!-- PuntoInicio -->
-            <ng-container matColumnDef="puntoInicio">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>Punto Inicio</mat-header-cell>
+            <ng-container matColumnDef="puntoInicio" >
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">Punto Inicio</mat-header-cell>
               <mat-cell *matCellDef="let element"> {{element.payload.val().puntoInicio}} </mat-cell>
             </ng-container>
 
             <!-- puntoFinal -->
-            <ng-container matColumnDef="puntoFinal">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>Punto Final</mat-header-cell>
+            <ng-container matColumnDef="puntoFinal" >
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">Punto Final</mat-header-cell>
               <mat-cell *matCellDef="let element"> {{element.payload.val().puntoFinal}} </mat-cell>
             </ng-container>
 
             <!-- Estado -->
-            <ng-container matColumnDef="Estado">
-              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header>Estado</mat-header-cell>
+            <ng-container matColumnDef="Estado" >
+              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header class="text-center">Estado</mat-header-cell>
               <mat-cell class="text-center" *matCellDef="let element"> {{element.payload.val().Estado}} </mat-cell>
             </ng-container>
 
             <!-- Mensajero -->
-            <ng-container matColumnDef="Mensajero">
-              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header> Mensajero </mat-header-cell>
+            <ng-container matColumnDef="Mensajero" >
+              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header class="text-center"> Mensajero </mat-header-cell>
               <mat-cell class="text-center" *matCellDef="let element">
                 <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Nombres }} {{ Mensajeros[element.payload.val().Motorratoner_id].Apellidos
                   }}
@@ -142,8 +142,8 @@
       </ng-container>-->
 
             <!-- MensajeroCelular -->
-            <ng-container matColumnDef="MensajeroCelular">
-              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header> Mensajero Celular </mat-header-cell>
+            <ng-container matColumnDef="MensajeroCelular" >
+              <mat-header-cell class="text-center" *matHeaderCellDef mat-sort-header class="text-center"> Mensajero Celular </mat-header-cell>
               <mat-cell class="text-center" *matCellDef="let element">
                 <span *ngIf="element.payload.val().Motorratoner_id">{{ Mensajeros[element.payload.val().Motorratoner_id].Celular }}</span>
               </mat-cell>
