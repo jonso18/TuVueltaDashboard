@@ -25,7 +25,8 @@
         "./assets/sass/material-dashboard.scss",
         "../node_modules/angular-calendar/scss/angular-calendar.scss",
         "./assets/css/demo.css",
-        "../node_modules/ngx-toastr/toastr.css"
+        "../node_modules/ngx-toastr/toastr.css",
+        "styles.css"
       ],
       "scripts": [ "../node_modules/hammerjs/hammer.min.js",
       "../node_modules/jquery/dist/jquery.js",

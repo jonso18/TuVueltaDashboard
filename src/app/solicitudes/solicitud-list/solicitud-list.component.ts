@@ -88,7 +88,7 @@ export class SolicitudListComponent implements OnInit {
   }
 
   loadAllSolicitudes() {
-    this.dbService.listSolicitudesLimitToLast(150)
+    this.dbService.listAllSolicitudes()
       .subscribe(res => {
         this.solicitudes = this.allSolicitudes = res.sort((a, b) => Number(b.key) - Number(a.key));
         this.instanceTable();
