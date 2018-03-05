@@ -24,8 +24,6 @@ import { dataConfirmation } from '../../config/dialogs.data';
 })
 export class SolicitudListComponent implements OnInit {
 
-  // 'Nombres', 'Apellidos', 'Celular' 'Telefono'
-
   dateEnd: number;
   dateStart: number;
   public displayedColumns = ['Id', 'Fecha', 'TotalAPagar', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'MensajeroCelular'];
@@ -84,25 +82,26 @@ export class SolicitudListComponent implements OnInit {
 
   loadSolicitudes() {
     this.dbService.listSolicitudes().subscribe(res => {
-      this.solicitudes = res.reverse();
+      this.solicitudes = this.allSolicitudes = res.sort((a, b) => Number(b.key) - Number(a.key));
       this.instanceTable();
     });
   }
 
   loadAllSolicitudes() {
-    this.dbService.listAllSolicitudes().subscribe(res => {
-      this.solicitudes = this.allSolicitudes = res.reverse();
-      this.instanceTable();
-    })
+    this.dbService.listSolicitudesLimitToLast(150)
+      .subscribe(res => {
+        this.solicitudes = this.allSolicitudes = res.sort((a, b) => Number(b.key) - Number(a.key));
+        this.instanceTable();
+      })
   }
 
-  applyFilter() {
+  applyFilter(): void {
     if (!this.clientSelected) {
       this.solicitudes = this.allSolicitudes;
     } else {
       this.solicitudes = this.allSolicitudes.filter(item => {
         if (item.payload.val().user_id === this.clientSelected.$key) {
-          return item.reverse();
+          return item;
         }
       })
     }
@@ -110,7 +109,7 @@ export class SolicitudListComponent implements OnInit {
     if (this.dateStart) {
       this.solicitudes = this.solicitudes.filter(item => {
         if (item.key > this.dateStart) {
-          return item.reverse();
+          return item;
         }
       })
     }
@@ -118,7 +117,7 @@ export class SolicitudListComponent implements OnInit {
     if (this.dateEnd) {
       this.solicitudes = this.solicitudes.filter(item => {
         if (item.key < this.dateEnd) {
-          return item.reverse();
+          return item;
         }
       })
     }
@@ -127,13 +126,11 @@ export class SolicitudListComponent implements OnInit {
   }
 
   pickerStart(type: string, event: MatDatepickerInputEvent<Date>) {
-    // console.log(new Date(event.value))
     this.dateStart = new Date(event.value).getTime();
     this.applyFilter();
   }
 
   pickerEnd(type: string, event: MatDatepickerInputEvent<Date>) {
-    // console.log(new Date(event.value))
     this.dateEnd = new Date(event.value).getTime();
     this.applyFilter();
   }
@@ -147,18 +144,6 @@ export class SolicitudListComponent implements OnInit {
       }, {});
 
     })
-  }
-
-  sortData(event) {
-    // console.log(event)
-    switch (event.active) {
-      case 'key':
-        this.sortByDirection('key', event.direction);
-        break;
-
-      default:
-        break;
-    }
   }
 
   removeCreditosRetiro(element) {
@@ -184,13 +169,26 @@ export class SolicitudListComponent implements OnInit {
     }
   }
 
-  removeLogsSolicitud(element) {
+  /**
+   * Remove al movements for the specified element.
+   * 
+   * @private
+   * @param {any} element 
+   * @memberof SolicitudListComponent
+   */
+  private removeLogsSolicitud(element): void {
     const key: string = element.key;
     this.dbService.objectLogSolicitud(key).remove();
   }
 
-  openDialogDelete(element) {
-    // console.log(element)
+  /**
+   * Create and instance from a dialog to confirm delete action.
+   * 
+   * @param {any} element 
+   * @public
+   * @memberof SolicitudListComponent
+   */
+  public openDialogDelete(element): void {
     const key = element.key;
     const title: string = `Eliminar Servicio`;
     const question: string = `Desea Eliminar el servicio ${key}`;
@@ -208,41 +206,23 @@ export class SolicitudListComponent implements OnInit {
 
       }
     })
-    /* let dialogRef = this.dialog.open(DialogDeleteCity, {
-      width: '250px',
-      data: { action: this.dbService.objectSolicitud(key) }
-    }) */
-
-    /* dialogRef.afterClosed().subscribe(res => {
-      if (res) {
-        const Motorratoner_id: string = element.payload.val().Motorratoner_id;
-        if (Motorratoner_id) {
-          this.dbService.listLogCreditoRetiroMensajeroByServicioId(Motorratoner_id, key)
-            .subscribe((logs: ILogCreditoRetiroMensajero[]): void => {
-              const p_delete = logs.map(_log => {
-                return this.dbService
-                  .objectLogCreditoRetiroMensajero(Motorratoner_id, _log.$key)
-                  .remove()
-              });
-              Promise.all(p_delete).then(res => {
-                this.notifySolicitudEliminada();
-              }).catch(err => {
-                console.log("Error eliminando los log de credito de retiro. ", err)
-              })
-
-            })
-        } else {
-          this.notifySolicitudEliminada();
-        }
-      }
-    }) */
   }
 
-  openDialogReAsigancion(serviceId, fechaCompra, PrevioMotorratoner_id) {
+  /**
+   * Create an instance to do a assign a new Mensajero to the 
+   * specifyied schedule.
+   * 
+   * @param {any} serviceId 
+   * @param {any} fechaCompra 
+   * @param {any} PrevioMotorratoner_id 
+   * @public
+   * @memberof SolicitudListComponent
+   */
+  public openDialogReAsigancion(serviceId, fechaCompra, PrevioMotorratoner_id): void {
     const _serviceId = serviceId;
     const _fechaCompra = fechaCompra;
     const _PrevioMotorratoner_id = PrevioMotorratoner_id;
-    let dialogRef = this.dialog.open(DialogReasignacion, {
+    const dialogRef = this.dialog.open(DialogReasignacion, {
       width: '350px',
       data: { PrevioMotorratoner_id: _PrevioMotorratoner_id, fechaCompra: _fechaCompra, serviceId: _serviceId, Mensajeros: this.Mensajeros }
     });
@@ -252,27 +232,46 @@ export class SolicitudListComponent implements OnInit {
         this.snackBar.open("Proceso Exitoso", 'Ok', {
           duration: 3000,
           verticalPosition: 'top'
-        })
+        });
       }
-    })
+    });
   }
 
-  notifySolicitudEliminada() {
+  /**
+   * Create an snap to notify in the DOM solicitud has been delted.
+   * 
+   * @private
+   * @memberof SolicitudListComponent
+   */
+  private notifySolicitudEliminada(): void {
     this.snackBar.open("Solicitud Eliminada", 'Ok', {
       duration: 3000,
       verticalPosition: 'top'
-    })
+    });
   }
 
-  openDialogUpdate(element) {
-    // console.log(element)
-    let dialogRef = this.dialog.open(SolicitudFormDialog, {
+  /**
+   * Create a intance from a dialog to update solicitud
+   * 
+   * @param {any} element 
+   * @public
+   * @memberof SolicitudListComponent
+   */
+  public openDialogUpdate(element): void {
+    this.dialog.open(SolicitudFormDialog, {
       width: '600px',
       data: { update: true, snap: element }
     });
   }
 
-  instanceTable() {
+  /**
+   * Prepare data, paginator, sort and rest lenght to show
+   * in the DOM.
+   * 
+   * @private
+   * @memberof SolicitudListComponent
+   */
+  private instanceTable(): void {
     this.dataSource.data = this.solicitudes;
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -280,7 +279,14 @@ export class SolicitudListComponent implements OnInit {
     this.resultsLength = this.solicitudes.length;
   }
 
-  loadFilter(): any {
+  /**
+   * Load table filter which search in every value.
+   * 
+   * @private
+   * @returns {any} 
+   * @memberof SolicitudListComponent
+   */
+  private loadFilter(): any {
     this.inputFilter = this.formBuilder.control(null);
 
     this.inputFilter.valueChanges
@@ -288,30 +294,7 @@ export class SolicitudListComponent implements OnInit {
       .distinctUntilChanged()
       .subscribe((val: string) => {
         this.dataSource.filter = val.trim().toLowerCase();
-      })
-  }
-
-  sortByDirection(key, direction) {
-
-    switch (direction) {
-      case 'asc':
-        // console.log("sorting by key asc")
-        this.solicitudes = this.solicitudes.sort((a, b) => {
-          return a.key - b.key
-        })
-        this.instanceTable();
-        break;
-      case 'desc':
-        //console.log("sorting by key desc")
-        this.solicitudes = this.solicitudes.sort((a, b) => {
-          return b.key - a.key
-        })
-        this.instanceTable();
-        break;
-
-      default:
-        break;
-    }
+      });
   }
 
 }
