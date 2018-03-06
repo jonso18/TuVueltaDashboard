@@ -83,6 +83,7 @@ import { PagesModule } from './modules/pages/pages.module';
 import { CommonImportsModule } from './modules/common-imports/common-imports.module';
 
 import { RolGuard } from './guards/rol/rol.guard';
+import { LoadingRouteComponent } from './components/loading-route/loading-route.component';
 
 
 
@@ -91,7 +92,8 @@ import { RolGuard } from './guards/rol/rol.guard';
   declarations: [
     AppComponent,
     AdminLayoutComponent,
-    AuthLayoutComponent
+    AuthLayoutComponent,
+    LoadingRouteComponent
   ],
   imports: [
     AngularFireDatabaseModule,
