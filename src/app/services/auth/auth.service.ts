@@ -1,18 +1,47 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { Subscription } from 'rxjs';
+import { Subscription, BehaviorSubject } from 'rxjs';
+import { Router, NavigationEnd } from '@angular/router';
+import { RouteInfo } from '../../components/sidebar/sidebar.component';
+import { clientRoutes, operatorRoutes, administradorRoutes } from '../../config/Routes';
 
 @Injectable()
 export class AuthService {
 
   public userInfo: any;
   public userState;
-
+  public GlobalRoutes: BehaviorSubject<RouteInfo[]> = new BehaviorSubject([]);
   public subUserInfo: Subscription;
   constructor(
-    private authService: AngularFireAuth
+    private authService: AngularFireAuth,
+    private router: Router
   ) { }
 
+  routesForRol(){
+    /* this.router.events.subscribe(res => {
+      
+      if (res instanceof NavigationEnd){
+        const data: NavigationEnd = res;
+
+        if (res.urlAfterRedirects.indexOf('dashboard') != -1){
+          this.GlobalRoutes.next(administradorRoutes)
+        }
+
+        if (res.urlAfterRedirects.indexOf('cliente') != -1){
+          this.GlobalRoutes.next(clientRoutes)
+        }
+
+        if (res.urlAfterRedirects.indexOf('operador') != -1){
+          this.GlobalRoutes.next(operatorRoutes)
+        }
+
+        if (res.urlAfterRedirects.indexOf('administrador') != -1){
+          this.GlobalRoutes.next(administradorRoutes)
+        }
+      }
+      
+    }) */
+  }
 
   public authState() {
     return this.authService.authState;

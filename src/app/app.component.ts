@@ -6,6 +6,7 @@ import { ROLES } from './config/Roles';
 import { Router } from '@angular/router';
 import { ESTADOS_USUARIO } from './config/EstadosUsuario';
 import { GlobalTasksService } from './services/global-tasks/global-tasks.service';
+import { administradorRoutes, clientRoutes, operatorRoutes } from './config/Routes';
 
 declare var $: any;
 
@@ -26,9 +27,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit(){
     $.material.init();
+    this.authService.routesForRol();
     this.loadUserData();
   }
-
+ 
   private loadUserData():void {
     // Suscripcion al estado actual del login
     this.authService.authState().subscribe(_authState => {
@@ -50,13 +52,16 @@ export class AppComponent implements OnInit {
               if (info.Rol === ROLES.Administrador){
                 // Navigate to Administrator root url
                 this.globalTasksService.startTasks();
-                return this.router.navigateByUrl('/dashboard');
+                this.authService.GlobalRoutes.next(administradorRoutes);
+                return this.router.navigateByUrl('/administrador');
               }else if (info.Rol === ROLES.Cliente){
                 // Navigate to Cliente root url
-                return this.router.navigateByUrl('/dashboard');
+                this.authService.GlobalRoutes.next(clientRoutes);
+                return this.router.navigateByUrl('/cliente');
               }else if (info.Rol === ROLES.Operador){
                 // Navigate to Cliente root url
-                return this.router.navigateByUrl('/dashboard');
+                this.authService.GlobalRoutes.next(operatorRoutes);
+                return this.router.navigateByUrl('/operador');
               } 
               
               else {
