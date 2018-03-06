@@ -167,6 +167,7 @@ export class ReporteClientesServiciosComponent implements OnInit {
         if(log.value.Estado === "EnProceso"){
           fechaproceso = new Date(Number(log.key));
         }
+       
         
         if(log.value.Estado === "Despachado"){
           fechachaDespachado = new Date(Number(log.key));
@@ -189,16 +190,22 @@ export class ReporteClientesServiciosComponent implements OnInit {
         
       });
       const date = new Date(Number(element.key));
+        
+        let diasDifdespacho;
+        let diasDiffFinalizado;
 
-      var diasDifdespacho=  fechachaDespachado.getTime() - fechaproceso.getTime();
-      var diasDiffFinalizado=  FechaFinalizado.getTime() - fechachaDespachado.getTime();
-      var totaltiempodespacho = Math.round(diasDifdespacho/(60*24*60));
+        if (fechachaDespachado && fechaproceso) {
+          diasDifdespacho =  fechachaDespachado.getTime() - fechaproceso.getTime();
+        } else { diasDifdespacho = 0; }
 
+        if (FechaFinalizado && fechachaDespachado) {
+          diasDiffFinalizado =  FechaFinalizado.getTime() - fechachaDespachado.getTime();
+        } else { diasDiffFinalizado = 0; }
+
+       //var diasDiffFinalizado=  FechaFinalizado.getTime() - fechachaDespachado.getTime();
+       let totaltiempodespacho = Math.round(diasDifdespacho/(60*24*60));
       var totaltiempoFinalizado = Math.round(diasDiffFinalizado/(60*24*60));
-      
       var sumatiempo = totaltiempodespacho+totaltiempoFinalizado;
-      
-
 
       this.reporteHTML+=`
           <tbody>
@@ -214,7 +221,7 @@ export class ReporteClientesServiciosComponent implements OnInit {
           </tbody>
          `
     });
-    
+
     this.reporteHTML+=`
     </table>
     </div>

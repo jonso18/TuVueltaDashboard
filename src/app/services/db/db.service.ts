@@ -94,9 +94,9 @@ export class DbService {
     return this.objectReglasActivos()
       .snapshotChanges()
       .map(snap => {
-        const data: IRegasActivos = snap.payload.val()
-        return data
-      })
+        const data: IRegasActivos = snap.payload.val();
+        return data;
+      });
   }
 
   public listEstadosServicio(): AngularFireList<IEstadoServicio> {
@@ -139,11 +139,11 @@ export class DbService {
   }
 
   public objectListaTiposServicio() {
-    return this.db.object(`/Administrativo/ListaTipoServicios`)
+    return this.db.object(`/Administrativo/ListaTipoServicios`);
   }
 
   public listListaTiposServicio() {
-    return this.db.list(`/Administrativo/ListaTipoServicios`)
+    return this.db.list(`/Administrativo/ListaTipoServicios`);
   }
 
   public objectTarifasByCitySnap(cityCode: string): Observable<any> {
@@ -153,14 +153,14 @@ export class DbService {
   }
 
   public objectTarifas(cityCode: number, serviceType: string) {
-    return this.db.object(`/Administrativo/TipoServicio/${cityCode}/${serviceType}/Tarifas`)
+    return this.db.object(`/Administrativo/TipoServicio/${cityCode}/${serviceType}/Tarifas`);
   }
 
   public listSolicitudEnProceso() {
-    return this.db.list(`/Operativo/Solicitud`, ref => ref.orderByChild('EnProceso').equalTo(true))
+    return this.db.list(`/Operativo/Solicitud`, ref => ref.orderByChild('EnProceso').equalTo(true));
   }
   public listSolicitudFinalizadas() {
-    return this.db.list(`/Operativo/Solicitud`, ref => ref.orderByChild('Estado').equalTo('Finalizado'))
+    return this.db.list(`/Operativo/Solicitud`, ref => ref.orderByChild('Estado').equalTo('Finalizado'));
   }
 
   public objectSolicitud(key: string) {
