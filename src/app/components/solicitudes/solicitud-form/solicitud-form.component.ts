@@ -82,11 +82,11 @@ export class SolicitudFormDialog implements OnInit {
   doRequest() {
     let data = this.form.value;
     data.user_id = this.isUpdating ? this.solicitud.user_id : this.authProvider.userState.uid;
-    data.EsActualizacion = this.isUpdating ? true: false;
+    data.EsActualizacion = this.isUpdating ? true : false;
     data.servicioId = this.isUpdating ? this.data.snap.payload.key : null;
     console.log(data);
-    const getToken = this.authProvider.userState.getIdToken();
-    const newSolicitud = getToken.then(token => {
+    const getToken: Promise<any> = this.authProvider.userState.getIdToken();
+    const newSolicitud: Promise<any> = getToken.then(token => {
       data.idToken = token;
       console.log(token);
       // alert(data)
@@ -94,7 +94,7 @@ export class SolicitudFormDialog implements OnInit {
     });
     const response = newSolicitud.then(response => {
       alert('Servicio recibido exitosamente,' + ' ' + 'Codigo de la solicitud: '
-      + response.servicio_id + ' ' + ', El costo del servicio es de ' + response.servicio.TotalAPagar);
+        + response.servicio_id + ' ' + ', El costo del servicio es de ' + response.servicio.TotalAPagar);
       // console.log(response)
       this.router.navigateByUrl('/dashboard/solicitud/lista');
       console.log(response);
@@ -116,7 +116,7 @@ export class SolicitudFormDialog implements OnInit {
         'Content-Type': 'application/json',
       })
     };
-    const url = environment.baseapi.tuvuelta+ 'api/solicitudes';
+    const url = environment.baseapi.tuvuelta + 'api/solicitudes';
 
     const _body = body;
 
@@ -198,16 +198,16 @@ export class SolicitudFormComponent implements OnInit {
     let data = this.form.value;
     data.user_id = this.authProvider.userState.uid;
     console.log(data);
-    const getToken = this.authProvider.userState.getIdToken();
-    const newSolicitud = getToken.then(token => {
+    const getToken: Promise<any> = this.authProvider.userState.getIdToken();
+    const newSolicitud: Promise<any> = getToken.then(token => {
       data.idToken = token;
       console.log(token)
       // alert(data)
       return this.newSolicitud(data).toPromise();
     });
     const response = newSolicitud.then(response => {
-      alert('Servicio recibido exitosamente,' + ' ' + 'Codigo de la solicitud: ' 
-      + response.servicio_id + ' ' + ', El costo del servicio es de ' + response.servicio.TotalAPagar);
+      alert('Servicio recibido exitosamente,' + ' ' + 'Codigo de la solicitud: '
+        + response.servicio_id + ' ' + ', El costo del servicio es de ' + response.servicio.TotalAPagar);
       // console.log(response)
       this.location.back();
       console.log(response);

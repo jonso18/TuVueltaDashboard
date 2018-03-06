@@ -364,7 +364,7 @@ export class UsuarioFormComponent implements OnInit, OnDestroy {
         'Content-Type': 'application/json',
       })
     };
-    const url: string = `${environment.baseapi.tuvuelta}/api/usuarios/nuevo`
+    const url: string = `${environment.baseapi.tuvuelta}api/usuarios/nuevo`
     return this.http.post(url, body, httpOptions).toPromise();
   }
 

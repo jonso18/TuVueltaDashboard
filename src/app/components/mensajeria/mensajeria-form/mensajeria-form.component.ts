@@ -15,7 +15,7 @@ import { DbService } from '../../../services/db/db.service';
 import { ITarifasMensajeria } from '../../../interfaces/tarifas.interfaces';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ICiudad } from '../../../interfaces/ciudad.interface';
-
+let google: any;
 @Component({
   selector: 'app-mensajeria-form',
   templateUrl: './mensajeria-form.component.html',
@@ -38,7 +38,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   public selectedCity: ICiudad;
   public subTM: Subscription;
   public subTMC: Subscription;
-
+  public Servicio: IServicioMensajeria;
   constructor(
     private formBuilder: FormBuilder,
     private http: HttpClient,
@@ -50,6 +50,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadCitys();
     this.buildForm();
+
   }
 
   ngOnDestroy() {
@@ -237,7 +238,20 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  public Servicio: IServicioMensajeria;
+  getSentence(body: any, api: string): Observable<any> {
+    const token$ = Observable.fromPromise(this.authService.userState.getIdToken())
+    return token$.switchMap(token => {
+      body.idToken = token
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+        })
+      };
+      const url: string = `${environment.baseapi.tuvuelta}${api}`
+      return this.http.post(url, body, httpOptions).toPromise()
+    })
+
+  }
 
   doQuote() {
     console.log("doing quote")
@@ -258,53 +272,58 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
       }
 
     }
-    const url: string = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origins}&destinations=${destinations}&key=${key}`;
-    this.http.get(url)
-      .map((res: any) => {
-        if (res || res.rows) return res;
-        return {}
-      }).subscribe(res => {
-        if (res) {
-          const info = res.rows;
-          let fullDistance: number = 0;
-          let fullDuration: number = 0;
-          for (let i = 0; i < info.length; i++) {
-            const element = info[i];
-            fullDistance += parseFloat(
-              element.elements[i].distance.text.replace(',', '.')) + 0.0000000001;
-            fullDuration += parseFloat(
-              element.elements[i].duration.text.replace(',', '.'));
+
+    this.authService.userState.getIdToken().then(idToken => {
+      const body = { origins, destinations, idToken }
+      this.getSentence(body, 'api/google/distancematrix')
+        .map((res: any) => {
+          if (res || res.data) return res;
+          return {}
+        }).subscribe(res => {
+          if (res) {
+            console.log(res)
+            const info = res.data.rows;
+            let fullDistance: number = 0;
+            let fullDuration: number = 0;
+            for (let i = 0; i < info.length; i++) {
+              const element = info[i];
+              fullDistance += parseFloat(
+                element.elements[i].distance.text.replace(',', '.')) + 0.0000000001;
+              fullDuration += parseFloat(
+                element.elements[i].duration.text.replace(',', '.'));
+            }
+
+            // Calc Amount to pay
+
+
+            console.log(`Full Distancia ${fullDistance}`)
+            const Tarifas: ITarifasMensajeria = this.TarifasMensajeriaCustom ?
+              this.TarifasMensajeriaCustom :
+              this.TarifasMensajeria;
+            this.calcOvercostoutoftown(points, Tarifas)
+            this.Servicio = {
+              Recorrido: this.puntosIntermedios.value,
+              DistanciaTotal: Number(fullDistance),
+              DuracionTotal: Number(fullDuration),
+              TipoServicio: 'Mensajeria',
+              TotalAPagar: this.calcAmount(fullDistance, (points.length - 2), Tarifas),
+              SobreCostoFueraCiudad: 0
+            }
+            console.log(this.Servicio)
+
+            this.isQuoteCompleted = true;
+
+          } else {
+            this.isQuoteCompleted = false;
           }
 
-          // Calc Amount to pay
 
-
-          console.log(`Full Distancia ${fullDistance}`)
-          const Tarifas: ITarifasMensajeria = this.TarifasMensajeriaCustom ?
-            this.TarifasMensajeriaCustom :
-            this.TarifasMensajeria;
-          this.calcOvercostoutoftown(points, Tarifas)
-          this.Servicio = {
-            Recorrido: this.puntosIntermedios.value,
-            DistanciaTotal: Number(fullDistance),
-            DuracionTotal: Number(fullDuration),
-            TipoServicio: 'Mensajeria',
-            TotalAPagar: this.calcAmount(fullDistance, (points.length - 2), Tarifas),
-            SobreCostoFueraCiudad: 0
-          }
-          console.log(this.Servicio)
-
-          this.isQuoteCompleted = true;
-
-        } else {
+        }, err => {
+          console.log(err)
           this.isQuoteCompleted = false;
-        }
+        })
+    })
 
-
-      }, err => {
-        console.log(err)
-        this.isQuoteCompleted = false;
-      })
   }
 
   private calcAmount(fullDistance: number, aditionalStop: number, Tarifas: ITarifasMensajeria): number {
@@ -330,13 +349,13 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     let overCost: number = 0;
     const key: string = environment.google.geocoding;
     const hasDiferentCity = Points.map(point => {
-      const url: string = `https://maps.googleapis.com/maps/api/geocode/json?` +
-        `latlng=${point.Coors}&` +
-        `key=${key}&` +
-
-        `result_type=locality`;
-
-      return this.http.get(url)
+      const latlng = point.Coors;
+      const result_type = 'locality';
+      return this.getSentence({ latlng, result_type }, 'api/google/geocode')
+        .map(res => {
+          if (res && res.data) return res.data;
+          return null
+        })
         .map((res: any) => {
           console.log(res)
           if (res && res.results && res.status == "OK") return res.results
@@ -352,7 +371,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
             if (item.address_components) {
               const address_components: any[] = item.address_components;
               if (item.formatted_address.indexOf(prefix) > -1)
-                  hasPrefix = true;
+                hasPrefix = true;
               address_components.forEach(_address_component => {
                 console.log(`Comparando Nombre: ${Nombre} long_name ${_address_component.long_name} short_name ${_address_component.short_name}`)
                 if (_address_component.long_name.indexOf(Nombre) > -1)
@@ -371,7 +390,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     Promise.all(hasDiferentCity).then(res => {
       console.log("En el promise all")
       console.log(res)
-      if (res.indexOf(false) != -1){
+      if (res.indexOf(false) != -1) {
         console.log("Hay una ubicación fuera de la ciudad")
         this.Servicio.SobreCostoFueraCiudad = Tarifas.SobreCostoFueraCiudad;
       }
@@ -404,16 +423,20 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
       .valueChanges
       .debounceTime(2500)
       .distinctUntilChanged()
-      .switchMap(val => {
-        const url: string = `https://maps.googleapis.com/maps/api/geocode/json?address=${val}&key=${environment.google.geocoding}`;
+      .switchMap(address => {
         const data = group.value;
+        const answer = this.getSentence({ address }, 'api/google/geocode')
+          .map(res => {
+            if (res && res.data) return res.data;
+            return null
+          })
         if (data.Coors) {
           if (group.get('Coors').value) {
             return Observable.empty()
           }
-          return this.http.get(url)
+          return answer
         }
-        return this.http.get(url)
+        return answer
       })
       .map((res: any) => {
         if (res && res.results) return res.results[0];

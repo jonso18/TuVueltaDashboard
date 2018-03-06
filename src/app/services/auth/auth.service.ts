@@ -4,12 +4,13 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
 import { RouteInfo } from '../../components/sidebar/sidebar.component';
 import { clientRoutes, operatorRoutes, administradorRoutes } from '../../config/Routes';
+import { User } from '@firebase/auth-types';
 
 @Injectable()
 export class AuthService {
 
   public userInfo: any;
-  public userState;
+  public userState: User;
   public GlobalRoutes: BehaviorSubject<RouteInfo[]> = new BehaviorSubject([]);
   public subUserInfo: Subscription;
   constructor(
