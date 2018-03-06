@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavigationEnd } from '@angular/router';
+import { Router, NavigationStart, RoutesRecognized, NavigationEnd } from '@angular/router';
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/operator/do'
 @Component({
