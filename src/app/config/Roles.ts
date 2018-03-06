@@ -3,4 +3,5 @@ export const ROLES = {
     Cliente: 'Cliente',
     Mensajero: 'Mensajero',
     Operador: 'Operador',
+    Persona: 'Persona'
 };

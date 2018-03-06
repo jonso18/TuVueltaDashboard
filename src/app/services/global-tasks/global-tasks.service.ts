@@ -22,9 +22,9 @@ export class GlobalTasksService {
   }
 
   public startTasks(): void {
-    setInterval(() => {
+    /* setInterval(() => {
       this.servicesEnSitio();
-    }, 30000)
+    }, 30000) */
   }
 
   private servicesEnSitio(): void {
