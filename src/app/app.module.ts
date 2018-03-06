@@ -82,6 +82,8 @@ import { environment } from '../environments/environment';
 import { PagesModule } from './modules/pages/pages.module';
 import { CommonImportsModule } from './modules/common-imports/common-imports.module';
 
+import { RolGuard } from './guards/rol/rol.guard';
+
 
 
 
@@ -112,7 +114,8 @@ import { CommonImportsModule } from './modules/common-imports/common-imports.mod
     AuthService,
     DbService,
     GlobalTasksService,
-    MessagesService
+    MessagesService,
+    RolGuard
   ],
   bootstrap: [AppComponent]
 })

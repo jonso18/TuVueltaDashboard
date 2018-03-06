@@ -25,6 +25,8 @@ import { ReasignacionComponent } from './components/solicitudes/reasignaciones/r
 import { SolicitudFormComponent } from './components/solicitudes/solicitud-form/solicitud-form.component';
 import { SolicitudListComponent } from './components/solicitudes/solicitud-list/solicitud-list.component';
 import { SolicitudComponent } from './components/solicitudes/solicitud/solicitud.component';
+import { RolGuard } from './guards/rol/rol.guard';
+
 
 export const AppRoutes: Routes = [
     {
@@ -42,6 +44,7 @@ export const AppRoutes: Routes = [
     },
     {
         path: 'persona',
+        canActivate: [RolGuard],
         component: AdminLayoutComponent,
         children: [{
             path: '', // login page still under "pages" folder as the original code
@@ -50,6 +53,7 @@ export const AppRoutes: Routes = [
     },
     {
         path: 'cliente',
+        canActivate: [RolGuard],
         component: AdminLayoutComponent,
         children: [{
             path: '', // login page still under "pages" folder as the original code
@@ -58,6 +62,7 @@ export const AppRoutes: Routes = [
     },
     {
         path: 'operador',
+        canActivate: [RolGuard],
         component: AdminLayoutComponent,
         children: [{
             path: '', // login page still under "pages" folder as the original code
@@ -66,6 +71,7 @@ export const AppRoutes: Routes = [
     },
     {
         path: 'administrador',
+        canActivate: [RolGuard],
         component: AdminLayoutComponent,
         children: [{
             path: '', // login page still under "pages" folder as the original code

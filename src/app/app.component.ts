@@ -81,8 +81,10 @@ export class AppComponent implements OnInit {
               return this.router.navigateByUrl('/pages/login')
             }
 
+          }else {
+            return alert("El usuario no tiene informacion")
           }
-          return alert("El usuario no tiene informacion")
+          
         })
       }
     })
