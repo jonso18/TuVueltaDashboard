@@ -199,7 +199,7 @@ export class DbService {
   }
 
   public objectTarifasCustom(cityCode: number, serviceType: string, userId: string) {
-    return this.db.object(`Administrativo/Usuarios/${userId}/Tarifas/${cityCode}/${serviceType}`)
+    return this.db.object(`Administrativo/Usuarios/${userId}/Tarifas/${cityCode}/${serviceType}/Tarifas`)
   }
 
   public objectConfigGlobal(): Observable<IGlobalConfig> {

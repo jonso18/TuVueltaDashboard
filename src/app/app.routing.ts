@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { AdminLayoutComponent } from './components/layouts/admin/admin-layout.component';
 import { AuthLayoutComponent } from './components/layouts/auth/auth-layout.component';
 import { AuthGuardService } from './services/auth-guard.service';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
+
 import { ReportesComponent } from './components/reportes/reportes/reportes.component';
 import { ReporteClientesServiciosComponent } from './components/reportes/reporte-clientes/reporte-clientes-servicios/reporte-clientes-servicios.component';
 import { MensajeriaComponent } from './components/mensajeria/mensajeria/mensajeria.component';
@@ -41,11 +41,11 @@ export const AppRoutes: Routes = [
         }]
     },
     {
-        path: 'dashboard',
+        path: 'persona',
         component: AdminLayoutComponent,
         children: [{
             path: '', // login page still under "pages" folder as the original code
-            loadChildren: './modules/dashboard/dashboard.module#DashboardModule'
+            loadChildren: './modules/person/person.module#PersonModule'
         }]
     },
     {

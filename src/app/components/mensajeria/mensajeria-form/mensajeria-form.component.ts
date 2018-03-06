@@ -134,7 +134,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     this.subTMC = this.dbService.objectTarifasCustom(cityCode, 'Mensajeria', id)
       .snapshotChanges()
       .map(res => {
-        const TarifaMensajeria: ITarifasMensajeria = res.payload.val().Tarifas
+        const TarifaMensajeria: ITarifasMensajeria = res.payload.val()
         return TarifaMensajeria
       })
       .subscribe((res: ITarifasMensajeria) => {

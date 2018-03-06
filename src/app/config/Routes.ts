@@ -90,7 +90,15 @@ export const clientRoutes: RouteInfo[] = [
  
     },
 ];
+export const personRoutes: RouteInfo[] = [
+   {
+       path: '/persona/mensajeria',
+       title: 'Cargar Mensajeria',
+       type: 'link',
+       icontype: 'mail',
 
+   },
+];
 export const operatorRoutes: RouteInfo[] = [
     {
         path: '/operador/inicio',
