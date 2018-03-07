@@ -15,7 +15,7 @@ import { DbService } from '../../../services/db/db.service';
 import { ITarifasMensajeria } from '../../../interfaces/tarifas.interfaces';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ICiudad } from '../../../interfaces/ciudad.interface';
-import { Toast, ToastrService, IndividualConfig, } from 'ngx-toastr';
+import { Toast, ToastrService, IndividualConfig, ActiveToast, } from 'ngx-toastr';
 let google: any;
 @Component({
   selector: 'app-mensajeria-form',
@@ -28,7 +28,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   lng: number = -75.217;
   public form: FormGroup;
   private subs: Subscription[] = [];
-  public markers: IMarker[] = []
+
   public isMapReady: boolean = false;
   public points = [];
   public isStepEditable: boolean = true;
@@ -40,6 +40,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   public subTM: Subscription;
   public subTMC: Subscription;
   public Servicio: IServicioMensajeria;
+  public isQuoting: boolean = false;
   constructor(
     private formBuilder: FormBuilder,
     private http: HttpClient,
@@ -49,13 +50,13 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     private toastr: ToastrService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadCitys();
     this.buildForm();
 
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (this.subTM) this.subTM.unsubscribe();
     if (this.subTMC) this.subTMC.unsubscribe();
     this.subs.forEach(sub => {
@@ -63,15 +64,13 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     })
   }
 
-  onSelectedCity() {
+  public onSelectedCity(): void {
     const code: number = Number(this.selectedCity.Codigo);
     this.loadTarifasMensajeria(code);
     this.loadTarifasMensajeriaCustom(code);
   }
 
-
-
-  loadCitys() {
+  private loadCitys(): void {
     this.dbService.listCiudades().subscribe(res => {
       this.Ciudades = res;
       if (this.Ciudades.length > 0) {
@@ -82,36 +81,35 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     })
   }
 
-
-
-  onMapClick(event) {
+  public onMapClick(event: any): void {
+    console.log(this.stepper)
+    if (this.stepper.selectedIndex != 0) return
     const coors: LatLngLiteral = event.coords;
-
-    console.log(coors)
     const dialog = this.dialog.open(DialogOnClickMap, {
       width: '250px',
       data: {}
     });
 
     dialog.afterClosed().subscribe(res => {
-      if (!res) {
-        console.log("No hay selección");
-        return
+      if (!res) return
+      const addControls = (control, Nombre) => {
+        control.get('Nombre').setValue(Nombre);
+        control.get('Coors').setValue(_coords);
+
       }
+
       let _coords = `${coors.lat},${coors.lng}`;
       switch (res) {
         case 'puntoInicio':
           /* this.puntoInicioCoors.setValue(_coords)
           this.puntoInicio.setValue('Punto Inicio') */
           const controlPI = this.puntosIntermedios.at(0)
-          controlPI.get('Nombre').setValue('Punto 1');
-          controlPI.get('Coors').setValue(_coords);
+          addControls(controlPI, 'Punto 1');
           break;
         case 'puntoFinal':
           const i = this.puntosIntermedios.length - 1
           const controlPF = this.puntosIntermedios.at(i)
-          controlPF.get('Nombre').setValue('Punto ' + (Number(i) + 1));
-          controlPF.get('Coors').setValue(_coords)
+          addControls(controlPF, 'Punto ' + (Number(i) + 1))
           break;
         case 'puntoIntermedio':
           this.addIntermediatePoint(coors);
@@ -122,8 +120,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     })
   }
 
-
-  loadTarifasMensajeria(cityCode = 11001) {
+  private loadTarifasMensajeria(cityCode): void {
     if (this.subTM) this.subTM.unsubscribe();
     this.subTM = this.dbService.objectTarifas(cityCode, 'Mensajeria')
       .snapshotChanges()
@@ -136,7 +133,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
       })
   }
 
-  loadTarifasMensajeriaCustom(cityCode = 11001) {
+  private loadTarifasMensajeriaCustom(cityCode): void {
     const id = this.authService.userState.uid;
     if (this.subTMC) this.subTMC.unsubscribe();
     this.subTMC = this.dbService.objectTarifasCustom(cityCode, 'Mensajeria', id)
@@ -156,273 +153,31 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     })
     this.addIntermediatePoint();
     this.addIntermediatePoint();
-    this.subs.push(this.form.valueChanges
-      .subscribe(res => {
-
-        const val = this.puntosIntermedios.value;
-        this.markers = [];
-        let centinel: number = 0;
-        val.forEach(place => {
-
-          if (place.Coors) {
-            const Coors: string = place.Coors;
-            const Nombre: string = place.Nombre;
-            const _Coors = Coors.split(',').map(Number);
-            this.markers.push({
-              lat: _Coors[0],
-              lng: _Coors[1],
-              title: `Punto ${Number(centinel) + 1}`,
-              control: `Nombre${centinel}`
-            })
-          }
-          centinel++;
-        })
-      }))
   }
 
   addIntermediatePoint(coords?) {
     const group = this.getFormGroupPoint(coords ? `${coords.lat},${coords.lng}` : null);
     this.puntosIntermedios.push(group)
-    this.addListenerText(group, 'Nombre')
+    this.addListeners(group);
 
     if (coords) {
       let _control = `${this.puntosIntermedios.controls.indexOf(group)}`
-      this.puntosIntermedios.at(Number(_control)).get('Nombre').setValue(`Punto ${(Number(_control) + 1)}`)
+      const _group: FormGroup = this.puntosIntermedios.at(Number(_control)) as FormGroup;
+      _group.get('Nombre').setValue(`Punto ${(Number(_control) + 1)}`)
+      _group.addControl('Coordenadas', this.formBuilder.group({
+        Lat: coords.lat,
+        Lng: coords.lng
+      }))
+
       return
     }
 
   }
 
-  removeIntermediatePoint(index) {
-    const control = this.puntosIntermedios.at(index)
-    let coors = `Nombre${index}`;
-    console.log(control)
-    const i = this.markers.findIndex(x => x.control == coors)
-    if (i > -1) {
-      this.markers.splice(i, 1);
-    }
-    this.puntosIntermedios.removeAt(index);
-    let _i = 0;
-
-    // Update markers name
-    this.markers.forEach(marker => {
-      if (marker.control != 'puntoInicio' && marker.control != 'puntoFinal') {
-        marker.control = `Nombre${_i++}`
-        if (marker.title.indexOf('Punto') > -1) {
-          marker.control = `Punto ${_i}`
-          marker.title = `Punto ${_i}`
-        }
-      }
-    })
-
-    // Update Forms Name
-    _i = 0;
-    this.puntosIntermedios.controls.forEach(control => {
-      let Nombre = control.get('Nombre')
-      if (Nombre.value) {
-        if (Nombre.value.indexOf('Punto') > -1) {
-          Nombre.setValue(`Punto ${_i + 1}`)
-        }
-      }
-      _i++;
-    })
-
-  }
-
-  getFormGroupPoint(coords?): FormGroup {
-    return this.formBuilder.group({
-      Nombre: [null, [Validators.required]],
-      Coors: [(coords ? coords : null), [Validators.required]],
-      InformacionExtra: [null, [Validators.required]],
-      QueDebeHacer: [null, [Validators.required]],
-      Vuelta: [false, [Validators.required]]
-    })
-  }
-
-  onSubmit() {
-    if (this.form.valid) {
-      this.doQuote();
-    }
-  }
-
-  getSentence(body: any, api: string): Observable<any> {
-    const token$ = Observable.fromPromise(this.authService.userState.getIdToken())
-    return token$.switchMap(token => {
-      body.idToken = token
-      const httpOptions = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-        })
-      };
-      const url: string = `${environment.baseapi.tuvuelta}${api}`
-      return this.http.post(url, body, httpOptions).toPromise()
-    })
-
-  }
-
-  doQuote() {
-    console.log("doing quote")
-    const key = environment.google.distanceMatrix;
-    const points: IPunto[] = this.puntosIntermedios.value;
-    let origins = '';
-    let destinations = '';
-    for (let i = 0; i < points.length; i++) {
-      let element = points[i];
-      if (points[i] && points[i + 1]) {
-        origins += `${points[i].Coors}|`;
-        destinations += `${points[i + 1].Coors}|`;
-
-        if (points[i + 1].Vuelta) {
-          origins += `${points[i + 1].Coors}|`;
-          destinations += `${points[i].Coors}|`;
-        }
-      }
-
-    }
-
-    this.authService.userState.getIdToken().then(idToken => {
-      const body = { origins, destinations, idToken }
-      this.getSentence(body, 'api/google/distancematrix')
-        .map((res: any) => {
-          if (res || res.data) return res;
-          return {}
-        }).subscribe(res => {
-          if (res) {
-            console.log(res)
-            const info = res.data.rows;
-            let fullDistance: number = 0;
-            let fullDuration: number = 0;
-            for (let i = 0; i < info.length; i++) {
-              const element = info[i];
-              fullDistance += parseFloat(
-                element.elements[i].distance.text.replace(',', '.')) + 0.0000000001;
-              fullDuration += parseFloat(
-                element.elements[i].duration.text.replace(',', '.'));
-            }
-
-            // Calc Amount to pay
-
-
-            console.log(`Full Distancia ${fullDistance}`)
-            const Tarifas: ITarifasMensajeria = this.TarifasMensajeriaCustom ?
-              this.TarifasMensajeriaCustom :
-              this.TarifasMensajeria;
-            this.calcOvercostoutoftown(points, Tarifas)
-            this.Servicio = {
-              Recorrido: this.puntosIntermedios.value,
-              DistanciaTotal: Number(fullDistance),
-              DuracionTotal: Number(fullDuration),
-              TipoServicio: 'Mensajeria',
-              TotalAPagar: this.calcAmount(fullDistance, (points.length - 2), Tarifas),
-              SobreCostoFueraCiudad: 0
-            }
-            console.log(this.Servicio)
-
-            this.isQuoteCompleted = true;
-
-          } else {
-            this.isQuoteCompleted = false;
-          }
-
-
-        }, err => {
-          console.log(err)
-          this.isQuoteCompleted = false;
-        })
-    })
-
-  }
-
-  private calcAmount(fullDistance: number, aditionalStop: number, Tarifas: ITarifasMensajeria): number {
-    let amountToPay: number = 0;
-
-    let distance = fullDistance;
-    console.log(Tarifas)
-    // Apply Tarifas by distance
-    amountToPay += Tarifas.PrimerosKm.Costo;
-    distance -= Tarifas.PrimerosKm.Km;
-    while (distance > 0) {
-      amountToPay += Tarifas.KmAdicional;
-      distance -= 1;
-    }
-
-    // Apply Tarifas by Parada Adicional
-    amountToPay += aditionalStop * Tarifas.ParadaAdicional;
-
-    return amountToPay;
-  }
-
-  private calcOvercostoutoftown(Points: IPunto[], Tarifas: ITarifasMensajeria) {
-    let overCost: number = 0;
-    const key: string = environment.google.geocoding;
-    const hasDiferentCity = Points.map(point => {
-      const latlng = point.Coors;
-      const result_type = 'locality';
-      return this.getSentence({ latlng, result_type }, 'api/google/geocode')
-        .map(res => {
-          if (res && res.data) return res.data;
-          return null
-        })
-        .map((res: any) => {
-          console.log(res)
-          if (res && res.results && res.status == "OK") return res.results
-          return []
-        })
-        .toPromise()
-        .then((res: any[]) => {
-          console.log(res);
-          const prefix = this.selectedCity.Prefijo;
-          const Nombre = this.selectedCity.Nombre;
-          let hasPrefix: boolean = false;
-          res.forEach(item => {
-            if (item.address_components) {
-              const address_components: any[] = item.address_components;
-              if (item.formatted_address.indexOf(prefix) > -1)
-                hasPrefix = true;
-              address_components.forEach(_address_component => {
-                console.log(`Comparando Nombre: ${Nombre} long_name ${_address_component.long_name} short_name ${_address_component.short_name}`)
-                if (_address_component.long_name.indexOf(Nombre) > -1)
-                  hasPrefix = true;
-
-                if (_address_component.short_name.indexOf(Nombre) > -1)
-                  hasPrefix = true;
-              })
-            }
-          });
-          return Promise.resolve(hasPrefix)
-
-        })
-    })
-
-    Promise.all(hasDiferentCity).then(res => {
-      console.log("En el promise all")
-      console.log(res)
-      if (res.indexOf(false) != -1) {
-        console.log("Hay una ubicación fuera de la ciudad")
-        this.Servicio.SobreCostoFueraCiudad = Tarifas.SobreCostoFueraCiudad;
-      }
-    })
-
-  }
-
-  doNewSolicitud() {
-    this.isStepEditable = true;
-    this.stepper.selectedIndex = 0;
-    this.form.reset();
-    setTimeout(() => {
-      this.stepper.selectedIndex = 0;
-
-    }, 100);
-
-    setTimeout(() => {
-      this.isStepEditable = true;
-      this.isQuoteCompleted = false;
-      this.stepper._stateChanged();
-      this.subs.forEach(sub => sub.unsubscribe());
-      this.buildForm();
-      this.stepper.linear = true;
-    }, 1000);
-
+  private addListeners(group: FormGroup): void {
+    this.addListenerText(group, 'Nombre')
+    this.addIsVueltaListener(group)
+    this.addcoorsListener(group)
   }
 
   addListenerText(group: FormGroup, control: string) {
@@ -456,35 +211,312 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             group.get(control).setValue(null);
           }, 2000);
+          group.removeControl('Coordenadas')
           this.notifyNotFoundCoords(group.get(control).value);
         }
 
         if (val) {
-          if (control.indexOf('Coors') == -1) {
-            // Get coordenates
-            const coors = val.geometry.location;
-            console.log(coors)
-            if (Number(coors.lat) > 13 || Number(coors.lng) < -80) {
-              notFound();
+          const coors = val.geometry.location;
 
-            } else {
-              if (control == 'Nombre') {
-                group.get(`Coors`).setValue(`${coors.lat},${coors.lng}`)
-              } else {
-                group.get(`${control}Coors`).setValue(`${coors.lat},${coors.lng}`)
-              }
-            }
+          if (Number(coors.lat) > 13 || Number(coors.lng) < -80) {
+            notFound();
+            return
           }
+
+          group.get(`Coors`).setValue(`${coors.lat},${coors.lng}`)
+          return
         }
-        else {
-          notFound();
-        }
+
+        notFound();
+
       }, err => {
         console.log(err)
       }))
   }
 
-  notifyNotFoundCoords(location) {
+  private addIsVueltaListener(group: FormGroup) {
+    this.subs.push(
+      group.get('Vuelta')
+        .valueChanges
+        .subscribe(val => {
+          const label: string = 'PuntoAVolver';
+          if (val) {
+
+            return group.addControl(
+              label,
+              this.formBuilder
+                .control(
+                  this.puntosIntermedios.controls.indexOf(group) - 1,
+                  Validators.required
+                )
+            )
+          }
+          group.removeControl(label)
+
+        })
+    )
+  }
+
+  addcoorsListener(group: FormGroup) {
+    this.subs.push(
+      group.get('Coors')
+        .valueChanges
+        .subscribe((val: string) => {
+          if (!val) return
+
+          const data = val.split(',').filter(data => { if (data) return data })
+          const Lat: number = Number(data[0]);
+          const Lng: number = Number(data[1]);
+
+          const Coordenadas = group.get('Coordenadas')
+          if (Coordenadas) return Coordenadas.setValue({ Lat, Lng });
+          group.addControl('Coordenadas', this.formBuilder.group({ Lat, Lng }))
+
+        })
+    )
+  }
+
+  public removeIntermediatePoint(index): void {
+
+    this.puntosIntermedios.removeAt(index);
+
+    // Update Forms Name
+    let _i = 0;
+    this.puntosIntermedios.controls.forEach((_control: FormGroup) => {
+      const Nombre = _control.get('Nombre')
+      if (Nombre.value) {
+        if (Nombre.value.indexOf('Punto') > -1) {
+          Nombre.setValue(`Punto ${_i + 1}`)
+        }
+      }
+
+      const Vuelta = _control.get('Vuelta')
+      if (Vuelta && Vuelta.value) {
+        const PuntoAVolver = _control.get('PuntoAVolver');
+        PuntoAVolver.setValue(_i - 1)
+      }
+      _i++;
+    })
+
+  }
+
+  private getFormGroupPoint(coords?): FormGroup {
+    return this.formBuilder.group({
+      Nombre: [null, [Validators.required]],
+      Coors: [(coords ? coords : null), [Validators.required]],
+      InformacionExtra: [null, [Validators.required]],
+      QueDebeHacer: [null, [Validators.required]],
+      Vuelta: [false, [Validators.required]]
+    })
+  }
+
+  public onSubmit(): void {
+    if (this.form.valid) {
+      this.doQuote();
+    }
+  }
+  doQuote() {
+    this.isQuoting = true;
+    const key = environment.google.distanceMatrix;
+    const points: IPunto[] = this.puntosIntermedios.value;
+    let origins = '';
+    let destinations = '';
+    for (let i = 0; i < points.length; i++) {
+      let point: IPunto = points[i];
+      let nextPoint: IPunto = points[i + 1];
+
+      if (i == 0) {
+        origins += `${point.Coors}|`;
+        destinations += `${nextPoint.Coors}|`;
+      } else if (i > 0 && point) {
+        if (point.Vuelta) {
+          origins += `${point.Coors}|`;
+          destinations += `${points[point.PuntoAVolver].Coors}|`;
+
+          if (nextPoint) {
+            origins += `${points[point.PuntoAVolver].Coors}|`;
+            destinations += `${nextPoint.Coors}|`;
+          }
+
+        } else if (nextPoint) {
+          origins += `${point.Coors}|`;
+          destinations += `${nextPoint.Coors}|`;
+        }
+      }
+    }
+
+    const body = { origins, destinations }
+    this.getSentence(body, 'api/google/distancematrix')
+      .map((res: any) => {
+        if (res || res.data) return res;
+        return {}
+      }).subscribe(res => {
+        this.isQuoting = false;
+        if (res) {
+          this.isQuoting = true;
+          const info = res.data.rows;
+          let fullDistance: number = 0;
+          let fullDuration: number = 0;
+
+          for (let i = 0; i < info.length; i++) {
+            const element = info[i];
+            fullDistance += parseFloat(
+              element.elements[i].distance.text.replace(',', '.'));/* + 0.0000000001 */
+            fullDuration += parseFloat(
+              element.elements[i].duration.text.replace(',', '.'));
+          }
+
+          // Calc Amount to pay
+          console.log({ fullDistance, fullDuration })
+          console.log('full distance', Math.round(fullDistance))
+
+          const Tarifas: ITarifasMensajeria = this.TarifasMensajeriaCustom ?
+            this.TarifasMensajeriaCustom :
+            this.TarifasMensajeria;
+          this.calcOvercostoutoftown(points, Tarifas)
+          this.Servicio = {
+            Recorrido: this.puntosIntermedios.value,
+            DistanciaTotal: Number(fullDistance),
+            DuracionTotal: Number(fullDuration),
+            TipoServicio: 'Mensajeria',
+            TotalAPagar: this.calcAmount(Math.round(fullDistance), (points.length - 2), Tarifas),
+            SobreCostoFueraCiudad: 0
+          }
+
+
+
+
+        } else {
+          this.isQuoteCompleted = false;
+        }
+
+
+      }, err => {
+        console.log(err)
+        this.isQuoting = false;
+        this.isQuoteCompleted = false;
+      })
+
+
+  }
+
+  private getSentence(body: any, api: string): Observable<any> {
+    const token$ = Observable.fromPromise(this.authService.userState.getIdToken())
+    return token$.switchMap(token => {
+      body.idToken = token
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+        })
+      };
+      const url: string = `${environment.baseapi.tuvuelta}${api}`
+      return this.http.post(url, body, httpOptions).toPromise()
+    })
+
+  }
+
+
+
+  private calcAmount(fullDistance: number, aditionalStop: number, Tarifas: ITarifasMensajeria): number {
+    let amountToPay: number = 0;
+
+    let distance = fullDistance;
+
+    // Apply Tarifas by distance
+    amountToPay += Tarifas.PrimerosKm.Costo;
+    distance -= Tarifas.PrimerosKm.Km;
+    while (distance > 0) {
+      amountToPay += Tarifas.KmAdicional;
+      distance -= 1;
+    }
+
+    // Apply Tarifas by Parada Adicional
+    amountToPay += aditionalStop * Tarifas.ParadaAdicional;
+
+    return amountToPay;
+  }
+
+  private calcOvercostoutoftown(Points: IPunto[], Tarifas: ITarifasMensajeria) {
+    this.isQuoting = true;
+    let overCost: number = 0;
+    const key: string = environment.google.geocoding;
+    const hasDiferentCity = Points.map(point => {
+      const latlng = point.Coors;
+      const result_type = 'locality';
+      return this.getSentence({ latlng, result_type }, 'api/google/geocode')
+        .map(res => {
+          if (res && res.data) return res.data;
+          return null
+        })
+        .map((res: any) => {
+
+          if (res && res.results && res.status == "OK") return res.results
+          return []
+        })
+        .toPromise()
+        .then((res: any[]) => {
+
+          const prefix = this.selectedCity.Prefijo;
+          const Nombre = this.selectedCity.Nombre;
+          let hasPrefix: boolean = false;
+          res.forEach(item => {
+            if (item.address_components) {
+              const address_components: any[] = item.address_components;
+              if (item.formatted_address.indexOf(prefix) > -1)
+                hasPrefix = true;
+              address_components.forEach(_address_component => {
+
+                if (_address_component.long_name.indexOf(Nombre) > -1)
+                  hasPrefix = true;
+
+                if (_address_component.short_name.indexOf(Nombre) > -1)
+                  hasPrefix = true;
+              })
+            }
+          });
+          return Promise.resolve(hasPrefix)
+
+        })
+    })
+
+    Promise.all(hasDiferentCity)
+      .then(res => {
+        this.isQuoting = false;
+        this.isQuoteCompleted = true;
+        if (res.indexOf(false) != -1) {
+          console.log("Hay una ubicación fuera de la ciudad")
+          this.Servicio.SobreCostoFueraCiudad = Tarifas.SobreCostoFueraCiudad;
+        }
+      })
+      .catch(err => {
+        this.isQuoteCompleted = true;
+        this.isQuoting = false
+      })
+
+  }
+
+  doNewSolicitud() {
+    this.isStepEditable = true;
+    this.stepper.selectedIndex = 0;
+    this.form.reset();
+    setTimeout(() => {
+      this.stepper.selectedIndex = 0;
+    }, 100);
+
+    setTimeout(() => {
+      this.isStepEditable = true;
+      this.isQuoteCompleted = false;
+      this.stepper._stateChanged();
+      this.subs.forEach(sub => sub.unsubscribe());
+      this.buildForm();
+      this.stepper.linear = true;
+    }, 1000);
+
+  }
+
+
+
+  private notifyNotFoundCoords(location): ActiveToast {
     const message: string = `No se encontró la ubicacion <strong>${location}</strong>`;
     const title: string = `Ubicación no encontrada`;
     const config: Partial<IndividualConfig> = {
@@ -494,10 +526,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
       positionClass: 'toast-center-center',
       disableTimeOut: false
     }
-
-    this.toastr.warning(message, title, config)
-
-
+    return this.toastr.warning(message, title, config)
   }
 
 
@@ -511,13 +540,22 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   }
 
   onSelectionChange(event) {
-    console.log(this.stepper)
-    console.log(event)
+    
     const selectedIndex: number = event.selectedIndex;
     if (selectedIndex == 1) {
       this.doQuote();
     } else if (selectedIndex == 2) {
-      this.isStepEditable = false;
+      console.log(event)
+      console.log(event.previouslySelectedIndex == 0)
+      if (event.previouslySelectedIndex == 0) {
+        setTimeout(() => {
+          this.stepper.selectedIndex = 1
+        }, 500);
+        console.log()
+      }else {
+        this.isStepEditable = false;
+      }
+      
     }
   }
 
@@ -572,6 +610,7 @@ interface IPunto {
   InformacionExtra: string;
   QueDebeHacer: string;
   Vuelta: boolean;
+  PuntoAVolver?: number;
 }
 
 class IServicioMensajeria {

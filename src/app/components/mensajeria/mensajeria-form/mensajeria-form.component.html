@@ -12,13 +12,15 @@
       <div class="container-map">
         <agm-map [latitude]="selectedCity.Coordenadas.Lat" [longitude]="selectedCity.Coordenadas.Lng" [zoom]="14" (mapClick)="onMapClick($event)">
           <!-- mapDblClick -->
-          <ng-container *ngFor="let marker of markers">
-            <agm-marker [latitude]="marker.lat" [longitude]="marker.lng">
-              <agm-info-window>{{marker.title}}</agm-info-window>
+          <ng-container *ngFor="let marker of puntosIntermedios.value; let i=index">
+            <agm-marker *ngIf="marker.Coordenadas" [latitude]="marker.Coordenadas.Lat" [longitude]="marker.Coordenadas.Lng">
+              <agm-info-window>Punto {{i + 1 }}</agm-info-window>
             </agm-marker>
           </ng-container>
           <agm-polyline [editable]="true" [strokeColor]="blue">
-            <agm-polyline-point [latitude]="marker.lat" [longitude]="marker.lng" *ngFor="let marker of markers"></agm-polyline-point>
+            <ng-container *ngFor="let marker of  puntosIntermedios.value">
+              <agm-polyline-point *ngIf="marker.Coordenadas" [latitude]="marker.Coordenadas.Lat" [longitude]="marker.Coordenadas.Lng"></agm-polyline-point>
+            </ng-container>
           </agm-polyline>
         </agm-map>
       </div>
@@ -50,9 +52,26 @@
                         <div>
                           <mat-checkbox formControlName="Vuelta" *ngIf="i > 0">
                             <mat-icon>refresh</mat-icon>
-                            Debe Volver al Punto {{i}}
+                            ¿Es Ida y Vuelta?
                           </mat-checkbox>
                         </div>
+
+                        <mat-form-field *ngIf="point.get('PuntoAVolver')">
+                          <mat-select placeholder="Seleccione Punto a Volver" formControlName="PuntoAVolver">
+                            <ng-container *ngFor="let _poin of puntosIntermedios.value; let _i = index">
+                              <mat-option *ngIf="_i < i" [value]="_i">
+                                Punto {{ _i + 1 }}
+                              </mat-option>
+                            </ng-container>
+                          </mat-select>
+                          <mat-error>
+                            Campo
+                            <strong>Obligatorio</strong>
+                          </mat-error>
+                        </mat-form-field>
+
+
+
 
                         <!-- <mat-form-field>
                                   <input matInput placeholder="Coors punto {{i+1}}" formControlName="Coors" readonly>
@@ -101,21 +120,32 @@
               </mat-step>
               <mat-step [editable]="isStepEditable" [completed]="isQuoteCompleted">
                 <ng-template matStepLabel>Hacer Cotización</ng-template>
-                <ng-container *ngIf="isQuoteCompleted; else noQuoteCompleted">
+                <ng-container *ngIf="isQuoting">
+                  <div class="text-center">
+
+                    <mat-spinner></mat-spinner>
+                    <h4>Realizando Cotizacion
+                      <small>Espere porfavor</small>
+                    </h4>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="!isQuoting && isQuoteCompleted; else noQuoteCompleted">
                   <mat-list>
                     <h3 mat-subheader>Resumen del servicio</h3>
                     <mat-list-item>
                       <mat-icon mat-list-icon>location_on</mat-icon>
-                      <h4 mat-line>Distancia Total:
+                      <h4 mat-line>Distancia Total: </h4>
+                      <h6 mat-line>
                         <strong>{{(Servicio.DistanciaTotal) | number:'1.1-4'}} Km</strong>
-                      </h4>
+                      </h6>
                       <p mat-line> </p>
                     </mat-list-item>
                     <mat-list-item>
                       <mat-icon mat-list-icon>timer</mat-icon>
-                      <h4 mat-line>Duración Aproximada:
+                      <h4 mat-line>Duración Aproximada: </h4>
+                      <h6 mat-line>
                         <strong>{{(Servicio.DuracionTotal) | number:'1.1-2'}} Minutos</strong>
-                      </h4>
+                      </h6>
                       <p mat-line>Más el tiempo de tome cada parada.</p>
                     </mat-list-item>
                     <mat-list-item>
@@ -129,31 +159,40 @@
                     <mat-list-item>
                       <mat-icon mat-list-icon>timeline</mat-icon>
                       <h4 mat-line>Total Puntos a Recorrer:
-                        <strong>{{Servicio.Recorrido.length}} Puntos</strong>
+
                       </h4>
+                      <h6 mat-line>
+                        <strong>{{Servicio.Recorrido.length}} Puntos</strong>
+                      </h6>
                       <p mat-line></p>
                     </mat-list-item>
                     <mat-list-item>
                       <mat-icon mat-list-icon>play_arrow</mat-icon>
                       <h4 mat-line>Dirección de Partida:
-                        <strong>{{Servicio.Recorrido[0].Nombre}}</strong>
+
                       </h4>
+                      <h6 mat-line>
+                        <strong>{{Servicio.Recorrido[0].Nombre}}</strong>
+                      </h6>
                       <p mat-line></p>
                     </mat-list-item>
                     <mat-list-item>
                       <mat-icon mat-list-icon>location_off</mat-icon>
                       <h4 mat-line>Dirección de Entrega:
-                        <strong>{{Servicio.Recorrido[Servicio.Recorrido.length - 1].Nombre}}</strong>
+
                       </h4>
+                      <h6 mat-line>
+                        <strong>{{Servicio.Recorrido[Servicio.Recorrido.length - 1].Nombre}}</strong>
+                      </h6>
                       <p mat-line></p>
                     </mat-list-item>
                     <mat-list-item>
-                        <mat-icon mat-list-icon>attach_money</mat-icon>
-                        <h4 mat-line>Sobrecosto por Servicio fuera de la ciudad:
-                          <strong>{{Servicio.SobreCostoFueraCiudad | number }}</strong>
-                        </h4>
-                        <p mat-line></p>
-                      </mat-list-item>
+                      <mat-icon mat-list-icon>attach_money</mat-icon>
+                      <h4 mat-line>Sobrecosto por Servicio fuera de la ciudad:
+                        <strong>{{Servicio.SobreCostoFueraCiudad | number }}</strong>
+                      </h4>
+                      <p mat-line></p>
+                    </mat-list-item>
                     <mat-divider></mat-divider>
                     <h3 mat-subheader>Resumen del recorrido</h3>
                     <mat-list-item *ngFor="let point of Servicio.Recorrido; let i=index">
@@ -185,7 +224,7 @@
                   </div>
                 </ng-container>
 
-                <ng-template #noQuoteCompleted>
+                <ng-template #noQuoteCompleted *ngIf="!isQuoting">
                   <div class="text-center">
                     <h3 class="h3">Hubo un Error
                       <small>Error en la Cotización</small>
@@ -197,6 +236,7 @@
                     al paso anterior e intentelo de nuevo.
                   </div>
                 </ng-template>
+
                 <div class="text-left">
                   <button mat-button matStepperPrevious>
                     <mat-icon>arrow_back</mat-icon>
@@ -248,3 +288,4 @@
 </ng-template>
 
 <spinner></spinner>
+
