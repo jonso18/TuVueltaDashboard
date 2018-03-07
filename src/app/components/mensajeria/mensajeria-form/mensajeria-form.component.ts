@@ -15,6 +15,7 @@ import { DbService } from '../../../services/db/db.service';
 import { ITarifasMensajeria } from '../../../interfaces/tarifas.interfaces';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ICiudad } from '../../../interfaces/ciudad.interface';
+import { Toast, ToastrService, IndividualConfig, } from 'ngx-toastr';
 let google: any;
 @Component({
   selector: 'app-mensajeria-form',
@@ -44,7 +45,8 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private dialog: MatDialog,
     private dbService: DbService,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit() {
@@ -72,6 +74,11 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   loadCitys() {
     this.dbService.listCiudades().subscribe(res => {
       this.Ciudades = res;
+      if (this.Ciudades.length > 0) {
+        this.selectedCity = this.Ciudades[0];
+        this.onSelectedCity()
+      }
+
     })
   }
 
@@ -424,6 +431,8 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
       .debounceTime(2500)
       .distinctUntilChanged()
       .switchMap(address => {
+        if (!address) return Observable.empty();
+
         const data = group.value;
         const answer = this.getSentence({ address }, 'api/google/geocode')
           .map(res => {
@@ -440,27 +449,55 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
       })
       .map((res: any) => {
         if (res && res.results) return res.results[0];
-        return {}
+        return null
       })
       .subscribe(val => {
+        const notFound = (): void => {
+          setTimeout(() => {
+            group.get(control).setValue(null);
+          }, 2000);
+          this.notifyNotFoundCoords(group.get(control).value);
+        }
+
         if (val) {
           if (control.indexOf('Coors') == -1) {
             // Get coordenates
             const coors = val.geometry.location;
-            if (control == 'Nombre') {
-              group.get(`Coors`).setValue(`${coors.lat},${coors.lng}`)
+            console.log(coors)
+            if (Number(coors.lat) > 13 || Number(coors.lng) < -80) {
+              notFound();
+
             } else {
-              group.get(`${control}Coors`).setValue(`${coors.lat},${coors.lng}`)
+              if (control == 'Nombre') {
+                group.get(`Coors`).setValue(`${coors.lat},${coors.lng}`)
+              } else {
+                group.get(`${control}Coors`).setValue(`${coors.lat},${coors.lng}`)
+              }
             }
           }
         }
         else {
-          alert(`No se pudo encontrar la ubicación ${group.get(control).value}`)
-          group.get(control).setValue(null);
+          notFound();
         }
       }, err => {
         console.log(err)
       }))
+  }
+
+  notifyNotFoundCoords(location) {
+    const message: string = `No se encontró la ubicacion <strong>${location}</strong>`;
+    const title: string = `Ubicación no encontrada`;
+    const config: Partial<IndividualConfig> = {
+      progressBar: true,
+      closeButton: true,
+      timeOut: 3000,
+      positionClass: 'toast-center-center',
+      disableTimeOut: false
+    }
+
+    this.toastr.warning(message, title, config)
+
+
   }
 
 

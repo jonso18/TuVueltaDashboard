@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
                 case ROLES.Administrador:
                   this.globalTasksService.startTasks();
                   this.authService.GlobalRoutes.next(administradorRoutes);
-                  this.router.navigateByUrl('/administrador');
+                  this.router.navigateByUrl('/administrador/mensajeria/nuevo');
                   break;
 
                 case ROLES.Cliente:

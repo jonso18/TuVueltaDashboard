@@ -5,11 +5,12 @@ import { Router, NavigationEnd } from '@angular/router';
 import { RouteInfo } from '../../components/sidebar/sidebar.component';
 import { clientRoutes, operatorRoutes, administradorRoutes } from '../../config/Routes';
 import { User } from '@firebase/auth-types';
+import { IUser } from '../../interfaces/usuario.interface';
 
 @Injectable()
 export class AuthService {
 
-  public userInfo: any;
+  public userInfo: IUser;
   public userState: User;
   public GlobalRoutes: BehaviorSubject<RouteInfo[]> = new BehaviorSubject([]);
   public subUserInfo: Subscription;
