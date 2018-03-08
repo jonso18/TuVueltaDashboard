@@ -24,3 +24,8 @@ mat-form-field{
     margin-top: 0.5em; 
     margin-bottom: 1.5em;
 }
+
+p.note{
+    white-space: inherit !important;
+    overflow: visible !important;
+}

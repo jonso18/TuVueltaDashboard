@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialog, MatHorizontalStepper } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog, MatHorizontalStepper, MatSelect, MatSelectChange } from '@angular/material';
 import { LatLngLiteral } from '@agm/core';
 import { Observable } from 'rxjs/Rx';
 import { DbService } from '../../../services/db/db.service';
@@ -16,6 +16,8 @@ import { ITarifasMensajeria } from '../../../interfaces/tarifas.interfaces';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ICiudad } from '../../../interfaces/ciudad.interface';
 import { Toast, ToastrService, IndividualConfig, ActiveToast, } from 'ngx-toastr';
+import { ROLES } from '../../../config/Roles';
+import { IUser } from '../../../interfaces/usuario.interface';
 let google: any;
 @Component({
   selector: 'app-mensajeria-form',
@@ -24,6 +26,8 @@ let google: any;
 })
 export class MensajeriaFormComponent implements OnInit, OnDestroy {
   @ViewChild('stepper') stepper: MatHorizontalStepper;
+  @ViewChild('clientSelect') clientSelect: MatSelect;
+
   lat: number = 4.433;
   lng: number = -75.217;
   public form: FormGroup;
@@ -39,8 +43,11 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   public selectedCity: ICiudad;
   public subTM: Subscription;
   public subTMC: Subscription;
+  public subClnts: Subscription;
   public Servicio: IServicioMensajeria;
   public isQuoting: boolean = false;
+  public Clientes: IUser[];
+  public selectedCliente: IUser;
   constructor(
     private formBuilder: FormBuilder,
     private http: HttpClient,
@@ -50,12 +57,6 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     private toastr: ToastrService
   ) { }
 
-  ngOnInit(): void {
-    this.loadCitys();
-    this.buildForm();
-
-  }
-
   ngOnDestroy(): void {
     if (this.subTM) this.subTM.unsubscribe();
     if (this.subTMC) this.subTMC.unsubscribe();
@@ -64,7 +65,37 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     })
   }
 
-  public onSelectedCity(): void {
+
+
+
+  ngOnInit(): void {
+    if (this.authService.userInfo.Rol == ROLES.Administrador || this.authService.userInfo.Rol == ROLES.Operador){
+      this.loadClientes();
+    }else {
+      this.selectedCliente = this.authService.userInfo;
+    }
+    
+    this.loadCitys();
+    this.buildForm();
+
+  }
+
+  loadClientes() {
+    if (this.subClnts) this.subClnts.unsubscribe();
+    this.subClnts = this.dbService.listUsersByRol(ROLES.Cliente)
+      .subscribe(res => this.Clientes = res)
+
+  }
+
+  public onSelectedClient(event: MatSelectChange): void {
+    
+    this.selectedCliente = event.value;
+    this.selectedCity = null;
+    
+  }
+
+  public onSelectedCity(event: MatSelectChange): void {
+    
     const code: number = Number(this.selectedCity.Codigo);
     this.loadTarifasMensajeria(code);
     this.loadTarifasMensajeriaCustom(code);
@@ -73,16 +104,10 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   private loadCitys(): void {
     this.dbService.listCiudades().subscribe(res => {
       this.Ciudades = res;
-      if (this.Ciudades.length > 0) {
-        this.selectedCity = this.Ciudades[0];
-        this.onSelectedCity()
-      }
-
     })
   }
 
   public onMapClick(event: any): void {
-    console.log(this.stepper)
     if (this.stepper.selectedIndex != 0) return
     const coors: LatLngLiteral = event.coords;
     const dialog = this.dialog.open(DialogOnClickMap, {
@@ -134,7 +159,9 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   }
 
   private loadTarifasMensajeriaCustom(cityCode): void {
-    const id = this.authService.userState.uid;
+    const id = this.selectedCliente.$key;
+
+    console.log(this.selectedCliente)
     if (this.subTMC) this.subTMC.unsubscribe();
     this.subTMC = this.dbService.objectTarifasCustom(cityCode, 'Mensajeria', id)
       .snapshotChanges()
@@ -148,7 +175,9 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   }
 
   buildForm() {
+    
     this.form = this.formBuilder.group({
+      
       puntosIntermedios: this.formBuilder.array([]),
     })
     this.addIntermediatePoint();
@@ -310,11 +339,6 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     })
   }
 
-  public onSubmit(): void {
-    if (this.form.valid) {
-      this.doQuote();
-    }
-  }
   doQuote() {
     this.isQuoting = true;
     const key = environment.google.distanceMatrix;
@@ -366,25 +390,43 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
               element.elements[i].duration.text.replace(',', '.'));
           }
 
-          // Calc Amount to pay
-          console.log({ fullDistance, fullDuration })
-          console.log('full distance', Math.round(fullDistance))
-
+          // Load Tarifas
           const Tarifas: ITarifasMensajeria = this.TarifasMensajeriaCustom ?
             this.TarifasMensajeriaCustom :
             this.TarifasMensajeria;
-          this.calcOvercostoutoftown(points, Tarifas)
-          this.Servicio = {
-            Recorrido: this.puntosIntermedios.value,
-            DistanciaTotal: Number(fullDistance),
-            DuracionTotal: Number(fullDuration),
-            TipoServicio: 'Mensajeria',
-            TotalAPagar: this.calcAmount(Math.round(fullDistance), (points.length - 2), Tarifas),
-            SobreCostoFueraCiudad: 0
-          }
+
+          this.calcOvercostoutoftown(points, Tarifas).then((isOut: boolean) => {
+            const Recorrido: IPunto[] = this.puntosIntermedios.value;
+            const DistanciaTotal: number = Number(fullDistance);
+            const DistanciaRedondeada: number = Math.round(DistanciaTotal);
+            const KmAdAlBase: number = DistanciaRedondeada - Tarifas.PrimerosKm.Km;
+            const DuracionTotal: number = Number(fullDuration);
+            const TipoServicio: string = 'Mensajeria';
+            const RecargoKmAdi: number = this.amountByAdKm(KmAdAlBase, Tarifas.KmAdicional)
+            const ValorBase: number = Tarifas.PrimerosKm.Costo;
+            const SobreCostoFueraCiudad: number = isOut ? Tarifas.SobreCostoFueraCiudad : 0;
+            const RecargoParadas: number = (points.length - 2) * Tarifas.ParadaAdicional;
+            const TotalAPagar: number = ValorBase + RecargoKmAdi + SobreCostoFueraCiudad + RecargoParadas;
+            const TiempoEspera: number = 0;
+            const ValorAsegurado: number = 0;
+            const SeguroAPagar: number = 0;
+            const user_id: string = this.selectedCliente.$key;
+
+            this.Servicio = {
+              Recorrido, DistanciaTotal, DistanciaRedondeada, KmAdAlBase,
+              DuracionTotal, TipoServicio, RecargoKmAdi, ValorBase,
+              SobreCostoFueraCiudad, RecargoParadas, TotalAPagar,
+              TiempoEspera, ValorAsegurado, SeguroAPagar, user_id
+            }
 
 
 
+            this.isQuoting = false;
+            this.isQuoteCompleted = true;
+          }).catch(err => {
+            this.isQuoteCompleted = true;
+            this.isQuoting = false
+          })
 
         } else {
           this.isQuoteCompleted = false;
@@ -398,6 +440,36 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
       })
 
 
+  }
+
+  /**
+   * Calculate amount to pay by aditional Km
+   * 
+   * @private
+   * @param {number} distance 
+   * @param {number} ValueAdKm 
+   * @returns {number} 
+   * @memberof MensajeriaFormComponent
+   */
+  private amountByAdKm(distance: number, ValueAdKm: number): number {
+    let amount: number = 0;
+    while (distance > 0) {
+      amount += ValueAdKm
+    }
+    return amount;
+  }
+
+  /**
+   * Calculate amount to pay by aditional stop
+   * 
+   * @private
+   * @param {number} aditionalStop 
+   * @param {number} AmountAdStop 
+   * @returns {number} 
+   * @memberof MensajeriaFormComponent
+   */
+  private amountByAditionalStop(aditionalStop: number, AmountAdStop: number): number {
+    return aditionalStop * AmountAdStop
   }
 
   private getSentence(body: any, api: string): Observable<any> {
@@ -415,28 +487,16 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
 
   }
 
-
-
-  private calcAmount(fullDistance: number, aditionalStop: number, Tarifas: ITarifasMensajeria): number {
-    let amountToPay: number = 0;
-
-    let distance = fullDistance;
-
-    // Apply Tarifas by distance
-    amountToPay += Tarifas.PrimerosKm.Costo;
-    distance -= Tarifas.PrimerosKm.Km;
-    while (distance > 0) {
-      amountToPay += Tarifas.KmAdicional;
-      distance -= 1;
-    }
-
-    // Apply Tarifas by Parada Adicional
-    amountToPay += aditionalStop * Tarifas.ParadaAdicional;
-
-    return amountToPay;
-  }
-
-  private calcOvercostoutoftown(Points: IPunto[], Tarifas: ITarifasMensajeria) {
+  /**
+   * Check if any one direction is out of town;
+   * 
+   * @private
+   * @param {IPunto[]} Points Array with points which must visit.
+   * @param {ITarifasMensajeria} Tarifas 
+   * @returns {Promise<boolean>} 
+   * @memberof MensajeriaFormComponent
+   */
+  private calcOvercostoutoftown(Points: IPunto[], Tarifas: ITarifasMensajeria): Promise<boolean> {
     this.isQuoting = true;
     let overCost: number = 0;
     const key: string = environment.google.geocoding;
@@ -475,24 +535,20 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
             }
           });
           return Promise.resolve(hasPrefix)
-
-        })
+        }).catch(err => console.log(err))
     })
-
-    Promise.all(hasDiferentCity)
+    
+    return Promise.all(hasDiferentCity)
       .then(res => {
         this.isQuoting = false;
         this.isQuoteCompleted = true;
         if (res.indexOf(false) != -1) {
           console.log("Hay una ubicación fuera de la ciudad")
-          this.Servicio.SobreCostoFueraCiudad = Tarifas.SobreCostoFueraCiudad;
-        }
-      })
-      .catch(err => {
-        this.isQuoteCompleted = true;
-        this.isQuoting = false
-      })
 
+          return Promise.resolve(true)
+        }
+        return Promise.resolve(false);
+      })
   }
 
   doNewSolicitud() {
@@ -529,37 +585,37 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     return this.toastr.warning(message, title, config)
   }
 
-
-  removeCoors(control, i?) {
-    console.log(`control: ${control} i: ${i}`)
-    if (typeof i == 'number') {
-      this.puntosIntermedios.get(i + '').get('Coors').setValue(null)
-      return
-    }
-    this.form.get(`${control}Coors`).setValue(null)
+  /**
+   * Remove coors.
+   * Is used in DOM keyup for each direction. so, it mmust remove the coors.
+   * 
+   * @param {string} control 
+   * @param {number} i 
+   * @memberof MensajeriaFormComponent
+   */
+  public removeCoors(control: string, i: number): void {
+    this.puntosIntermedios.get(i + '').get('Coors').setValue(null)
+    const group: FormGroup = this.puntosIntermedios.get(i + '') as FormGroup;
+    group.removeControl('Coordenadas')
   }
 
-  onSelectionChange(event) {
-    
+  onSelectionChange(event): void {
     const selectedIndex: number = event.selectedIndex;
     if (selectedIndex == 1) {
       this.doQuote();
     } else if (selectedIndex == 2) {
-      console.log(event)
-      console.log(event.previouslySelectedIndex == 0)
       if (event.previouslySelectedIndex == 0) {
         setTimeout(() => {
           this.stepper.selectedIndex = 1
         }, 500);
-        console.log()
-      }else {
+      } else {
         this.isStepEditable = false;
       }
-      
     }
   }
 
   get puntosIntermedios() { return this.form.get('puntosIntermedios') as FormArray }
+  
 }
 
 @Component({
@@ -616,9 +672,17 @@ interface IPunto {
 class IServicioMensajeria {
   public Recorrido: IPunto[];
   public DistanciaTotal: number;
+  public DistanciaRedondeada: number;
+  public KmAdAlBase: number;
   public DuracionTotal: number;
   public TipoServicio: string;
-  public TotalAPagar?: number;
-  public ValorDomicilio?: number;
-  public SobreCostoFueraCiudad?: number;
+  public RecargoKmAdi: number;
+  public ValorBase: number;
+  public SobreCostoFueraCiudad: number;
+  public RecargoParadas: number;
+  public TotalAPagar: number;
+  public TiempoEspera: number;
+  public ValorAsegurado: number;
+  public SeguroAPagar: number;
+  public user_id: string;
 }

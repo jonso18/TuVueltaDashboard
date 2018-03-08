@@ -18,12 +18,10 @@ import { MaterialModule } from '../material/material.module';
     MaterialModule,
     RouterModule.forChild(ClientRoutes),
     SharedComponentsModule,
-    AgmCoreModule.forRoot({
-      apiKey: environment.google.maps
-  }),
+    AgmCoreModule,
   ],
   declarations: [
-    
+
   ]
 })
 export class ClientModule { }

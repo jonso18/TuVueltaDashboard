@@ -15,12 +15,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   public tableData: TableData;
 
   // constructor(private navbarTitleService: NavbarTitleService) { }
-  public ngOnInit() {
-    
+  public ngOnInit() { }
 
-   }
-
-   ngAfterViewInit() {
-
-   }
+  ngAfterViewInit() { }
 }

@@ -23,9 +23,7 @@ import { ConfirmationComponent } from '../../dialogs/confirmation/confirmation.c
   imports: [
     CommonModule,
     CommonImportsModule,
-    AgmCoreModule.forRoot({
-      apiKey: environment.google.maps
-    }),
+    AgmCoreModule,
   ],
   declarations: [
     DashboardComponent,

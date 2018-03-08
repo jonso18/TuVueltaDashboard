@@ -110,6 +110,9 @@ import { LoadingRouteComponent } from './components/loading-route/loading-route.
     FixedpluginModule,
     AngularFireModule.initializeApp(environment.firebase),
     ToastrModule.forRoot(ToastConfig),
+    AgmCoreModule.forRoot({
+      apiKey: environment.google.maps
+    })
   ],
   providers: [
     AuthGuardService,

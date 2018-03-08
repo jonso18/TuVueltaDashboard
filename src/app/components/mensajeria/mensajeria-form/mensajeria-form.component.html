@@ -1,6 +1,16 @@
-<mat-form-field *ngIf="Ciudades">
-  <mat-select placeholder="Seleccione la Ciudad" [(ngModel)]="selectedCity">
-    <mat-option *ngFor="let city of Ciudades" [value]="city" (click)="onSelectedCity()">
+<mat-form-field *ngIf="Clientes">
+  <mat-select placeholder="Seleccione Cliente" (selectionChange)="onSelectedClient($event)">
+    <mat-option *ngFor="let Cliente of Clientes" [value]="Cliente">
+      {{Cliente.Nombres + ' ' + Cliente.Apellidos}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+
+
+<mat-form-field *ngIf="Ciudades && selectedCliente">
+  <mat-select placeholder="Seleccione la Ciudad" [(ngModel)]="selectedCity" (selectionChange)="onSelectedCity($event)">
+    <mat-option *ngFor="let city of Ciudades" [value]="city" >
       {{city.Nombre}}
     </mat-option>
   </mat-select>
@@ -29,6 +39,8 @@
         <div class="col-sm-offset-1 col-sm-10">
           <mat-card class="card-summary">
             <mat-horizontal-stepper (selectionChange)="onSelectionChange($event)" [linear]="true" #stepper="matHorizontalStepper">
+
+              <!-- Step 1 -->
               <mat-step [stepControl]="form" [editable]="isStepEditable">
 
                 <form [formGroup]="form">
@@ -69,10 +81,6 @@
                             <strong>Obligatorio</strong>
                           </mat-error>
                         </mat-form-field>
-
-
-
-
                         <!-- <mat-form-field>
                                   <input matInput placeholder="Coors punto {{i+1}}" formControlName="Coors" readonly>
                                 </mat-form-field> -->
@@ -118,17 +126,22 @@
                   </div>
                 </form>
               </mat-step>
+
+              <!-- Step 2 -->
               <mat-step [editable]="isStepEditable" [completed]="isQuoteCompleted">
                 <ng-template matStepLabel>Hacer Cotización</ng-template>
+
+                <!-- Spinner Quoting -->
                 <ng-container *ngIf="isQuoting">
                   <div class="text-center">
-
                     <mat-spinner></mat-spinner>
                     <h4>Realizando Cotizacion
                       <small>Espere porfavor</small>
                     </h4>
                   </div>
                 </ng-container>
+
+                <!-- Quote Details -->
                 <ng-container *ngIf="!isQuoting && isQuoteCompleted; else noQuoteCompleted">
                   <mat-list>
                     <h3 mat-subheader>Resumen del servicio</h3>
@@ -141,6 +154,51 @@
                       <p mat-line> </p>
                     </mat-list-item>
                     <mat-list-item>
+                      <mat-icon mat-list-icon>attach_money</mat-icon>
+                      <h4 mat-line>Valor Base</h4>
+                      <h6 mat-line>
+                        <strong>{{ Servicio.ValorBase | number }}</strong>
+                      </h6>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>attach_money</mat-icon>
+                      <h4 mat-line>Recargo Paradas</h4>
+                      <h6 mat-line>
+                        <strong>{{ Servicio.RecargoParadas | number }}</strong>
+                      </h6>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>attach_money</mat-icon>
+                      <h4 mat-line>Recargo Km. Adicional</h4>
+                      <h6 mat-line>
+                        <strong>{{ Servicio.RecargoKmAdi | number }}</strong>
+                      </h6>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>attach_money</mat-icon>
+                      <h4 mat-line>Tiempo Espera</h4>
+                      <h6 mat-line>
+                        <strong>{{ Servicio.TiempoEspera | number }}</strong>
+                      </h6>
+                      <p mat-line class="note">(Nota: El total del servicio está sujeto a cambio según el tiempo de espera en cada parada)</p>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>attach_money</mat-icon>
+                      <h4 mat-line>Valor Asegurado</h4>
+                      <h6 mat-line>
+                        <strong>{{ Servicio.ValorAsegurado | number }}</strong>
+                      </h6>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>attach_money</mat-icon>
+                      <h4 mat-line>Seguro A Pagar</h4>
+                      <h6 mat-line>
+                        <strong>{{ Servicio.SeguroAPagar | number }}</strong>
+                      </h6>
+                      <p mat-line class="note">(Nota: Para valores declarados desde $0 hasta $500.000 el seguro es sin costo. Para valores desde $500.001
+                        hasta $2.000.000 el costo es del 2% sobre el valor asegurado)</p>
+                    </mat-list-item>
+                    <mat-list-item>
                       <mat-icon mat-list-icon>timer</mat-icon>
                       <h4 mat-line>Duración Aproximada: </h4>
                       <h6 mat-line>
@@ -148,19 +206,10 @@
                       </h6>
                       <p mat-line>Más el tiempo de tome cada parada.</p>
                     </mat-list-item>
-                    <mat-list-item>
-                      <mat-icon mat-list-icon>monetization_on</mat-icon>
-                      <h4 mat-line>Total a pagar:
-                        <strong>$ {{(Servicio.TotalAPagar) | number:'1.1-4'}}</strong>
-                      </h4>
-                      <p mat-line>Pesos Colombianos.</p>
 
-                    </mat-list-item>
                     <mat-list-item>
                       <mat-icon mat-list-icon>timeline</mat-icon>
-                      <h4 mat-line>Total Puntos a Recorrer:
-
-                      </h4>
+                      <h4 mat-line>Total Puntos a Recorrer: </h4>
                       <h6 mat-line>
                         <strong>{{Servicio.Recorrido.length}} Puntos</strong>
                       </h6>
@@ -168,9 +217,7 @@
                     </mat-list-item>
                     <mat-list-item>
                       <mat-icon mat-list-icon>play_arrow</mat-icon>
-                      <h4 mat-line>Dirección de Partida:
-
-                      </h4>
+                      <h4 mat-line>Dirección de Partida: </h4>
                       <h6 mat-line>
                         <strong>{{Servicio.Recorrido[0].Nombre}}</strong>
                       </h6>
@@ -178,9 +225,7 @@
                     </mat-list-item>
                     <mat-list-item>
                       <mat-icon mat-list-icon>location_off</mat-icon>
-                      <h4 mat-line>Dirección de Entrega:
-
-                      </h4>
+                      <h4 mat-line>Dirección de Entrega: </h4>
                       <h6 mat-line>
                         <strong>{{Servicio.Recorrido[Servicio.Recorrido.length - 1].Nombre}}</strong>
                       </h6>
@@ -192,6 +237,13 @@
                         <strong>{{Servicio.SobreCostoFueraCiudad | number }}</strong>
                       </h4>
                       <p mat-line></p>
+                    </mat-list-item>
+                    <mat-list-item>
+                      <mat-icon mat-list-icon>monetization_on</mat-icon>
+                      <h4 mat-line>Total a pagar:
+                        <strong>$ {{(Servicio.TotalAPagar) | number:'1.1-4'}}</strong>
+                      </h4>
+                      <p mat-line>Pesos Colombianos.</p>
                     </mat-list-item>
                     <mat-divider></mat-divider>
                     <h3 mat-subheader>Resumen del recorrido</h3>
@@ -243,6 +295,8 @@
                   </button>
                 </div>
               </mat-step>
+
+              <!-- Step 3 -->
               <mat-step>
                 <ng-template matStepLabel>Hacer Solicitud</ng-template>
                 Se ha realizado la Solicitud Exitosamente
@@ -287,5 +341,4 @@
   </div>
 </ng-template>
 
-<spinner></spinner>
-
+<!-- <spinner></spinner> -->

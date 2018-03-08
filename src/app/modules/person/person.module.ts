@@ -18,9 +18,7 @@ import { MaterialModule } from '../material/material.module';
     MaterialModule,
     RouterModule.forChild(PersonRoutes),
     SharedComponentsModule,
-    AgmCoreModule.forRoot({
-      apiKey: environment.google.maps
-    }),
+    AgmCoreModule,
   ],
   declarations: [
 
