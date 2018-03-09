@@ -13,6 +13,7 @@ import { AgmCoreModule } from '@agm/core';
 import { environment } from '../../../environments/environment';
 import { RouterModule } from '@angular/router';
 
+
 @NgModule({
   imports: [
     FormsModule,
@@ -21,6 +22,7 @@ import { RouterModule } from '@angular/router';
     ReactiveFormsModule,
     NgHttpLoaderModule,
     RouterModule,
+    
   ],
   exports: [
     FormsModule,

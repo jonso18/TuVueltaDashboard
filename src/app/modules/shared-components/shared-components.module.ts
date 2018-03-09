@@ -18,7 +18,25 @@ import { ComprarServicioComponent } from '../../components/solicitudes/comprar-s
 import { CambiarEstadoServicioComponent } from '../../components/solicitudes/cambiar-estado-servicio/cambiar-estado-servicio.component';
 import { DataTransaccionServicioComponent } from '../../components/solicitudes/data-transaccion-servicio/data-transaccion-servicio.component';
 import { ConfirmationComponent } from '../../dialogs/confirmation/confirmation.component';
-
+import { ParametrosComponent } from '../../components/parametros/parametros/parametros.component';
+import { CiudadesComponent, DialogNewCity, DialogDeleteCity } from '../../components/parametros/ciudades/ciudades.component';
+import { TarifasComponent } from '../../components/parametros/tarifas/tarifas.component';
+import { GananciasComponent } from '../../components/parametros/ganancias/ganancias.component';
+import { EstadosDomiciliosComponent } from '../../components/parametros/estados-domicilios/estados-domicilios.component';
+import { EquipamientoComponent } from '../../components/parametros/equipamiento/equipamiento.component';
+import { ReglasActivosComponent } from '../../components/parametros/reglas-activos/reglas-activos.component';
+import { DialogReasignacion } from '../../components/solicitudes/reasignaciones/reasignacion/reasignacion.component';
+import { SolicitudFormDialog } from '../../components/solicitudes/solicitud-form/solicitud-form.component';
+import { ConfigGlobalComponent } from '../../components/parametros/config-global/config-global.component';
+import { UsuarioFormComponent } from '../../components/usuarios/usuario-form/usuario-form.component';
+import { UsuariosComponent } from '../../components/usuarios/usuarios/usuarios.component';
+import { UsuariosListComponent } from '../../components/usuarios/usuarios-list/usuarios-list.component';
+import { RelanzamientosComponent } from '../../components/usuarios/relanzamientos/relanzamientos.component';
+import { EstadodecuentaComponent } from '../../components/usuarios/estadodecuenta/estadodecuenta.component';
+import { RetirosComponent } from '../../components/usuarios/retiros/retiros.component';
+import { NoRetirementCreditDialogComponent } from '../../dialogs/no-retirement-credit-dialog/no-retirement-credit-dialog.component';
+import { SeguimientoActivosComponent } from '../../components/usuarios/seguimiento-activos/seguimiento-activos.component';
+import { LogEquipamientoComponent } from '../../components/usuarios/log-equipamiento/log-equipamiento.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -39,10 +57,39 @@ import { ConfirmationComponent } from '../../dialogs/confirmation/confirmation.c
     CambiarEstadoServicioComponent,
     DialogOnClickMap,
     ConfirmationComponent,
+    
+    ParametrosComponent,
+    CiudadesComponent,
+    TarifasComponent,
+    GananciasComponent,
+    EstadosDomiciliosComponent,
+    EquipamientoComponent,
+    ReglasActivosComponent,
+    DialogNewCity,
+    DialogDeleteCity,
+    DialogReasignacion,
+    
+    SolicitudFormDialog,
+    ConfigGlobalComponent,
+    UsuarioFormComponent,
+    UsuariosComponent,
+    UsuariosListComponent,
+    
+    RelanzamientosComponent,
+    EstadodecuentaComponent,
+    RetirosComponent,
+    LogEquipamientoComponent,
+    NoRetirementCreditDialogComponent,
+    SeguimientoActivosComponent
   ],
   entryComponents: [
     DialogOnClickMap,
     ConfirmationComponent,
+    DialogNewCity,
+    DialogDeleteCity,
+    DialogReasignacion,
+    SolicitudFormDialog,
+    NoRetirementCreditDialogComponent
   ],
   exports: [
     DashboardComponent,

@@ -157,19 +157,5 @@ export const operatorRoutes: RouteInfo[] = [
             /* { path: 'hacer-reasignacion', title: 'Reasignar Servicios', ab: 'RS'}, */
             { path: 'lista', title: 'Reajustar Servicios', ab: 'RJS'},
         ]
-    },
-    {
-        path: '/operador/Usuarios',
-        title: 'Usuarios',
-        
-        type: 'sub',
-        icontype: 'account_box',
-        collapse: 'Usuarios',
-        children: [
-            { path: 'nuevo', title: 'Crear Usuario', ab: 'NU'},
-            { path: 'lista', title: 'Listado de usuarios', ab: 'LU'},
-            { path: 'seguimiento-activos', title: 'Seguimiento Activos', ab: 'SA'},
-
-        ]
-    },
+    }
 ];

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, ViewChild, AfterViewInit } from '@angular/core';
 import { FormGroup, Validators, FormArray, FormBuilder } from '@angular/forms';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
@@ -18,13 +18,18 @@ import { ICiudad } from '../../../interfaces/ciudad.interface';
 import { Toast, ToastrService, IndividualConfig, ActiveToast, } from 'ngx-toastr';
 import { ROLES } from '../../../config/Roles';
 import { IUser } from '../../../interfaces/usuario.interface';
-let google: any;
+
+declare const $: any;
 @Component({
   selector: 'app-mensajeria-form',
   templateUrl: './mensajeria-form.component.html',
   styleUrls: ['./mensajeria-form.component.css']
 })
-export class MensajeriaFormComponent implements OnInit, OnDestroy {
+export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit {
+  ngAfterViewInit(): void {
+    $('body').addClass('sidebar-mini');
+    $('.sidebar .collapse').css('height', 'auto');
+  }
   @ViewChild('stepper') stepper: MatHorizontalStepper;
   @ViewChild('clientSelect') clientSelect: MatSelect;
 
@@ -58,6 +63,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnDestroy(): void {
+    $('body').removeClass('sidebar-mini');
     if (this.subTM) this.subTM.unsubscribe();
     if (this.subTMC) this.subTMC.unsubscribe();
     this.subs.forEach(sub => {
@@ -69,12 +75,12 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    if (this.authService.userInfo.Rol == ROLES.Administrador || this.authService.userInfo.Rol == ROLES.Operador){
+    if (this.authService.userInfo.Rol == ROLES.Administrador || this.authService.userInfo.Rol == ROLES.Operador) {
       this.loadClientes();
-    }else {
+    } else {
       this.selectedCliente = this.authService.userInfo;
     }
-    
+
     this.loadCitys();
     this.buildForm();
 
@@ -88,14 +94,14 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   }
 
   public onSelectedClient(event: MatSelectChange): void {
-    
+
     this.selectedCliente = event.value;
     this.selectedCity = null;
-    
+
   }
 
   public onSelectedCity(event: MatSelectChange): void {
-    
+
     const code: number = Number(this.selectedCity.Codigo);
     this.loadTarifasMensajeria(code);
     this.loadTarifasMensajeriaCustom(code);
@@ -175,9 +181,9 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   }
 
   buildForm() {
-    
+
     this.form = this.formBuilder.group({
-      
+
       puntosIntermedios: this.formBuilder.array([]),
     })
     this.addIntermediatePoint();
@@ -426,6 +432,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
           }).catch(err => {
             this.isQuoteCompleted = true;
             this.isQuoting = false
+            console.log(err)
           })
 
         } else {
@@ -455,7 +462,9 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     let amount: number = 0;
     while (distance > 0) {
       amount += ValueAdKm
+      distance--;
     }
+
     return amount;
   }
 
@@ -482,7 +491,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
         })
       };
       const url: string = `${environment.baseapi.tuvuelta}${api}`
-      return this.http.post(url, body, httpOptions).toPromise()
+      return this.http.post(url, body, httpOptions)
     })
 
   }
@@ -500,7 +509,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
     this.isQuoting = true;
     let overCost: number = 0;
     const key: string = environment.google.geocoding;
-    const hasDiferentCity = Points.map(point => {
+    const _request: Promise<any>[] = Points.map(point => {
       const latlng = point.Coors;
       const result_type = 'locality';
       return this.getSentence({ latlng, result_type }, 'api/google/geocode')
@@ -509,46 +518,53 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
           return null
         })
         .map((res: any) => {
-
           if (res && res.results && res.status == "OK") return res.results
           return []
         })
         .toPromise()
-        .then((res: any[]) => {
-
-          const prefix = this.selectedCity.Prefijo;
-          const Nombre = this.selectedCity.Nombre;
-          let hasPrefix: boolean = false;
-          res.forEach(item => {
-            if (item.address_components) {
-              const address_components: any[] = item.address_components;
-              if (item.formatted_address.indexOf(prefix) > -1)
-                hasPrefix = true;
-              address_components.forEach(_address_component => {
-
-                if (_address_component.long_name.indexOf(Nombre) > -1)
-                  hasPrefix = true;
-
-                if (_address_component.short_name.indexOf(Nombre) > -1)
-                  hasPrefix = true;
-              })
-            }
-          });
-          return Promise.resolve(hasPrefix)
-        }).catch(err => console.log(err))
     })
-    
-    return Promise.all(hasDiferentCity)
-      .then(res => {
-        this.isQuoting = false;
-        this.isQuoteCompleted = true;
-        if (res.indexOf(false) != -1) {
-          console.log("Hay una ubicación fuera de la ciudad")
 
-          return Promise.resolve(true)
-        }
-        return Promise.resolve(false);
-      })
+    return Promise.all(_request).then((snap: any[]) => {
+      const prefix = this.getCleanedString(this.selectedCity.Prefijo);
+      const Nombre = this.getCleanedString(this.selectedCity.Nombre);
+      let hasPrefix: boolean = false;
+      snap.forEach(_res => {
+        _res.forEach(item => {
+          if (item.address_components) {
+            const address_components: any[] = item.address_components;
+
+            if (this.getCleanedString(item.formatted_address).indexOf(prefix) == -1)
+              hasPrefix = true;
+          }
+        });
+      });
+      return Promise.resolve(hasPrefix)
+    })
+  }
+
+  private getCleanedString(cadena: string): string {
+    // Definimos los caracteres que queremos eliminar
+    let specialChars = "!@#$^&%*()+=-[]\/{}|:<>?,.";
+
+    // Los eliminamos todos
+    for (let i = 0; i < specialChars.length; i++) {
+      cadena = cadena.replace(new RegExp("\\" + specialChars[i], 'gi'), '');
+    }
+
+    // Lo queremos devolver limpio en minusculas
+    cadena = cadena.toLowerCase();
+
+    // Quitamos espacios y los sustituimos por _ porque nos gusta mas asi
+    cadena = cadena.replace(/ /g, "_");
+
+    // Quitamos acentos y "ñ". Fijate en que va sin comillas el primer parametro
+    cadena = cadena.replace(/á/gi, "a");
+    cadena = cadena.replace(/é/gi, "e");
+    cadena = cadena.replace(/í/gi, "i");
+    cadena = cadena.replace(/ó/gi, "o");
+    cadena = cadena.replace(/ú/gi, "u");
+    cadena = cadena.replace(/ñ/gi, "n");
+    return cadena.toLowerCase();
   }
 
   doNewSolicitud() {
@@ -615,7 +631,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy {
   }
 
   get puntosIntermedios() { return this.form.get('puntosIntermedios') as FormArray }
-  
+
 }
 
 @Component({
