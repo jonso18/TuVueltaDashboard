@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog, MatHorizontalStepper, MatSelect, MatSelectChange } from '@angular/material';
-import { LatLngLiteral } from '@agm/core';
+import { LatLngLiteral, LatLng } from '@agm/core';
 import { Observable } from 'rxjs/Rx';
 import { DbService } from '../../../services/db/db.service';
 import { ITarifasMensajeria } from '../../../interfaces/tarifas.interfaces';
@@ -53,6 +53,8 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
   public isQuoting: boolean = false;
   public Clientes: IUser[];
   public selectedCliente: IUser;
+
+  public Directions: LatLng[] = [];
   constructor(
     private formBuilder: FormBuilder,
     private http: HttpClient,
@@ -346,6 +348,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   doQuote() {
+
     this.isQuoting = true;
     const key = environment.google.distanceMatrix;
     const points: IPunto[] = this.puntosIntermedios.value;
@@ -374,7 +377,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
         }
       }
     }
-
+    this.loadRoute(origins, destinations);
     const body = { origins, destinations }
     this.getSentence(body, 'api/google/distancematrix')
       .map((res: any) => {
@@ -447,6 +450,51 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
       })
 
 
+  }
+
+  private loadRoute(origins: string, destinations: string) {
+
+    const points: string[] = origins.split('|')
+      .concat(destinations.split('|'))
+      .filter(item => { if (item) return item })
+    this.Directions = [];
+    const origin: string = `${points.shift()}`;
+    const destination: string = `${points.splice(-1, 1)}`;
+    const waypoints: string = points.join('|');
+    const mode: string = 'driving'
+    const language: string = 'es'
+    const body = { origin, destination, waypoints, mode, language }
+
+    this.getSentence(body, 'api/google/directions')
+      .map(res => {
+        if (res && res.data) return res.data;
+        return null
+      })
+      .subscribe(res => {
+        if (res) {
+          if (res.routes) {
+            const route: any = res.routes[0];
+
+
+            const legs: any[] = route.legs;
+
+            legs.forEach(leg => {
+              const steps: any[] = leg.steps;
+
+              steps.forEach(step => {
+                this.Directions.push(step.start_location)
+                this.Directions.push(step.end_location)
+              })
+            })
+
+          }
+        } else {
+          console.log("Error al encontrar la dirección")
+        }
+
+      }, err => {
+        console.log(err)
+      })
   }
 
   /**
@@ -625,7 +673,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
           this.stepper.selectedIndex = 1
         }, 500);
       } else {
-        this.isStepEditable = false;
+        /* this.isStepEditable = false; */
       }
     }
   }
@@ -640,7 +688,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
   <mat-radio-group [(ngModel)]="selectedOption">
     <mat-radio-button class="example-margin" value="puntoInicio">Punto Inicio</mat-radio-button>
     <mat-radio-button class="example-margin" value="puntoFinal">Punto Final</mat-radio-button>
-    <mat-radio-button class="example-margin" value="puntoIntermedio">Punto Intermedio</mat-radio-button>
+    <mat-radio-button class="example-margin" value="puntoIntermedio">Agregar al Final Intermedio</mat-radio-button>
   </mat-radio-group>
 
   <div class="text-center">

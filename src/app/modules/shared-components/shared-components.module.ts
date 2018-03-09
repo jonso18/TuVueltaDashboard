@@ -37,6 +37,7 @@ import { RetirosComponent } from '../../components/usuarios/retiros/retiros.comp
 import { NoRetirementCreditDialogComponent } from '../../dialogs/no-retirement-credit-dialog/no-retirement-credit-dialog.component';
 import { SeguimientoActivosComponent } from '../../components/usuarios/seguimiento-activos/seguimiento-activos.component';
 import { LogEquipamientoComponent } from '../../components/usuarios/log-equipamiento/log-equipamiento.component';
+import { MensajeriaFormDetailsComponent } from '../../components/mensajeria/mensajeria-form/mensajeria-form-details/mensajeria-form-details.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -80,7 +81,8 @@ import { LogEquipamientoComponent } from '../../components/usuarios/log-equipami
     RetirosComponent,
     LogEquipamientoComponent,
     NoRetirementCreditDialogComponent,
-    SeguimientoActivosComponent
+    SeguimientoActivosComponent,
+    MensajeriaFormDetailsComponent
   ],
   entryComponents: [
     DialogOnClickMap,

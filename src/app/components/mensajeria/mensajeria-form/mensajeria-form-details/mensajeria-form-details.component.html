@@ -1,0 +1,123 @@
+<form [formGroup]="form">
+
+  <mat-form-field>
+    <input matInput type="text" formControlName="QueEnviar" placeholder="¿Qué vas a enviar?">
+    <mat-error *ngIf="QueEnviar.invalid" [innerHTML]="getErrorMessage(QueEnviar)"></mat-error>
+  </mat-form-field>
+
+  <mat-radio-group formControlName="MetodoDePago">
+    <mat-radio-button value="Credito">Crédito</mat-radio-button>
+    <mat-radio-button value="Efectivo">Efectivo</mat-radio-button>
+  </mat-radio-group>
+
+  <ng-container *ngIf="InfoPagoCredito" formGroupName="InfoPagoCredito">
+      <mat-form-field>
+        <input matInput type="text" formControlName="NombresTitular" placeholder="NombresTitular">
+        <mat-error *ngIf="InfoPagoCredito.get('NombresTitular').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('NombresTitular'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="Nombres" placeholder="Nombres">
+        <mat-error *ngIf="InfoPagoCredito.get('Nombres').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('Nombres'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="ApellidosTitular" placeholder="ApellidosTitular">
+        <mat-error *ngIf="InfoPagoCredito.get('ApellidosTitular').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('ApellidosTitular'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="Apellidos" placeholder="Apellidos">
+        <mat-error *ngIf="InfoPagoCredito.get('Apellidos').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('Apellidos'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="DocumentoTitular" placeholder="DocumentoTitular">
+        <mat-error *ngIf="InfoPagoCredito.get('DocumentoTitular').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('DocumentoTitular'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="NumDocumento" placeholder="NumDocumento">
+        <mat-error *ngIf="InfoPagoCredito.get('NumDocumento').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('NumDocumento'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="EmailTitular" placeholder="EmailTitular">
+        <mat-error *ngIf="InfoPagoCredito.get('EmailTitular').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('EmailTitular'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="CorreoElectrónico" placeholder="CorreoElectrónico">
+        <mat-error *ngIf="InfoPagoCredito.get('CorreoElectrónico').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('CorreoElectrónico'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="CiudadTitular" placeholder="CiudadTitular">
+        <mat-error *ngIf="InfoPagoCredito.get('CiudadTitular').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('CiudadTitular'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="CiudadResidencia" placeholder="CiudadResidencia">
+        <mat-error *ngIf="InfoPagoCredito.get('CiudadResidencia').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('CiudadResidencia'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="DirecciónTitular" placeholder="DirecciónTitular">
+        <mat-error *ngIf="InfoPagoCredito.get('DirecciónTitular').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('DirecciónTitular'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="Dirección" placeholder="Dirección">
+        <mat-error *ngIf="InfoPagoCredito.get('Dirección').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('Dirección'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="NúmeroDeTarjeta" placeholder="NúmeroDeTarjeta">
+        <mat-error *ngIf="InfoPagoCredito.get('NúmeroDeTarjeta').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('NúmeroDeTarjeta'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="Númerotarjeta" placeholder="Númerotarjeta">
+        <mat-error *ngIf="InfoPagoCredito.get('Númerotarjeta').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('Númerotarjeta'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="FechaVencimiento" placeholder="FechaVencimiento">
+        <mat-error *ngIf="InfoPagoCredito.get('FechaVencimiento').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('FechaVencimiento'))"></mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="CódigoCVV" placeholder="CódigoCVV">
+        <mat-error *ngIf="InfoPagoCredito.get('CódigoCVV').invalid" [innerHTML]="getErrorMessage(InfoPagoCredito.get('CódigoCVV'))"></mat-error>
+      </mat-form-field>
+
+  </ng-container>
+
+  <div>
+    <mat-checkbox formControlName="Asegurar">Asegurar</mat-checkbox>
+  </div>
+  <mat-form-field *ngIf="ValorAAsegurar">
+      <input matInput type="text" formControlName="ValorAAsegurar" placeholder="ValorAAsegurar">
+      <mat-error *ngIf="ValorAAsegurar.invalid" [innerHTML]="getErrorMessage(ValorAAsegurar)"></mat-error>
+  </mat-form-field>
+
+  <div>
+    <mat-checkbox formControlName="FotoRecibido">FotoRecibido</mat-checkbox>
+  </div>
+
+  <div>
+    <mat-checkbox formControlName="FirmaRecibido">FirmaRecibido</mat-checkbox>
+  </div>
+
+  <mat-form-field>
+    <input matInput type="text" formControlName="Instrucciones" placeholder="Instrucciones para el Mensajero">
+    <mat-error *ngIf="Instrucciones.invalid" [innerHTML]="getErrorMessage(Instrucciones)"></mat-error>
+  </mat-form-field>
+
+</form>
+
+<pre class="code-panel">
+  {{form.value | json}}
+</pre>
+
+<img class="loading" *ngIf="loading$ | async" src="assets/img/flags/loading.gif" alt="">

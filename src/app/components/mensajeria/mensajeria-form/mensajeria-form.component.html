@@ -27,11 +27,18 @@
               <agm-info-window>Punto {{i + 1 }}</agm-info-window>
             </agm-marker>
           </ng-container>
-          <agm-polyline [editable]="true" [strokeColor]="blue">
+          <agm-polyline [editable]="true" [strokeColor]="blue" *ngIf="stepper.selectedIndex == 0; else direction">
             <ng-container *ngFor="let marker of  puntosIntermedios.value">
               <agm-polyline-point *ngIf="marker.Coordenadas" [latitude]="marker.Coordenadas.Lat" [longitude]="marker.Coordenadas.Lng"></agm-polyline-point>
             </ng-container>
           </agm-polyline>
+          <ng-template #direction>
+            <agm-polyline [editable]="true" [strokeColor]="blue">
+              <ng-container *ngFor="let point of  Directions">
+                <agm-polyline-point [latitude]="point.lat" [longitude]="point.lng"></agm-polyline-point>
+              </ng-container>
+            </agm-polyline>
+          </ng-template>
         </agm-map>
       </div>
       <div class="mensajeria-form">
@@ -39,16 +46,16 @@
           <div class="col-sm-offset-1 col-sm-10">
             <mat-card class="card-summary">
               <mat-horizontal-stepper (selectionChange)="onSelectionChange($event)" class="step-container" [linear]="true" #stepper="matHorizontalStepper">
-  
+
                 <!-- Step 1 -->
                 <mat-step [stepControl]="form" [editable]="isStepEditable">
-  
+
                   <form [formGroup]="form">
-                    <ng-template matStepLabel>Registre Los Puntos</ng-template>
+                    <ng-template matStepLabel>Solicitud</ng-template>
                     <ng-container formArrayName="puntosIntermedios">
                       <ng-container *ngFor="let point of puntosIntermedios.controls; let i=index">
                         <ng-container [formGroupName]="i" class="row">
-  
+
                           <mat-form-field>
                             <input matInput placeholder="Nombre punto {{i+1}}" formControlName="Nombre" (keyup)="removeCoors('Coors',i)">
                             <!-- (keyup)="removeCoors('Coors',i)" -->
@@ -67,7 +74,7 @@
                               ¿Es Ida y Vuelta?
                             </mat-checkbox>
                           </div>
-  
+
                           <mat-form-field *ngIf="point.get('PuntoAVolver')">
                             <mat-select placeholder="Seleccione Punto a Volver" formControlName="PuntoAVolver">
                               <ng-container *ngFor="let _poin of puntosIntermedios.value; let _i = index">
@@ -126,11 +133,11 @@
                     </div>
                   </form>
                 </mat-step>
-  
+
                 <!-- Step 2 -->
                 <mat-step [editable]="isStepEditable" [completed]="isQuoteCompleted">
-                  <ng-template matStepLabel>Hacer Cotización</ng-template>
-  
+                  <ng-template matStepLabel>Cotización</ng-template>
+
                   <!-- Spinner Quoting -->
                   <ng-container *ngIf="isQuoting">
                     <div class="text-center">
@@ -140,7 +147,7 @@
                       </h4>
                     </div>
                   </ng-container>
-  
+
                   <!-- Quote Details -->
                   <ng-container *ngIf="!isQuoting && isQuoteCompleted; else noQuoteCompleted">
                     <mat-list>
@@ -153,7 +160,7 @@
                         </h6>
                         <p mat-line> </p>
                       </mat-list-item>
-  
+
                       <mat-list-item>
                         <mat-icon mat-list-icon>access_time</mat-icon>
                         <h4 mat-line>Tiempo Espera</h4>
@@ -162,7 +169,7 @@
                         </h6>
                         <p mat-line class="note">(Nota: El total del servicio está sujeto a cambio según el tiempo de espera en cada parada)</p>
                       </mat-list-item>
-  
+
                       <mat-list-item>
                         <mat-icon mat-list-icon>timer</mat-icon>
                         <h4 mat-line>Duración Aproximada: </h4>
@@ -171,7 +178,7 @@
                         </h6>
                         <p mat-line>Más el tiempo de tome cada parada.</p>
                       </mat-list-item>
-  
+
                       <mat-list-item>
                         <mat-icon mat-list-icon>timeline</mat-icon>
                         <h4 mat-line>Total Puntos a Recorrer: </h4>
@@ -238,8 +245,8 @@
                         <h6 mat-line>
                           <strong>$ {{ Servicio.SeguroAPagar | number }}</strong>
                         </h6>
-                        <p mat-line class="note">(Nota: Para valores declarados desde $0 hasta $500.000 el seguro es sin costo. Para valores desde $500.001
-                          hasta $2.000.000 el costo es del 2% sobre el valor asegurado)</p>
+                        <p mat-line class="note">(Nota: Para valores declarados desde $0 hasta $500.000 el seguro es sin costo. Para valores desde
+                          $500.001 hasta $2.000.000 el costo es del 2% sobre el valor asegurado)</p>
                       </mat-list-item>
                       <mat-list-item class="total-amount">
                         <mat-icon mat-list-icon>monetization_on</mat-icon>
@@ -251,7 +258,7 @@
                       <mat-divider></mat-divider>
                       <h3 mat-subheader>Resumen del recorrido</h3>
                       <mat-list-item *ngFor="let point of Servicio.Recorrido; let i=index">
-  
+
                         <mat-icon mat-list-icon>location_on</mat-icon>
                         <div [ngSwitch]="i">
                           <h4 matLine *ngSwitchCase="0">Dirección de Partida</h4>
@@ -278,7 +285,7 @@
                       </button>
                     </div>
                   </ng-container>
-  
+
                   <ng-template #noQuoteCompleted *ngIf="!isQuoting">
                     <div class="text-center">
                       <h3 class="h3">Hubo un Error
@@ -291,29 +298,29 @@
                       al paso anterior e intentelo de nuevo.
                     </div>
                   </ng-template>
-  
+
                   <div class="text-left">
                     <button mat-button matStepperPrevious>
                       <mat-icon>arrow_back</mat-icon>
                     </button>
                   </div>
                 </mat-step>
-  
+
                 <!-- Step 3 -->
                 <mat-step>
                   <ng-template matStepLabel>Hacer Solicitud</ng-template>
-                  Se ha realizado la Solicitud Exitosamente
-                  <div class="text-center">
+                  <app-mensajeria-form-details></app-mensajeria-form-details>
+                  <!-- <div class="text-center">
                     <button mat-button color="primary" (click)="doNewSolicitud()">Hacer Nueva Solicitud</button>
-  
-                  </div>
+
+                  </div> -->
                 </mat-step>
               </mat-horizontal-stepper>
             </mat-card>
           </div>
         </div>
       </div>
-      
+
     </ng-container>
 
   </ng-container>

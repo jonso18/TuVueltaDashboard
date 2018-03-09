@@ -24,6 +24,7 @@ import { SeguimientoActivosComponent } from '../../components/usuarios/seguimien
 
 import { EstadodecuentaComponent } from '../../components/usuarios/estadodecuenta/estadodecuenta.component';
 import { TransaccionesComponent } from '../../components/solicitudes/transacciones/transacciones.component';
+import { MensajeriaFormDetailsComponent } from '../../components/mensajeria/mensajeria-form/mensajeria-form-details/mensajeria-form-details.component';
 
 export const AdminRoutes: Routes = [
     {
@@ -182,5 +183,9 @@ export const AdminRoutes: Routes = [
                 component: MensajeriaFormComponent
             }
         ]
+    },
+    {
+        path: 'desarrollo',
+        component: MensajeriaFormDetailsComponent
     }
 ];
