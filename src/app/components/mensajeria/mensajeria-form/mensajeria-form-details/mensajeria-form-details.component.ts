@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { METODOS_PAGO } from '../../../../config/MetodosPago';
 import { MessagesService } from '../../../../services/messages/messages.service';
 import { BehaviorSubject } from 'rxjs';
+import { AngularFireDatabase } from 'angularfire2/database';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'app-mensajeria-form-details',
@@ -10,39 +12,109 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./mensajeria-form-details.component.css']
 })
 export class MensajeriaFormDetailsComponent implements OnInit {
+  @Output() onEdit: EventEmitter<any> = new EventEmitter();
+
   public loading$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public form: FormGroup;
   private _infoCreditPayment: any;
+  public CostoSeguro: any;
+
+
   constructor(
     private formBuilder: FormBuilder,
-    private messages: MessagesService
+    private messages: MessagesService,
+    private db: AngularFireDatabase
   ) { }
 
   ngOnInit() {
     this.buildForm();
     this.loadRules();
+    this.loadEventEmiters()
+    this.loadCostoSeguro();
   }
 
   private buildForm(): void {
     this.form = this.formBuilder.group({
-      QueEnviar: [null, Validators.required],
-      MetodoDePago: [null, Validators.required],
+      MetodoDePago: [METODOS_PAGO.Efectivo, Validators.required],
       DebeComprar: [false],
       CodigoPromocional: [null],
       Asegurar: [false],
       FotoRecibido: [false],
       FirmaRecibido: [false],
+      ComprarAlgo: [false],
       Instrucciones: [null]
     })
+
+    /* this.onEdit.emit({
+      isValid: this.form.valid,
+      value: this.form.value
+    }) */
   }
 
   private loadRules(): void {
     this.validatorMetodoPago();
-    this.validatorAsegurar();
+    this.validatorComprarAlgo();
+    this.validatorCostoAsegurar();
   }
 
-  private validatorAsegurar(): void {
-    this.Asegurar
+  private loadEventEmiters(): void {
+    this.form
+      .valueChanges
+      .debounceTime(1500)
+      .distinctUntilChanged()
+      .subscribe(val => this.onEdit.emit({
+        isValid: this.form.valid,
+        value: this.form.value
+      })
+      )
+  }
+
+  private loadCostoSeguro() {
+    this.db.list(`/Administrativo/ReglasMensajeria/CostoSeguro`)
+      .valueChanges()
+      .merge(this.Asegurar.valueChanges
+        .do(() => this.loading$.next(true))
+        .debounceTime(500)
+        .do(() => this.loading$.next(false)))
+      .subscribe(res => {
+        const addControl = () => {
+          if (this.Asegurar.value) {
+            const value = this.ValorAAsegurar ? this.ValorAAsegurar.value : 0;
+            this.form.removeControl('ValorAAsegurar')
+            this.form.addControl('ValorAAsegurar',
+              this.formBuilder.control(value, [
+                Validators.required,
+                Validators.min(0),
+                Validators.max(this.CostoSeguro ? this.CostoSeguro[this.CostoSeguro.length - 1].Hasta : 0)
+              ])
+            )
+          } else {
+            return this.form.removeControl('ValorAAsegurar')
+          }
+        }
+
+        if (typeof res == 'object') {
+          this.CostoSeguro = res;
+          if (!this.ValorAAsegurar) return addControl()
+          this.ValorAAsegurar.setValidators([
+            Validators.required,
+            Validators.min(0),
+            Validators.max(this.CostoSeguro ? this.CostoSeguro[this.CostoSeguro.length - 1].Hasta : 0)
+          ])
+          this.ValorAAsegurar.updateValueAndValidity()
+        }
+
+        if (typeof res == 'boolean') {
+          addControl();
+
+        }
+      })
+  }
+
+
+
+  private validatorComprarAlgo(): void {
+    this.ComprarAlgo
       .valueChanges
       .do(() => this.loading$.next(true))
       .debounceTime(500)
@@ -51,11 +123,50 @@ export class MensajeriaFormDetailsComponent implements OnInit {
       .subscribe((val: boolean) => {
         if (val)
           return this.form.addControl(
-            'ValorAAsegurar',
-            this.formBuilder.control(null, Validators.required)
+            'DetallesComprarAlgo',
+            this.formBuilder.group({
+              Monto: this.formBuilder.control(null, [Validators.required, Validators.min(0)]),
+              Descripcion: this.formBuilder.control(null, Validators.required)
+            })
           )
-        if (this.ValorAAsegurar)
-          return this.form.removeControl('ValorAAsegurar')
+        if (this.DetallesComprarAlgo)
+          return this.form.removeControl('DetallesComprarAlgo')
+      })
+
+  }
+
+  private validatorCostoAsegurar() {
+    this.form
+      .valueChanges
+      .debounceTime(500)
+      .distinctUntilChanged()
+      .subscribe(res => {
+        if (res.ValorAAsegurar && this.CostoSeguro) {
+
+          if (res.ValorAAsegurar < this.CostoSeguro[0].Hasta) {
+            if (!this.CobroAsegurar)
+              this.form.addControl('CobroAsegurar', this.formBuilder.control(null))
+            this.CobroAsegurar.setValue(res.ValorAAsegurar * this.CostoSeguro[0].CobroPorcentaje)
+          } else {
+            for (let i = this.CostoSeguro.length; i > 0; i--) {
+              const element = this.CostoSeguro[i - 1];
+              if (this.CostoSeguro[i - 2]) {
+                if (this.CostoSeguro[i - 2].Hasta < res.ValorAAsegurar &&
+                  this.CostoSeguro[i - 1].Hasta >= res.ValorAAsegurar) {
+                  if (!this.CobroAsegurar)
+                    this.form.addControl('CobroAsegurar', this.formBuilder.control(null))
+                  this.CobroAsegurar.setValue(res.ValorAAsegurar * this.CostoSeguro[i - 1].CobroPorcentaje)
+                }
+              } else {
+
+              }
+            }
+          }
+
+
+        } else {
+          if (this.CobroAsegurar) this.form.removeControl('CobroAsegurar')
+        }
       })
   }
 
@@ -106,7 +217,7 @@ export class MensajeriaFormDetailsComponent implements OnInit {
       })
   }
 
-  public getErrorMessage(control: FormControl): string{
+  public getErrorMessage(control: FormControl): string {
     return this.messages.getErrorMessage(control)
   }
 
@@ -120,5 +231,21 @@ export class MensajeriaFormDetailsComponent implements OnInit {
   get FirmaRecibido() { return this.form.get('FirmaRecibido') }
   get ValorAAsegurar() { return this.form.get('ValorAAsegurar') }
   get Instrucciones() { return this.form.get('Instrucciones') }
+  get ComprarAlgo() { return this.form.get('ComprarAlgo') }
+  get DetallesComprarAlgo() { return this.form.get('DetallesComprarAlgo') as FormGroup }
+  get CobroAsegurar() { return this.form.get('CobroAsegurar') }
 }
 
+
+
+/* 
+0 - 500 el seguro es gratis
+500 - 2000 000 se calcula un % del 2 % del valor asegurado
+
+ese 2% no se tiene en cuena para la ganancia del mensajero
+la ganancia del mensajero se 
+
+la ganancia del mensajero es del 0.7
+
+
+si el mensajero solo puede comprar la mensajeria si en creditos de retiro  */

@@ -10,7 +10,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog, MatHorizontalStepper, MatSelect, MatSelectChange } from '@angular/material';
 import { LatLngLiteral, LatLng } from '@agm/core';
-import { Observable } from 'rxjs/Rx';
+import { Observable, BehaviorSubject } from 'rxjs/Rx';
 import { DbService } from '../../../services/db/db.service';
 import { ITarifasMensajeria } from '../../../interfaces/tarifas.interfaces';
 import { AuthService } from '../../../services/auth/auth.service';
@@ -37,7 +37,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
   lng: number = -75.217;
   public form: FormGroup;
   private subs: Subscription[] = [];
-
+  public isSaving$: BehaviorSubject<boolean> = new BehaviorSubject(false)
   public isMapReady: boolean = false;
   public points = [];
   public isStepEditable: boolean = true;
@@ -53,8 +53,10 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
   public isQuoting: boolean = false;
   public Clientes: IUser[];
   public selectedCliente: IUser;
-
+  public Details: any;
   public Directions: LatLng[] = [];
+  public isValidDetails: boolean = false;
+  public messageSaved: string;
   constructor(
     private formBuilder: FormBuilder,
     private http: HttpClient,
@@ -185,7 +187,6 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
   buildForm() {
 
     this.form = this.formBuilder.group({
-
       puntosIntermedios: this.formBuilder.array([]),
     })
     this.addIntermediatePoint();
@@ -208,6 +209,13 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
 
       return
     }
+
+  }
+
+  onEditDetails(event) {
+    this.isValidDetails = event.isValid;
+    console.log(event)
+    this.Details = event.value;
 
   }
 
@@ -415,18 +423,36 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
             const ValorBase: number = Tarifas.PrimerosKm.Costo;
             const SobreCostoFueraCiudad: number = isOut ? Tarifas.SobreCostoFueraCiudad : 0;
             const RecargoParadas: number = (points.length - 2) * Tarifas.ParadaAdicional;
-            const TotalAPagar: number = ValorBase + RecargoKmAdi + SobreCostoFueraCiudad + RecargoParadas;
+
             const TiempoEspera: number = 0;
-            const ValorAsegurado: number = 0;
-            const SeguroAPagar: number = 0;
+            const ValorAsegurado: number = this.Details.ValorAAsegurar ? this.Details.ValorAAsegurar: null;
+            const SeguroAPagar: number = this.Details.CobroAsegurar ? this.Details.CobroAsegurar: null;
+            console.log(this.Details)
+            const TotalAPagar: number = ValorBase + RecargoKmAdi + SobreCostoFueraCiudad + RecargoParadas + SeguroAPagar;
             const user_id: string = this.selectedCliente.$key;
+            const MetodoDePago = this.Details.MetodoDePago ? this.Details.MetodoDePago: null;
+            const DebeComprar = this.Details.DebeComprar ? this.Details.DebeComprar: null;
+            const CodigoPromocional = this.Details.CodigoPromocional ? this.Details.CodigoPromocional: null;
+            const Asegurar = this.Details.Asegurar ? this.Details.Asegurar: null;
+            const FotoRecibido = this.Details.FotoRecibido ? this.Details.FotoRecibido: null;
+            const FirmaRecibido = this.Details.FirmaRecibido ? this.Details.FirmaRecibido: null;
+            const ComprarAlgo = this.Details.ComprarAlgo ? this.Details.ComprarAlgo: null;
+            const Instrucciones = this.Details.Instrucciones ? this.Details.Instrucciones: null;
+
+            const DetallesComprarAlgo = this.Details.DetallesComprarAlgo ? this.Details.DetallesComprarAlgo: null;
+
 
             this.Servicio = {
               Recorrido, DistanciaTotal, DistanciaRedondeada, KmAdAlBase,
               DuracionTotal, TipoServicio, RecargoKmAdi, ValorBase,
               SobreCostoFueraCiudad, RecargoParadas, TotalAPagar,
-              TiempoEspera, ValorAsegurado, SeguroAPagar, user_id
+              TiempoEspera, ValorAsegurado, SeguroAPagar, user_id,
+              MetodoDePago, DebeComprar, CodigoPromocional, Asegurar,
+              FotoRecibido, FirmaRecibido, ComprarAlgo, Instrucciones,
+              DetallesComprarAlgo
             }
+
+            
 
 
 
@@ -666,7 +692,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
   onSelectionChange(event): void {
     const selectedIndex: number = event.selectedIndex;
     if (selectedIndex == 1) {
-      this.doQuote();
+
     } else if (selectedIndex == 2) {
       if (event.previouslySelectedIndex == 0) {
         setTimeout(() => {
@@ -674,7 +700,24 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
         }, 500);
       } else {
         /* this.isStepEditable = false; */
+        this.doQuote();
       }
+    } else if (selectedIndex == 3) {
+      const key: string = new Date().getTime().toString();
+      console.log(this.Servicio)
+      this.isSaving$.next(true);
+      this.dbService.objectSolicitud(key)
+        .update(this.Servicio)
+        .then(res => {
+          this.isSaving$.next(false);
+          this.isStepEditable = false;
+          this.messageSaved = `El servicio se ha guardado con <strong>Exito!</strong>`;
+        })
+        .catch(err => {
+          this.isSaving$.next(false);
+          this.messageSaved = `Algo salio mal y <strong>no se creó la solicitud</strong>`;
+          console.log(err)
+        })
     }
   }
 
@@ -749,4 +792,14 @@ class IServicioMensajeria {
   public ValorAsegurado: number;
   public SeguroAPagar: number;
   public user_id: string;
+  public MetodoDePago;
+  public DebeComprar;
+  public CodigoPromocional;
+  public Asegurar;
+  public FotoRecibido;
+  public FirmaRecibido;
+  public ComprarAlgo;
+  public Instrucciones;
+
+  public DetallesComprarAlgo;
 }

@@ -47,11 +47,11 @@
             <mat-card class="card-summary">
               <mat-horizontal-stepper (selectionChange)="onSelectionChange($event)" class="step-container" [linear]="true" #stepper="matHorizontalStepper">
 
-                <!-- Step 1 -->
+                <!-- Solicitud -->
                 <mat-step [stepControl]="form" [editable]="isStepEditable">
 
                   <form [formGroup]="form">
-                    <ng-template matStepLabel>Solicitud</ng-template>
+                    <ng-template matStepLabel>Recorrido</ng-template>
                     <ng-container formArrayName="puntosIntermedios">
                       <ng-container *ngFor="let point of puntosIntermedios.controls; let i=index">
                         <ng-container [formGroupName]="i" class="row">
@@ -132,9 +132,18 @@
                       <button matStepperNext type="submit" class="btn btn-primary" color="primary">Siguiente</button>
                     </div>
                   </form>
+                  
                 </mat-step>
 
-                <!-- Step 2 -->
+                <!-- Details -->
+                
+                <mat-step [completed]="isValidDetails" [editable]="isStepEditable">
+                  <ng-template matStepLabel>Detalles</ng-template>
+                  <app-mensajeria-form-details (onEdit)="onEditDetails($event)"></app-mensajeria-form-details>
+                  <pre>{{isValidDetails}}</pre>
+                </mat-step>
+                
+                <!-- Cotizacion -->
                 <mat-step [editable]="isStepEditable" [completed]="isQuoteCompleted">
                   <ng-template matStepLabel>Cotización</ng-template>
 
@@ -306,14 +315,11 @@
                   </div>
                 </mat-step>
 
-                <!-- Step 3 -->
-                <mat-step>
-                  <ng-template matStepLabel>Hacer Solicitud</ng-template>
-                  <app-mensajeria-form-details></app-mensajeria-form-details>
-                  <!-- <div class="text-center">
-                    <button mat-button color="primary" (click)="doNewSolicitud()">Hacer Nueva Solicitud</button>
-
-                  </div> -->
+                <mat-step [editable]="isStepEditable">
+                  <div class="text-center" *ngIf="isSaving$ | async"> 
+                    <mat-spinner></mat-spinner>
+                  </div>
+                  <div [innerHTML]="messageSaved"></div>
                 </mat-step>
               </mat-horizontal-stepper>
             </mat-card>
