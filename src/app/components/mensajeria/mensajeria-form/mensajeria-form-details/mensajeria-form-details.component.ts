@@ -5,6 +5,8 @@ import { MessagesService } from '../../../../services/messages/messages.service'
 import { BehaviorSubject } from 'rxjs';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
+import { DbService } from '../../../../services/db/db.service';
+import { IBonoDescuento } from '../../../../interfaces/bono-descuento.interface';
 
 @Component({
   selector: 'app-mensajeria-form-details',
@@ -12,25 +14,29 @@ import { Observable } from 'rxjs/Observable';
   styleUrls: ['./mensajeria-form-details.component.css']
 })
 export class MensajeriaFormDetailsComponent implements OnInit {
+
   @Output() onEdit: EventEmitter<any> = new EventEmitter();
 
   public loading$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public form: FormGroup;
   private _infoCreditPayment: any;
   public CostoSeguro: any;
-
-
+  public BonosDescuento: IBonoDescuento[];
+  public bonoDescuentoMsg: string;
   constructor(
     private formBuilder: FormBuilder,
     private messages: MessagesService,
-    private db: AngularFireDatabase
+    private db: AngularFireDatabase,
+    private dbService: DbService
   ) { }
 
   ngOnInit() {
     this.buildForm();
+    this.loadBonusDiscount()
     this.loadRules();
     this.loadEventEmiters()
     this.loadCostoSeguro();
+
   }
 
   private buildForm(): void {
@@ -42,25 +48,29 @@ export class MensajeriaFormDetailsComponent implements OnInit {
       FotoRecibido: [false],
       FirmaRecibido: [false],
       ComprarAlgo: [false],
-      Instrucciones: [null]
+      Instrucciones: [null],
+      BonoDescuento: [null]
     })
+  }
 
-    /* this.onEdit.emit({
-      isValid: this.form.valid,
-      value: this.form.value
-    }) */
+
+  private loadBonusDiscount(): void {
+    this.dbService.listBonoDescuento().subscribe(bonus => {
+      this.BonosDescuento = bonus;
+    })
   }
 
   private loadRules(): void {
     this.validatorMetodoPago();
     this.validatorComprarAlgo();
     this.validatorCostoAsegurar();
+    this.validatorBonoDescuento();
   }
 
   private loadEventEmiters(): void {
     this.form
       .valueChanges
-      .debounceTime(1500)
+      .debounceTime(100)
       .distinctUntilChanged()
       .subscribe(val => this.onEdit.emit({
         isValid: this.form.valid,
@@ -170,6 +180,54 @@ export class MensajeriaFormDetailsComponent implements OnInit {
       })
   }
 
+  private validatorBonoDescuento() {
+    this.BonoDescuento
+      .valueChanges
+      .debounceTime(1000)
+      .distinctUntilChanged()
+      .subscribe((_bonus: string) => {
+
+        if (this.ValorDescuento) this.form.removeControl('ValorDescuento');
+        const bonus: IBonoDescuento = this.BonosDescuento.find(data => data.Clave == _bonus);
+        if (bonus == undefined) {
+          this.bonoDescuentoMsg = `
+          <div class="alert alert-danger">
+            <strong>Bono no valido</strong>
+            <p>El bono ingresado no está registrado en la base de datos.</p>
+          </div>
+          `;
+          return
+        };
+        const now: number = new Date().getTime();
+        if (now > bonus.Inicio && now < bonus.Fin) {
+          this.bonoDescuentoMsg = `
+          <div class="alert alert-info">
+            <strong>${bonus.Nombre}</strong>
+            <p>Descuento efectuado del ${bonus.Descuento * 100} %, lo veras reflejado cuando hagas la cotización</p>
+          </div>
+          `;
+          this.form.addControl('ValorDescuento', this.formBuilder.control(bonus.Descuento))
+        } else {
+          const Inicio = new Date(bonus.Inicio);
+          const Fin = new Date(bonus.Fin);
+          const getFormatedDate = (date: Date): string => {
+            return date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes()
+          }
+          this.bonoDescuentoMsg = `
+          <div class="alert alert-warning">
+            <strong>Descuento inhabilitado</strong>
+            <p>El bono <strong>${bonus.Nombre}</strong> es valido del 
+            <strong>${getFormatedDate(Inicio)}</strong> hasta 
+            <strong>${getFormatedDate(Fin)}</strong>
+          </div>
+          `;
+        }
+
+
+
+      })
+  }
+
   private validatorMetodoPago(): void {
     this.MetodoDePago
       .valueChanges
@@ -234,6 +292,8 @@ export class MensajeriaFormDetailsComponent implements OnInit {
   get ComprarAlgo() { return this.form.get('ComprarAlgo') }
   get DetallesComprarAlgo() { return this.form.get('DetallesComprarAlgo') as FormGroup }
   get CobroAsegurar() { return this.form.get('CobroAsegurar') }
+  get BonoDescuento() { return this.form.get('BonoDescuento') }
+  get ValorDescuento() { return this.form.get('ValorDescuento') }
 }
 
 

@@ -18,6 +18,8 @@ import { ICiudad } from '../../../interfaces/ciudad.interface';
 import { Toast, ToastrService, IndividualConfig, ActiveToast, } from 'ngx-toastr';
 import { ROLES } from '../../../config/Roles';
 import { IUser } from '../../../interfaces/usuario.interface';
+import { IGanancias } from '../../../interfaces/gananciass.interface';
+import { ESTADOS_SERVICIO } from '../../../config/EstadosServicio';
 
 declare const $: any;
 @Component({
@@ -93,7 +95,19 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
   loadClientes() {
     if (this.subClnts) this.subClnts.unsubscribe();
     this.subClnts = this.dbService.listUsersByRol(ROLES.Cliente)
-      .subscribe(res => this.Clientes = res)
+      .subscribe(res => {
+        this.Clientes = res;
+        if (!this.selectedCliente) {
+          setTimeout(() => {
+            this.selectedCliente = res[0]
+            if (this.Ciudades) {
+              this.selectedCity = this.Ciudades[0]
+              this.loadTarifasMensajeria(this.selectedCity.Codigo);
+              this.loadTarifasMensajeriaCustom(this.selectedCity.Codigo);
+            }
+          }, 1000);
+        }
+      })
 
   }
 
@@ -114,6 +128,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
   private loadCitys(): void {
     this.dbService.listCiudades().subscribe(res => {
       this.Ciudades = res;
+
     })
   }
 
@@ -387,99 +402,108 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
     this.loadRoute(origins, destinations);
     const body = { origins, destinations }
-    this.getSentence(body, 'api/google/distancematrix')
+    const distanceMtrx$ = this.getSentence(body, 'api/google/distancematrix')
       .map((res: any) => {
         if (res || res.data) return res;
         return {}
-      }).subscribe(res => {
-        this.isQuoting = false;
-        if (res) {
-          this.isQuoting = true;
-          const info = res.data.rows;
-          let fullDistance: number = 0;
-          let fullDuration: number = 0;
-
-          for (let i = 0; i < info.length; i++) {
-            const element = info[i];
-            fullDistance += parseFloat(
-              element.elements[i].distance.text.replace(',', '.'));/* + 0.0000000001 */
-            fullDuration += parseFloat(
-              element.elements[i].duration.text.replace(',', '.'));
-          }
-
-          // Load Tarifas
-          const Tarifas: ITarifasMensajeria = this.TarifasMensajeriaCustom ?
-            this.TarifasMensajeriaCustom :
-            this.TarifasMensajeria;
-
-          this.calcOvercostoutoftown(points, Tarifas).then((isOut: boolean) => {
-            const Recorrido: IPunto[] = this.puntosIntermedios.value;
-            const DistanciaTotal: number = Number(fullDistance);
-            const DistanciaRedondeada: number = Math.round(DistanciaTotal);
-            const KmAdAlBase: number = DistanciaRedondeada - Tarifas.PrimerosKm.Km;
-            const DuracionTotal: number = Number(fullDuration);
-            const TipoServicio: string = 'Mensajeria';
-            const RecargoKmAdi: number = this.amountByAdKm(KmAdAlBase, Tarifas.KmAdicional)
-            const ValorBase: number = Tarifas.PrimerosKm.Costo;
-            const SobreCostoFueraCiudad: number = isOut ? Tarifas.SobreCostoFueraCiudad : 0;
-            const RecargoParadas: number = (points.length - 2) * Tarifas.ParadaAdicional;
-
-            const TiempoEspera: number = 0;
-            const ValorAsegurado: number = this.Details.ValorAAsegurar ? this.Details.ValorAAsegurar: null;
-            const SeguroAPagar: number = this.Details.CobroAsegurar ? this.Details.CobroAsegurar: null;
-            console.log(this.Details)
-            const TotalAPagar: number = ValorBase + RecargoKmAdi + SobreCostoFueraCiudad + RecargoParadas + SeguroAPagar;
-            const user_id: string = this.selectedCliente.$key;
-            const MetodoDePago = this.Details.MetodoDePago ? this.Details.MetodoDePago: null;
-            const DebeComprar = this.Details.DebeComprar ? this.Details.DebeComprar: null;
-            const CodigoPromocional = this.Details.CodigoPromocional ? this.Details.CodigoPromocional: null;
-            const Asegurar = this.Details.Asegurar ? this.Details.Asegurar: null;
-            const FotoRecibido = this.Details.FotoRecibido ? this.Details.FotoRecibido: null;
-            const FirmaRecibido = this.Details.FirmaRecibido ? this.Details.FirmaRecibido: null;
-            const ComprarAlgo = this.Details.ComprarAlgo ? this.Details.ComprarAlgo: null;
-            const Instrucciones = this.Details.Instrucciones ? this.Details.Instrucciones: null;
-
-            const DetallesComprarAlgo = this.Details.DetallesComprarAlgo ? this.Details.DetallesComprarAlgo: null;
-
-
-            this.Servicio = {
-              Recorrido, DistanciaTotal, DistanciaRedondeada, KmAdAlBase,
-              DuracionTotal, TipoServicio, RecargoKmAdi, ValorBase,
-              SobreCostoFueraCiudad, RecargoParadas, TotalAPagar,
-              TiempoEspera, ValorAsegurado, SeguroAPagar, user_id,
-              MetodoDePago, DebeComprar, CodigoPromocional, Asegurar,
-              FotoRecibido, FirmaRecibido, ComprarAlgo, Instrucciones,
-              DetallesComprarAlgo
-            }
-
-            
-
-
-
-            this.isQuoting = false;
-            this.isQuoteCompleted = true;
-          }).catch(err => {
-            this.isQuoteCompleted = true;
-            this.isQuoting = false
-            console.log(err)
-          })
-
-        } else {
-          this.isQuoteCompleted = false;
-        }
-
-
-      }, err => {
-        console.log(err)
-        this.isQuoting = false;
-        this.isQuoteCompleted = false;
       })
+
+    // Load Tarifas
+    const Tarifas: ITarifasMensajeria = this.TarifasMensajeriaCustom ?
+      this.TarifasMensajeriaCustom :
+      this.TarifasMensajeria;
+
+    const profitMensajeroMensajeria$ = this.dbService.objectGanancias().valueChanges().first()
+    const isOut$ = Observable.fromPromise(this.calcOvercostoutoftown(points, Tarifas))
+    const data = Observable.forkJoin([distanceMtrx$, profitMensajeroMensajeria$, isOut$])
+
+
+    data.subscribe(res => {
+      console.log(res)
+      const distMatrx = res[0];
+      const Profit: IGanancias = res[1];
+      const isOut: boolean = res[2];
+
+      this.isQuoting = true;
+      const info = distMatrx.data.rows;
+      let fullDistance: number = 0;
+      let fullDuration: number = 0;
+
+      for (let i = 0; i < info.length; i++) {
+        const element = info[i];
+        fullDistance += parseFloat(
+          element.elements[i].distance.text.replace(',', '.'));
+        fullDuration += Math.round(parseFloat(
+          element.elements[i].duration.text.replace(',', '.')));
+      }
+
+      const lastPoint = (item: string): string => {
+        const lastPoint: IPunto = Recorrido[Recorrido.length - 1];
+        const isVuelta = lastPoint.Vuelta
+        if (isVuelta) {
+          return Recorrido[lastPoint.PuntoAVolver][item]
+        }
+        return lastPoint[item];
+      }
+
+      const Recorrido: IPunto[] = this.puntosIntermedios.value;
+      const DistanciaTotal: number = Number(fullDistance);
+      const DistanciaRedondeada: number = Math.round(Math.round(DistanciaTotal));
+      const KmAdAlBase: number = DistanciaRedondeada - Tarifas.PrimerosKm.Km;
+      const DuracionTotal: number = Number(fullDuration);
+      const TipoServicio: string = 'Mensajeria';
+      const RecargoKmAdi: number = Math.round(this.amountByAdKm(KmAdAlBase, Tarifas.KmAdicional))
+      const ValorBase: number = Math.round(Tarifas.PrimerosKm.Costo);
+      const SobreCostoFueraCiudad: number = Math.round(isOut ? Tarifas.SobreCostoFueraCiudad : 0);
+      const RecargoParadas: number = Math.round((points.length - 2) * Tarifas.ParadaAdicional);
+      const TiempoEspera: number = Math.round(0);
+      const ValorAsegurado: number = Math.round(this.Details.ValorAAsegurar ? this.Details.ValorAAsegurar : 0);
+      const SeguroAPagar: number = Math.round(this.Details.CobroAsegurar ? this.Details.CobroAsegurar : 0);
+      const SubTotalAPagar: number = Math.round(ValorBase + RecargoKmAdi + SobreCostoFueraCiudad + RecargoParadas);
+      const GananciaMensajero: number = Math.round(SubTotalAPagar * Profit.MensajeroMensajeria);
+      const user_id: string = this.selectedCliente.$key;
+      const MetodoDePago = this.Details.MetodoDePago ? this.Details.MetodoDePago : null;
+      const DebeComprar = this.Details.DebeComprar ? this.Details.DebeComprar : null;
+      const CodigoPromocional = this.Details.CodigoPromocional ? this.Details.CodigoPromocional : null;
+      const Asegurar = this.Details.Asegurar ? this.Details.Asegurar : null;
+      const FotoRecibido = this.Details.FotoRecibido ? this.Details.FotoRecibido : null;
+      const FirmaRecibido = this.Details.FirmaRecibido ? this.Details.FirmaRecibido : null;
+      const ComprarAlgo = this.Details.ComprarAlgo ? this.Details.ComprarAlgo : null;
+      const Instrucciones = this.Details.Instrucciones ? this.Details.Instrucciones : null;
+      const DetallesComprarAlgo = this.Details.DetallesComprarAlgo ? this.Details.DetallesComprarAlgo : null;
+      const ValorDescuento: number = Math.round(this.Details.ValorDescuento ? this.Details.ValorDescuento : 0);
+      const TotalDescuento: number = Math.round(SubTotalAPagar * ValorDescuento);
+      const TotalAPagar: number = Math.round((SubTotalAPagar - TotalDescuento) + SeguroAPagar);
+      const puntoInicialCoors: string = Recorrido[0].Coors;
+      const puntoInicio: string = Recorrido[0].Nombre;
+      const puntoFinal: string = lastPoint('Nombre');
+      const puntoFinalCoors: string = lastPoint('Coors');
+      const Estado: string = ESTADOS_SERVICIO.Pendiente;
+      this.Servicio = {
+        Recorrido, DistanciaTotal, DistanciaRedondeada, KmAdAlBase,
+        DuracionTotal, TipoServicio, RecargoKmAdi, ValorBase,
+        SobreCostoFueraCiudad, RecargoParadas, TotalAPagar,
+        TiempoEspera, ValorAsegurado, SeguroAPagar, user_id,
+        MetodoDePago, DebeComprar, CodigoPromocional, Asegurar,
+        FotoRecibido, FirmaRecibido, ComprarAlgo, Instrucciones,
+        DetallesComprarAlgo, SubTotalAPagar, ValorDescuento, TotalDescuento,
+        GananciaMensajero, puntoInicialCoors, puntoFinal, puntoFinalCoors,
+        puntoInicio, Estado
+      }
+
+      this.isQuoting = false;
+      this.isQuoteCompleted = true;
+    }, err => {
+      this.isQuoting = false;
+      this.isQuoteCompleted = true;
+      console.log(err)
+    })
+
 
 
   }
 
   private loadRoute(origins: string, destinations: string) {
-
     const points: string[] = origins.split('|')
       .concat(destinations.split('|'))
       .filter(item => { if (item) return item })
@@ -500,24 +524,18 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
         if (res) {
           if (res.routes) {
             const route: any = res.routes[0];
-
-
             const legs: any[] = route.legs;
-
             legs.forEach(leg => {
               const steps: any[] = leg.steps;
-
               steps.forEach(step => {
                 this.Directions.push(step.start_location)
                 this.Directions.push(step.end_location)
               })
             })
-
           }
         } else {
           console.log("Error al encontrar la dirección")
         }
-
       }, err => {
         console.log(err)
       })
@@ -800,6 +818,14 @@ class IServicioMensajeria {
   public FirmaRecibido;
   public ComprarAlgo;
   public Instrucciones;
-
   public DetallesComprarAlgo;
+  public ValorDescuento: number;
+  public SubTotalAPagar: number;
+  public TotalDescuento: number;
+  public GananciaMensajero: number;
+  public puntoInicio: string;
+  public puntoInicialCoors: string;
+  public puntoFinal: string;
+  public puntoFinalCoors: string;
+  public Estado: string:
 }

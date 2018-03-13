@@ -29,6 +29,7 @@ export class GananciasComponent implements OnInit {
     this.sub = this.getGanancias().subscribe(response => {
       const data = response;
       data.Mensajero*=100;
+      data.MensajeroMensajeria*=100;
       this.buildForm();
       this.form.patchValue(data);
     })
@@ -36,9 +37,7 @@ export class GananciasComponent implements OnInit {
 
   getGanancias(): Observable<IGanancias>{
     return this.dbService.objectGanancias().snapshotChanges().map(item => {
-      const Ganancias: IGanancias = {
-        Mensajero: item.payload.val().Mensajero
-      }
+      const Ganancias: IGanancias = item.payload.val()
       return Ganancias;
     })
   }
@@ -50,6 +49,12 @@ export class GananciasComponent implements OnInit {
         Validators.min(0), 
         Validators.max(100),
         Validators.pattern('^(0|[1-9][0-9]*)$')
+      ]],
+      MensajeroMensajeria: [null, [
+        Validators.required, 
+        Validators.min(0), 
+        Validators.max(100),
+        Validators.pattern('^(0|[1-9][0-9]*)$')
       ]]
     });
   }
@@ -57,6 +62,7 @@ export class GananciasComponent implements OnInit {
   save(){
     const data: IGanancias = this.form.value;
     data.Mensajero/=100;
+    data.MensajeroMensajeria/=100;
     const p = this.dbService.objectGanancias().update(data);
     p.then(res => {
       this.snackBar.open("Información Actualizada", 'Ok', {
@@ -67,5 +73,6 @@ export class GananciasComponent implements OnInit {
   }
 
   get Mensajero() { return this.form.get('Mensajero'); }
+  get MensajeroMensajeria() { return this.form.get('MensajeroMensajeria'); }
 
 }

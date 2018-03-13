@@ -25,6 +25,7 @@ import { IRelanzamiento } from '../../interfaces/relanzamiento.interface';
 import { IRetiros } from '../../interfaces/retiros.interface';
 import { ILogEquipamiento } from '../../interfaces/logequipamiento.interface';
 import { ISolicitud } from '../../interfaces/solicitud.interface';
+import { IBonoDescuento } from '../../interfaces/bono-descuento.interface';
 @Injectable()
 export class DbService {
 
@@ -456,6 +457,17 @@ export class DbService {
 
             return _log;
           }))
+  }
+
+  listBonoDescuento(): Observable<IBonoDescuento[]> {
+    return this.db.list(`/Administrativo/BonosDescuento`)
+      .snapshotChanges()
+      .map(changes => 
+        changes.map(_bono => {
+          let bono: IBonoDescuento = _bono.payload.val();
+          bono.$key  = _bono.payload.key;
+          return bono
+        }))
   }
 
   /**

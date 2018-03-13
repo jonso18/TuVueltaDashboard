@@ -127,6 +127,12 @@
     <mat-error *ngIf="Instrucciones.invalid" [innerHTML]="getErrorMessage(Instrucciones)"></mat-error>
   </mat-form-field>
 
+  <mat-form-field *ngIf="BonosDescuento">
+    <input matInput type="text" formControlName="BonoDescuento" placeholder="Bono Descuento">
+  </mat-form-field>
+
+  <div [innerHTML]="bonoDescuentoMsg" *ngIf="bonoDescuentoMsg"></div>
+
 </form>
 
 <!-- <pre class="code-panel">

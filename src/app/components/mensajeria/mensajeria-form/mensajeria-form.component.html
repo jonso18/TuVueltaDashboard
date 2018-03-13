@@ -1,5 +1,6 @@
+
 <mat-form-field *ngIf="Clientes">
-  <mat-select placeholder="Seleccione Cliente" (selectionChange)="onSelectedClient($event)">
+  <mat-select placeholder="Seleccione Cliente" [(ngModel)]="selectedCliente" (selectionChange)="onSelectedClient($event)">
     <mat-option *ngFor="let Cliente of Clientes" [value]="Cliente">
       {{Cliente.Nombres + ' ' + Cliente.Apellidos}}
     </mat-option>
@@ -140,7 +141,9 @@
                 <mat-step [completed]="isValidDetails" [editable]="isStepEditable">
                   <ng-template matStepLabel>Detalles</ng-template>
                   <app-mensajeria-form-details (onEdit)="onEditDetails($event)"></app-mensajeria-form-details>
-                  <pre>{{isValidDetails}}</pre>
+                  <div class="text-center">
+                    <button matStepperNext type="submit" class="btn btn-primary" color="primary">Siguiente</button>
+                  </div>
                 </mat-step>
                 
                 <!-- Cotizacion -->
@@ -183,7 +186,7 @@
                         <mat-icon mat-list-icon>timer</mat-icon>
                         <h4 mat-line>Duración Aproximada: </h4>
                         <h6 mat-line>
-                          <strong>{{(Servicio.DuracionTotal) | number:'1.1-2'}} Minutos</strong>
+                          <strong>{{(Servicio.DuracionTotal) | number}} Minutos</strong>
                         </h6>
                         <p mat-line>Más el tiempo de tome cada parada.</p>
                       </mat-list-item>
@@ -243,6 +246,13 @@
                       </mat-list-item>
                       <mat-list-item>
                         <mat-icon mat-list-icon>attach_money</mat-icon>
+                        <h4 mat-line>Descuento por Bono de Descuento</h4>
+                        <h6 mat-line>
+                          <strong>$ {{ Servicio.TotalDescuento | number }}</strong>
+                        </h6>
+                      </mat-list-item>
+                      <mat-list-item>
+                        <mat-icon mat-list-icon>attach_money</mat-icon>
                         <h4 mat-line>Valor Asegurado</h4>
                         <h6 mat-line>
                           <strong>$ {{ Servicio.ValorAsegurado | number }}</strong>
@@ -260,7 +270,7 @@
                       <mat-list-item class="total-amount">
                         <mat-icon mat-list-icon>monetization_on</mat-icon>
                         <h4 mat-line>Total a pagar:
-                          <strong>$ {{(Servicio.TotalAPagar) | number:'1.1-4'}}</strong>
+                          <strong>$ {{(Servicio.TotalAPagar) | number}}</strong>
                         </h4>
                         <p mat-line>Pesos Colombianos.</p>
                       </mat-list-item>
@@ -316,6 +326,7 @@
                 </mat-step>
 
                 <mat-step [editable]="isStepEditable">
+                    <ng-template matStepLabel>Solicitar</ng-template>
                   <div class="text-center" *ngIf="isSaving$ | async"> 
                     <mat-spinner></mat-spinner>
                   </div>
