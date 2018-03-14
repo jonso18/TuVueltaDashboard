@@ -827,5 +827,5 @@ class IServicioMensajeria {
   public puntoInicialCoors: string;
   public puntoFinal: string;
   public puntoFinalCoors: string;
-  public Estado: string:
+  public Estado: string;
 }

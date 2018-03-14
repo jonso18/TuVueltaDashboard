@@ -21,6 +21,7 @@ export const administradorRoutes: RouteInfo[] = [
             { path: 'Ganacias', title: 'Ganacias', ab: 'G'},
             { path: 'Estados-Domicilios', title: 'Estados Domicilios', ab: 'ED'},
             { path: 'Equipamiento', title: 'Equipamiento', ab: 'EQ'},
+            { path: 'Bonos-Mensajeria', title: 'Bonos Mensajeria', ab: 'BM'},
         ]
     },
     {

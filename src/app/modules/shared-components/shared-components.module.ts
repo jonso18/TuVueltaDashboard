@@ -38,6 +38,7 @@ import { NoRetirementCreditDialogComponent } from '../../dialogs/no-retirement-c
 import { SeguimientoActivosComponent } from '../../components/usuarios/seguimiento-activos/seguimiento-activos.component';
 import { LogEquipamientoComponent } from '../../components/usuarios/log-equipamiento/log-equipamiento.component';
 import { MensajeriaFormDetailsComponent } from '../../components/mensajeria/mensajeria-form/mensajeria-form-details/mensajeria-form-details.component';
+import { BonosMensajeriaComponent } from '../../components/parametros/bonos-mensajeria/bonos-mensajeria.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -82,7 +83,8 @@ import { MensajeriaFormDetailsComponent } from '../../components/mensajeria/mens
     LogEquipamientoComponent,
     NoRetirementCreditDialogComponent,
     SeguimientoActivosComponent,
-    MensajeriaFormDetailsComponent
+    MensajeriaFormDetailsComponent,
+    BonosMensajeriaComponent
   ],
   entryComponents: [
     DialogOnClickMap,
@@ -105,6 +107,7 @@ import { MensajeriaFormDetailsComponent } from '../../components/mensajeria/mens
     ComprarServicioComponent,
     DataTransaccionServicioComponent,
     CambiarEstadoServicioComponent,
+    BonosMensajeriaComponent,
   ]
 })
 export class SharedComponentsModule { }
