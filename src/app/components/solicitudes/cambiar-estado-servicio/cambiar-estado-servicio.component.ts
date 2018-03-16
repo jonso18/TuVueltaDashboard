@@ -9,6 +9,7 @@ import { dataConfirmation } from '../../../config/dialogs.data';
 import { ISolicitud } from '../../../interfaces/solicitud.interface';
 import { ESTADOS_SERVICIO } from '../../../config/EstadosServicio';
 import { AuthService } from '../../../services/auth/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cambiar-estado-servicio',
@@ -21,7 +22,7 @@ export class CambiarEstadoServicioComponent implements OnInit, OnDestroy {
   @Input() Id: string;
   @Input() Estados: IEstadoServicio[];
   @Input() Solicitud: ISolicitud;
-
+private subs: Subscription[] = [];
   constructor(
     private formBuilder: FormBuilder,
     private dbService: DbService,
@@ -37,6 +38,7 @@ export class CambiarEstadoServicioComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     console.log("Destroying compra servicio")
+    this.subs.forEach(res => res.unsubscribe());
   }
 
   buildForm(): void {
@@ -72,11 +74,11 @@ export class CambiarEstadoServicioComponent implements OnInit, OnDestroy {
       const question: string = `Desea Realizar el cambio de Estado <strong>${this.Solicitud.Estado}</strong> del servicio <strong>${this.Id}</strong> para el Estado <strong>${nameEstado}</strong> con Fecha  <strong>${'Dia: ' + fecha.getDate() + ' Mes: ' + (fecha.getMonth() + 1) + ' Año: ' + fecha.getFullYear() + ' a las ' + data.Hora + ':' + data.Minutos}</strong>`;
       let dialogRef = this.dialog.open(ConfirmationComponent,
         dataConfirmation(title, question));
-      dialogRef.afterClosed().subscribe(res => {
+      this.subs.push(dialogRef.afterClosed().subscribe(res => {
         if (res) {
           this.updateSolicitudEstado(date);
         }
-      })
+      }))
     }
   }
 

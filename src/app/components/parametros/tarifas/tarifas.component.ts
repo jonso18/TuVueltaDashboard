@@ -9,6 +9,7 @@ import { Observable } from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../services/auth/auth.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-tarifas',
@@ -17,13 +18,14 @@ import { AuthService } from '../../../services/auth/auth.service';
 })
 export class TarifasComponent implements OnInit, OnDestroy {
 
-  public Cities$: Observable<ICiudad[]>;
+  public Cities: ICiudad[];
+  public code$: BehaviorSubject<string | null>;
   public subs: Subscription[] = [];
   public form: FormGroup;
   public citySelected: ICiudad;
   public hasDomicilios: boolean = false;
   public hasMensajeria: boolean = false;
-
+  public subPricing: Subscription
   constructor(
     private dbService: DbService,
     private formBuilder: FormBuilder,
@@ -37,7 +39,48 @@ export class TarifasComponent implements OnInit, OnDestroy {
    * @returns void
    */
   ngOnInit(): void {
-    this.Cities$ = this.dbService.listCiudades();
+
+    this.code$ = new BehaviorSubject(null);
+    this.subs.push(
+      this.dbService.listCiudades().subscribe(Cities => {
+        this.addFirstCity(Cities)
+        this.Cities = Cities;
+      })
+    )
+
+    this.subs.push(
+      this.code$.switchMap((code: string) =>
+        this.dbService.objectTarifasByCitySnap(code)).subscribe((res) => {
+          if (this.citySelected) {
+            this.buildForm();
+            if (res) {
+              if (res.Domicilios && res.Domicilios.Tarifas) {
+                this.Dom.patchValue(res.Domicilios);
+                this.hasDomicilios = true;
+              } else {
+                this.hasDomicilios = false;
+              }
+              if (res.Mensajeria && res.Mensajeria.Tarifas) {
+                this.MenT.patchValue(res.Mensajeria.Tarifas)
+                this.hasMensajeria = true;
+              } else {
+                this.hasMensajeria = false;
+              }
+            } else {
+              this.hasDomicilios = false;
+              this.hasMensajeria = false;
+            }
+          }
+        })
+    )
+
+  }
+
+  addFirstCity(citys: ICiudad[]) {
+    if (citys.length > 1) {
+      this.citySelected = citys[0]
+      this.code$.next(this.citySelected.Codigo.toString())
+    }
   }
 
   /**
@@ -56,35 +99,10 @@ export class TarifasComponent implements OnInit, OnDestroy {
    * @returns void
    */
   onClickCity(Ciudad: ICiudad): void {
-    
     this.form = null;
-    this.subs.push(
-      this.dbService
-        .objectTarifasByCitySnap(Ciudad.Codigo.toString())
-        .subscribe(res => {
-          this.buildForm();
-          
-          console.log(res)
-          if (res) {
-            if (res.Domicilios && res.Domicilios.Tarifas) {
-              console.log('patching value to domiclios')
-              this.Dom.patchValue(res.Domicilios);
-              this.hasDomicilios = true;
-            } else {
-              this.hasDomicilios = false;
-            }
-            if (res.Mensajeria && res.Mensajeria.Tarifas) {
-              this.MenT.patchValue(res.Mensajeria.Tarifas)
-              this.hasMensajeria = true;
-            } else {
-              this.hasMensajeria = false;
-            }
-          }else {
-            this.hasDomicilios = false;
-            this.hasMensajeria = false;
-          }
-        })
-    )
+    console.log("calling new city")
+
+    this.code$.next(Ciudad.Codigo.toString());
   }
 
 
@@ -240,12 +258,12 @@ export class TarifasComponent implements OnInit, OnDestroy {
     }
   }
 
-  onRemove(service: string){
+  onRemove(service: string) {
     this.getToken().then(token => {
       const cityCode: string = this.citySelected.Codigo.toString();
-      const url:string = `${environment.firebase.databaseURL}/Administrativo/TipoServicio/${cityCode}/${service}/Tarifas.json?auth=${token}`;
+      const url: string = `${environment.firebase.databaseURL}/Administrativo/TipoServicio/${cityCode}/${service}/Tarifas.json?auth=${token}`;
       return this.http.delete(url).toPromise();
-    }).then(res=> {
+    }).then(res => {
       this.snackBar.open(`Tarifas ${service} de  ${this.citySelected.Nombre} Eliminada`, 'Ok', {
         duration: 3000,
         verticalPosition: 'top'
@@ -253,7 +271,7 @@ export class TarifasComponent implements OnInit, OnDestroy {
     })
   }
 
-  getToken(): Promise<string>{
+  getToken(): Promise<string> {
     return this.authService.userState.getIdToken();
   }
 

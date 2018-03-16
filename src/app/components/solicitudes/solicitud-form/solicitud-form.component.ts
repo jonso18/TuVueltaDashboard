@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../../services/auth/auth.service';
 import { DbService } from '../../../services/db/db.service';
@@ -8,6 +8,7 @@ import { ICiudad } from '../../../interfaces/ciudad.interface';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { environment } from '../../../../environments/environment';
 import { Location } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -17,12 +18,13 @@ import { Location } from '@angular/common';
 })
 
 // tslint:disable-next-line:component-class-suffix
-export class SolicitudFormDialog implements OnInit {
+export class SolicitudFormDialog implements OnInit, OnDestroy {
 
   form: FormGroup;
   public Ciudades: ICiudad[];
   public isUpdating: boolean;
   public solicitud;
+  private subCity: Subscription;
   constructor(
     private formBuilder: FormBuilder,
     private authProvider: AuthService,
@@ -43,8 +45,12 @@ export class SolicitudFormDialog implements OnInit {
     console.log(this.data);
   }
 
+  ngOnDestroy(){
+    this.subCity.unsubscribe();
+  }
+
   loadCitys() {
-    this.dbService.listCiudades().subscribe(res => {
+    this.subCity = this.dbService.listCiudades().subscribe(res => {
       this.Ciudades = res;
     })
   }
@@ -145,12 +151,14 @@ export class SolicitudFormDialog implements OnInit {
   templateUrl: './solicitud-form.component.html',
   styleUrls: ['./solicitud-form.component.css']
 })
-export class SolicitudFormComponent implements OnInit {
+export class SolicitudFormComponent implements OnInit, OnDestroy {
 
   form: FormGroup;
   public Ciudades: ICiudad[];
 
   public solicitud;
+
+  private subCity: Subscription;
   constructor(
     private formBuilder: FormBuilder,
     private authProvider: AuthService,
@@ -165,8 +173,12 @@ export class SolicitudFormComponent implements OnInit {
     this.buildForm();
   }
 
+  ngOnDestroy(){
+    this.subCity.unsubscribe();
+  }
+
   loadCitys() {
-    this.dbService.listCiudades().subscribe(res => {
+    this.subCity = this.dbService.listCiudades().subscribe(res => {
       this.Ciudades = res;
     });
   }

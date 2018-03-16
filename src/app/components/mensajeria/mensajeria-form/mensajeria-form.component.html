@@ -1,5 +1,5 @@
 
-<mat-form-field *ngIf="Clientes">
+<mat-form-field *ngIf="Clientes else loading">
   <mat-select placeholder="Seleccione Cliente" [(ngModel)]="selectedCliente" (selectionChange)="onSelectedClient($event)">
     <mat-option *ngFor="let Cliente of Clientes" [value]="Cliente">
       {{Cliente.Nombres + ' ' + Cliente.Apellidos}}
@@ -7,7 +7,12 @@
   </mat-select>
 </mat-form-field>
 
-
+<ng-template #loading>
+  <div class="text-center">
+    <mat-spinner></mat-spinner>
+    <h3>Cargando Información <small>Por favor, espere...</small></h3>
+  </div>
+</ng-template>
 
 <mat-form-field *ngIf="Ciudades && selectedCliente">
   <mat-select placeholder="Seleccione la Ciudad" [(ngModel)]="selectedCity" (selectionChange)="onSelectedCity($event)">
@@ -28,7 +33,7 @@
               <agm-info-window>Punto {{i + 1 }}</agm-info-window>
             </agm-marker>
           </ng-container>
-          <agm-polyline [editable]="true" [strokeColor]="blue" *ngIf="stepper.selectedIndex == 0; else direction">
+          <agm-polyline [editable]="true" [strokeColor]="blue" *ngIf="stepper.selectedIndex <= 1; else direction">
             <ng-container *ngFor="let marker of  puntosIntermedios.value">
               <agm-polyline-point *ngIf="marker.Coordenadas" [latitude]="marker.Coordenadas.Lat" [longitude]="marker.Coordenadas.Lng"></agm-polyline-point>
             </ng-container>
@@ -168,7 +173,7 @@
                         <mat-icon mat-list-icon>location_on</mat-icon>
                         <h4 mat-line>Distancia Total: </h4>
                         <h6 mat-line>
-                          <strong>{{(Servicio.DistanciaTotal) | number:'1.1-4'}} Km</strong>
+                          <strong>{{(Servicio.DistanciaTotal / 1000) | number:'1.0'}} Km</strong>
                         </h6>
                         <p mat-line> </p>
                       </mat-list-item>
@@ -199,22 +204,7 @@
                         </h6>
                         <p mat-line></p>
                       </mat-list-item>
-                      <mat-list-item>
-                        <mat-icon mat-list-icon>play_arrow</mat-icon>
-                        <h4 mat-line>Dirección de Partida: </h4>
-                        <h6 mat-line>
-                          <strong>{{Servicio.Recorrido[0].Nombre}}</strong>
-                        </h6>
-                        <p mat-line></p>
-                      </mat-list-item>
-                      <mat-list-item>
-                        <mat-icon mat-list-icon>location_off</mat-icon>
-                        <h4 mat-line>Dirección de Entrega: </h4>
-                        <h6 mat-line>
-                          <strong>{{Servicio.Recorrido[Servicio.Recorrido.length - 1].Nombre}}</strong>
-                        </h6>
-                        <p mat-line></p>
-                      </mat-list-item>
+       
                       <mat-list-item>
                         <mat-icon mat-list-icon>attach_money</mat-icon>
                         <h4 mat-line>Sobrecosto por Servicio fuera de la ciudad: </h4>
@@ -276,12 +266,12 @@
                       </mat-list-item>
                       <mat-divider></mat-divider>
                       <h3 mat-subheader>Resumen del recorrido</h3>
-                      <mat-list-item *ngFor="let point of Servicio.Recorrido; let i=index">
+                      <mat-list-item *ngFor="let point of TravelSummary; let i=index">
 
                         <mat-icon mat-list-icon>location_on</mat-icon>
                         <div [ngSwitch]="i">
                           <h4 matLine *ngSwitchCase="0">Dirección de Partida</h4>
-                          <h4 matLine *ngSwitchCase="Servicio.Recorrido.length-1">Dirección de Entrega</h4>
+                          <h4 matLine *ngSwitchCase="TravelSummary.length-1">Dirección de Entrega</h4>
                           <h4 matLine *ngSwitchDefault>Punto Intermedio</h4>
                         </div>
                         <h4 mat-line>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { DbService } from '../../../services/db/db.service';
 import { IRegasActivos } from '../../../interfaces/reglasactivos.interface';
@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material';
   templateUrl: './reglas-activos.component.html',
   styleUrls: ['./reglas-activos.component.css']
 })
-export class ReglasActivosComponent implements OnInit {
+export class ReglasActivosComponent implements OnInit, OnDestroy {
   private sub: Subscription;
   public form: FormGroup;
   private rulesData = [null, [
@@ -27,6 +27,11 @@ export class ReglasActivosComponent implements OnInit {
   ngOnInit() {
     this.loadInfo();
   }
+
+  ngOnDestroy(){
+    this.sub.unsubscribe();
+  }
+
   /**
    * Load all information to work on this component
    * @returns void

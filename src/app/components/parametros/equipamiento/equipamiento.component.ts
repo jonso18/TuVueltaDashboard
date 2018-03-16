@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
 import { DbService } from '../../../services/db/db.service';
 import { IEquipamiento, IRequisitoEquip } from '../../../interfaces/equipamiento.interface';
 import { MatSnackBar } from '@angular/material';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-equipamiento',
   templateUrl: './equipamiento.component.html',
   styleUrls: ['./equipamiento.component.css']
 })
-export class EquipamientoComponent implements OnInit {
+export class EquipamientoComponent implements OnInit, OnDestroy {
   form: FormGroup;
+  private subs: Subscription[] = [];
   constructor(
     private formBuilder: FormBuilder,
     private dbService: DbService,
@@ -18,12 +20,16 @@ export class EquipamientoComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
-    this.loadEquipamient();
+    this.subs.push(this.loadEquipamient());
   }
 
-  loadEquipamient() {
-    this.dbService.objectEquipamiento().snapshotChanges()
+  ngOnDestroy(){
+    this.subs.forEach(sub => sub.unsubscribe());
+  }
+
+  private loadEquipamient(): Subscription {
+    return this.dbService.objectEquipamiento().snapshotChanges()
+    .do(console.log)
       .map(equipamient => {
         const _equipament: IEquipamiento = {
           Mensaje: equipamient.payload.val().Mensaje,

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DbService } from '../../../services/db/db.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { IGlobalConfig } from '../../../interfaces/config-global.interface';
@@ -8,16 +8,18 @@ import { Observable } from 'rxjs/Observable';
 import { IUser } from '../../../interfaces/usuario.interface';
 import { ROLES } from '../../../config/Roles';
 import { MatSelect, MatSnackBar } from '@angular/material';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-config-global',
   templateUrl: './config-global.component.html',
   styleUrls: ['./config-global.component.css']
 })
-export class ConfigGlobalComponent implements OnInit {
+export class ConfigGlobalComponent implements OnInit, OnDestroy {
 
   public form: FormGroup;
   public Clientes$: Observable<IUser[]>;
+  public subs: Subscription[] = [];
   constructor(
     private dbService: DbService,
     private http: HttpClient,
@@ -28,15 +30,20 @@ export class ConfigGlobalComponent implements OnInit {
   ngOnInit() {
     this.Clientes$ = this.dbService.listUsersByRol(ROLES.Cliente);
     this.loadInfo();
+    console.log(this.subs.length)
+  }
+
+  ngOnDestroy(){
+    this.subs.forEach(sub => sub.unsubscribe());
   }
 
   loadInfo() {
-    this.dbService.objectConfigGlobal()
+    this.subs.push(this.dbService.objectConfigGlobal()
       .subscribe((res: IGlobalConfig) => {
         this.buildForm();
         this.validateIfUsuarios(res);
         this.form.patchValue(res);
-      })
+      }))
   }
 
   validateIfUsuarios(globalConfig: IGlobalConfig): void {

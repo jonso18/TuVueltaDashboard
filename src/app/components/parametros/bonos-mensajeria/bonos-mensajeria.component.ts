@@ -19,6 +19,7 @@ export class BonosMensajeriaComponent implements OnInit, OnDestroy {
   public loading$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public subList: Subscription;
   public subBonus: Subscription;
+  private subs: Subscription[] = [];
   public message: string = '';
   constructor(
     private formBuilder: FormBuilder,
@@ -36,6 +37,7 @@ export class BonosMensajeriaComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.subBonus) this.subBonus.unsubscribe();
     if (this.subList) this.subList.unsubscribe();
+    this.subs.forEach(sub => sub.unsubscribe());
   }
 
   private loadInfo(): void {
@@ -63,7 +65,6 @@ export class BonosMensajeriaComponent implements OnInit, OnDestroy {
       
       .distinctUntilChanged()
       .subscribe((bonus: IBonoDescuento[]) => {
-        console.log(bonus)
         let isDuplicated: number = 0;
         for (let i = 0; i < bonus.length; i++) {
           for (let j = 0; j < bonus.length; j++) {
@@ -71,8 +72,6 @@ export class BonosMensajeriaComponent implements OnInit, OnDestroy {
             if (bonus[i].Clave == bonus[j].Clave) isDuplicated++;
           }
         }
-
-        console.log(isDuplicated)
         if (isDuplicated > bonus.length) {
           this.message = `
           <div class="alert alert-warning" role="alert">
@@ -110,7 +109,7 @@ export class BonosMensajeriaComponent implements OnInit, OnDestroy {
   public onSubmit() {
     const isValid: boolean = this.form.valid;
     if (isValid) {
-      Observable.fromPromise(this.authService.userState.getIdToken())
+      this.subs.push(Observable.fromPromise(this.authService.userState.getIdToken())
         .switchMap((idToken: string) => this.updateBonus(idToken))
         .subscribe(res => {
           this.snack.open('Actualziación exitosa', 'Ok', {
@@ -129,7 +128,7 @@ export class BonosMensajeriaComponent implements OnInit, OnDestroy {
             Error al actualizar la informacion.
           </div>
           `
-        })
+        }))
 
     }
   }

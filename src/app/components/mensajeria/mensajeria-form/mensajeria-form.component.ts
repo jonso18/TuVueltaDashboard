@@ -59,6 +59,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
   public Directions: LatLng[] = [];
   public isValidDetails: boolean = false;
   public messageSaved: string;
+  public TravelSummary: IPunto[] = [];
   constructor(
     private formBuilder: FormBuilder,
     private http: HttpClient,
@@ -72,9 +73,8 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
     $('body').removeClass('sidebar-mini');
     if (this.subTM) this.subTM.unsubscribe();
     if (this.subTMC) this.subTMC.unsubscribe();
-    this.subs.forEach(sub => {
-      sub.unsubscribe();
-    })
+    if (this.subClnts) this.subClnts.unsubscribe();
+    this.subs.forEach(sub => sub.unsubscribe());
   }
 
 
@@ -108,7 +108,6 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
           }, 1000);
         }
       })
-
   }
 
   public onSelectedClient(event: MatSelectChange): void {
@@ -126,10 +125,9 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   private loadCitys(): void {
-    this.dbService.listCiudades().subscribe(res => {
+    this.subs.push(this.dbService.listCiudades().subscribe(res => {
       this.Ciudades = res;
-
-    })
+    }))
   }
 
   public onMapClick(event: any): void {
@@ -418,7 +416,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
     const data = Observable.forkJoin([distanceMtrx$, profitMensajeroMensajeria$, isOut$])
 
 
-    data.subscribe(res => {
+    this.subs.push(data.subscribe(res => {
       console.log(res)
       const distMatrx = res[0];
       const Profit: IGanancias = res[1];
@@ -447,8 +445,8 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
       }
 
       const Recorrido: IPunto[] = this.puntosIntermedios.value;
-      const DistanciaTotal: number = Number(fullDistance);
-      const DistanciaRedondeada: number = Math.round(Math.round(DistanciaTotal));
+      const DistanciaTotal: number = Number(fullDistance) * 1000;
+      const DistanciaRedondeada: number = Math.round(Math.round(Number(fullDistance)));
       const KmAdAlBase: number = DistanciaRedondeada - Tarifas.PrimerosKm.Km;
       const DuracionTotal: number = Number(fullDuration);
       const TipoServicio: string = 'Mensajeria';
@@ -479,6 +477,9 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
       const puntoFinal: string = lastPoint('Nombre');
       const puntoFinalCoors: string = lastPoint('Coors');
       const Estado: string = ESTADOS_SERVICIO.Pendiente;
+      const codigoCiudad: string = this.selectedCity.Codigo.toString();
+      const esPagoConTarjeta: boolean = false;
+
       this.Servicio = {
         Recorrido, DistanciaTotal, DistanciaRedondeada, KmAdAlBase,
         DuracionTotal, TipoServicio, RecargoKmAdi, ValorBase,
@@ -488,8 +489,10 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
         FotoRecibido, FirmaRecibido, ComprarAlgo, Instrucciones,
         DetallesComprarAlgo, SubTotalAPagar, ValorDescuento, TotalDescuento,
         GananciaMensajero, puntoInicialCoors, puntoFinal, puntoFinalCoors,
-        puntoInicio, Estado
+        puntoInicio, Estado, codigoCiudad, esPagoConTarjeta
       }
+
+      this.loadTravelSummary(this.Servicio.Recorrido);
 
       this.isQuoting = false;
       this.isQuoteCompleted = true;
@@ -497,10 +500,21 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
       this.isQuoting = false;
       this.isQuoteCompleted = true;
       console.log(err)
+    }))
+
+
+
+  }
+
+  private loadTravelSummary(points: IPunto[]){
+    this.TravelSummary = [];
+    points.forEach(point => {
+      this.TravelSummary.push(point)
+      if (point.Vuelta) this.TravelSummary.push(points[point.PuntoAVolver])
     })
 
-
-
+    console.log(this.TravelSummary)
+    console.log(this.TravelSummary.length)
   }
 
   private loadRoute(origins: string, destinations: string) {
@@ -515,7 +529,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
     const language: string = 'es'
     const body = { origin, destination, waypoints, mode, language }
 
-    this.getSentence(body, 'api/google/directions')
+    this.subs.push(this.getSentence(body, 'api/google/directions')
       .map(res => {
         if (res && res.data) return res.data;
         return null
@@ -538,7 +552,7 @@ export class MensajeriaFormComponent implements OnInit, OnDestroy, AfterViewInit
         }
       }, err => {
         console.log(err)
-      })
+      }))
   }
 
   /**
@@ -828,4 +842,6 @@ class IServicioMensajeria {
   public puntoFinal: string;
   public puntoFinalCoors: string;
   public Estado: string;
+  public codigoCiudad: string;
+  public esPagoConTarjeta: boolean;
 }

@@ -16,6 +16,7 @@ export class CiudadesComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   private subCiudades: Subscription;
   public Ciudades: ICiudad[];
+  public subs: Subscription[] = [];
   constructor(
     public dbService: DbService,
     private formBuilder: FormBuilder,
@@ -27,28 +28,30 @@ export class CiudadesComponent implements OnInit, OnDestroy {
     this.loadCiudades();
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.subCiudades.unsubscribe();
+    this.subs.forEach(sub => sub.unsubscribe())
   }
 
   loadCiudades() {
-    this.subCiudades = this.dbService.listCiudades().subscribe(res => {
-      this.form = this.formBuilder.group({
-        Citys: this.formBuilder.array([])
+    this.subCiudades = this.dbService.listCiudades()
+      .subscribe(res => {
+        this.form = this.formBuilder.group({
+          Citys: this.formBuilder.array([])
+        })
+        this.Ciudades = res;
+        res.forEach(item => {
+          this.addCity(item)
+        })
       })
-      this.Ciudades = res;
-      res.forEach(item => {
-        this.addCity(item)
-      })
-    })
   }
 
   addCity(city) {
-    console.log('Adding city', city)
+    
     this.Citys.push(this.formBuilder.group({
-      Codigo:   [city.Codigo],
-      Nombre:   [city.Nombre, Validators.required],
-      Prefijo:  [city.Prefijo, Validators.required]
+      Codigo: [city.Codigo],
+      Nombre: [city.Nombre, Validators.required],
+      Prefijo: [city.Prefijo, Validators.required]
     }))
   }
 
@@ -68,21 +71,21 @@ export class CiudadesComponent implements OnInit, OnDestroy {
   }
 
   delete(city: ICiudad) {
-    
+
     const key = city.Codigo;
     let dialogRef = this.dialog.open(DialogDeleteCity, {
       width: '250px',
       data: { action: this.dbService.objectCiudad(key) }
     });
 
-    dialogRef.afterClosed().subscribe(res => {
+    this.subs.push(dialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.snackBar.open("Ciudad Eliminada", 'Ok', {
           duration: 3000,
           verticalPosition: 'top'
         })
       }
-    })
+    }))
   }
 
   openDialog(): void {
@@ -90,15 +93,14 @@ export class CiudadesComponent implements OnInit, OnDestroy {
       width: '250px'
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result){
+    this.subs.push(dialogRef.afterClosed().subscribe(result => {
+      if (result) {
         this.snackBar.open("Ciudad Creada", 'Ok', {
           duration: 3000,
           verticalPosition: 'top'
         })
       }
-
-    });
+    }));
   }
 
   get Citys() { return this.form.get('Citys') as FormArray }

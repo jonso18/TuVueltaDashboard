@@ -26,6 +26,7 @@ import { EstadodecuentaComponent } from '../../components/usuarios/estadodecuent
 import { TransaccionesComponent } from '../../components/solicitudes/transacciones/transacciones.component';
 import { MensajeriaFormDetailsComponent } from '../../components/mensajeria/mensajeria-form/mensajeria-form-details/mensajeria-form-details.component';
 import { BonosMensajeriaComponent } from '../../components/parametros/bonos-mensajeria/bonos-mensajeria.component';
+import { IdTerNoPerComponent } from '../../components/parametros/id-ter-no-per/id-ter-no-per.component';
 
 export const AdminRoutes: Routes = [
     {
@@ -114,6 +115,10 @@ export const AdminRoutes: Routes = [
             {
                 path: 'Bonos-Mensajeria',
                 component: BonosMensajeriaComponent
+            },
+            {
+                path: 'Terceros-No-Permitidos',
+                component: IdTerNoPerComponent
             }
         ]
     },

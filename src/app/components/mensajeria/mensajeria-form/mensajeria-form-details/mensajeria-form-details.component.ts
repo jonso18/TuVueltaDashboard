@@ -1,8 +1,8 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { METODOS_PAGO } from '../../../../config/MetodosPago';
 import { MessagesService } from '../../../../services/messages/messages.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
 import { DbService } from '../../../../services/db/db.service';
@@ -13,8 +13,9 @@ import { IBonoDescuento } from '../../../../interfaces/bono-descuento.interface'
   templateUrl: './mensajeria-form-details.component.html',
   styleUrls: ['./mensajeria-form-details.component.css']
 })
-export class MensajeriaFormDetailsComponent implements OnInit {
+export class MensajeriaFormDetailsComponent implements OnInit, OnDestroy {
 
+  
   @Output() onEdit: EventEmitter<any> = new EventEmitter();
 
   public loading$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -23,6 +24,7 @@ export class MensajeriaFormDetailsComponent implements OnInit {
   public CostoSeguro: any;
   public BonosDescuento: IBonoDescuento[];
   public bonoDescuentoMsg: string;
+  public subs: Subscription[] = [];
   constructor(
     private formBuilder: FormBuilder,
     private messages: MessagesService,
@@ -32,11 +34,14 @@ export class MensajeriaFormDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.buildForm();
-    this.loadBonusDiscount()
+    this.subs.push(this.loadBonusDiscount());
     this.loadRules();
-    this.loadEventEmiters()
-    this.loadCostoSeguro();
+    this.subs.push(this.loadEventEmiters());
+    this.subs.push(this.loadCostoSeguro());
+  }
 
+  ngOnDestroy(): void {
+    this.subs.forEach(sub => sub.unsubscribe());
   }
 
   private buildForm(): void {
@@ -54,21 +59,21 @@ export class MensajeriaFormDetailsComponent implements OnInit {
   }
 
 
-  private loadBonusDiscount(): void {
-    this.dbService.listBonoDescuento().subscribe(bonus => {
+  private loadBonusDiscount(): Subscription {
+    return this.dbService.listBonoDescuento().subscribe(bonus => {
       this.BonosDescuento = bonus;
     })
   }
 
   private loadRules(): void {
-    this.validatorMetodoPago();
-    this.validatorComprarAlgo();
-    this.validatorCostoAsegurar();
-    this.validatorBonoDescuento();
+    this.subs.push(this.validatorMetodoPago());
+    this.subs.push(this.validatorComprarAlgo());
+    this.subs.push(this.validatorCostoAsegurar());
+    this.subs.push(this.validatorBonoDescuento());
   }
 
-  private loadEventEmiters(): void {
-    this.form
+  private loadEventEmiters(): Subscription {
+    return this.form
       .valueChanges
       .debounceTime(100)
       .distinctUntilChanged()
@@ -79,11 +84,12 @@ export class MensajeriaFormDetailsComponent implements OnInit {
       )
   }
 
-  private loadCostoSeguro() {
-    this.db.list(`/Administrativo/ReglasMensajeria/CostoSeguro`)
+  private loadCostoSeguro(): Subscription {
+    return this.db.list(`/Administrativo/ReglasMensajeria/CostoSeguro`)
       .valueChanges()
       .merge(this.Asegurar.valueChanges
         .do(() => this.loading$.next(true))
+        .do(console.log)
         .debounceTime(500)
         .do(() => this.loading$.next(false)))
       .subscribe(res => {
@@ -123,8 +129,8 @@ export class MensajeriaFormDetailsComponent implements OnInit {
 
 
 
-  private validatorComprarAlgo(): void {
-    this.ComprarAlgo
+  private validatorComprarAlgo(): Subscription {
+    return this.ComprarAlgo
       .valueChanges
       .do(() => this.loading$.next(true))
       .debounceTime(500)
@@ -145,8 +151,8 @@ export class MensajeriaFormDetailsComponent implements OnInit {
 
   }
 
-  private validatorCostoAsegurar() {
-    this.form
+  private validatorCostoAsegurar(): Subscription {
+    return this.form
       .valueChanges
       .debounceTime(500)
       .distinctUntilChanged()
@@ -180,8 +186,8 @@ export class MensajeriaFormDetailsComponent implements OnInit {
       })
   }
 
-  private validatorBonoDescuento() {
-    this.BonoDescuento
+  private validatorBonoDescuento(): Subscription {
+    return this.BonoDescuento
       .valueChanges
       .debounceTime(1000)
       .distinctUntilChanged()
@@ -228,8 +234,8 @@ export class MensajeriaFormDetailsComponent implements OnInit {
       })
   }
 
-  private validatorMetodoPago(): void {
-    this.MetodoDePago
+  private validatorMetodoPago(): Subscription {
+    return this.MetodoDePago
       .valueChanges
       .do(() => this.loading$.next(true))
       .debounceTime(500)
