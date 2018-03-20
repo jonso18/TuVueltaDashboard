@@ -6,9 +6,9 @@
     </div>
     <div class="card-content">
 
-      <mat-form-field *ngIf="Ciudades$ | async as Ciudades">
+      <mat-form-field *ngIf="Ciudades">
         <mat-select placeholder="Seleccione la Ciudad" [(ngModel)]="selectedCity">
-          <mat-option *ngFor="let city of Ciudades" [value]="city" (click)="onSelectedCity()">
+          <mat-option *ngFor="let city of Ciudades" [value]="city" >
             {{city.Nombre}}
           </mat-option>
         </mat-select>

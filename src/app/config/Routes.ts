@@ -21,6 +21,8 @@ export const administradorRoutes: RouteInfo[] = [
             { path: 'Ganacias', title: 'Ganacias', ab: 'G'},
             { path: 'Estados-Domicilios', title: 'Estados Domicilios', ab: 'ED'},
             { path: 'Equipamiento', title: 'Equipamiento', ab: 'EQ'},
+            { path: 'Bonos-Mensajeria', title: 'Bonos Mensajeria', ab: 'BM'},
+            { path: 'Terceros-No-Permitidos', title: 'Terceros No Permitidos', ab: 'TNP'},
         ]
     },
     {
@@ -157,19 +159,5 @@ export const operatorRoutes: RouteInfo[] = [
             /* { path: 'hacer-reasignacion', title: 'Reasignar Servicios', ab: 'RS'}, */
             { path: 'lista', title: 'Reajustar Servicios', ab: 'RJS'},
         ]
-    },
-    {
-        path: '/operador/Usuarios',
-        title: 'Usuarios',
-        
-        type: 'sub',
-        icontype: 'account_box',
-        collapse: 'Usuarios',
-        children: [
-            { path: 'nuevo', title: 'Crear Usuario', ab: 'NU'},
-            { path: 'lista', title: 'Listado de usuarios', ab: 'LU'},
-            { path: 'seguimiento-activos', title: 'Seguimiento Activos', ab: 'SA'},
-
-        ]
-    },
+    }
 ];

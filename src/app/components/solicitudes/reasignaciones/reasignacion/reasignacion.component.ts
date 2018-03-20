@@ -1,17 +1,18 @@
-import { Component, OnInit, ViewChild, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject, OnDestroy } from '@angular/core';
 import { DbService } from '../../../../services/db/db.service';
 import { MatTableDataSource, MatPaginator, MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatSnackBar } from '@angular/material';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { ROLES } from '../../../../config/Roles';
 import { DialogDeleteCity } from '../../../parametros/ciudades/ciudades.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-reasignacion',
   templateUrl: './reasignacion.component.html',
   styleUrls: ['./reasignacion.component.css']
 })
-export class ReasignacionComponent implements OnInit {
+export class ReasignacionComponent implements OnInit, OnDestroy {
   public Mensajeros;
   resultsLength = 0;
   displayedColumns = ['Id','Fecha', 'TotalAPagar', 'Telefono', 'PagoConTarjeta', 'Distancia', 'puntoInicio', 'puntoFinal', 'Estado', 'Mensajero', 'MensajeroCelular', 'Actions'];
@@ -19,6 +20,7 @@ export class ReasignacionComponent implements OnInit {
   public solicitudes;
   public Clientes;
   public allSolicitudes;
+  private subs: Subscription[] = [];
   @ViewChild('paginator') paginator: MatPaginator;
   constructor(
     private dbService: DbService,
@@ -30,21 +32,25 @@ export class ReasignacionComponent implements OnInit {
     this.loadInfo();
   }
 
-  private loadInfo() {
-    this.loadMensajeros();
-    this.loadClients();
-    this.loadSolicitudEnProceso();
+  ngOnDestroy(){
+    this.subs.forEach(sub => sub.unsubscribe());
   }
 
-  loadClients(){
+  private loadInfo() {
+    this.subs.push(this.loadMensajeros());
+    this.subs.push(this.loadClients());
+    this.subs.push(this.loadSolicitudEnProceso());
+  }
+
+  private loadClients(): Subscription{
     const rol = ROLES.Cliente
-    this.dbService.listUsersByRol(rol).subscribe(res => {
+    return this.dbService.listUsersByRol(rol).subscribe(res => {
       this.Clientes = res;
     })
   }
 
-  loadMensajeros() {
-    this.dbService.listMensajeros().snapshotChanges().subscribe(res => {
+  private loadMensajeros(): Subscription {
+    return this.dbService.listMensajeros().snapshotChanges().subscribe(res => {
       this.Mensajeros = res.reduce((o, val) => {
         o[val.key] = val.payload.val();
         return o;
@@ -70,8 +76,8 @@ export class ReasignacionComponent implements OnInit {
 
   }
 
-  loadSolicitudEnProceso() {
-    this.dbService.listSolicitudEnProceso().snapshotChanges().subscribe(res => {
+  private loadSolicitudEnProceso(): Subscription {
+    return this.dbService.listSolicitudEnProceso().snapshotChanges().subscribe(res => {
       this.solicitudes = this.allSolicitudes = res;
       this.instanceTable();
     })
@@ -95,14 +101,14 @@ export class ReasignacionComponent implements OnInit {
       data: { action: this.dbService.objectSolicitud(key) }
     })
 
-    dialogRef.afterClosed().subscribe(res => {
+    this.subs.push(dialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.snackBar.open("Solicitud Eliminada", 'Ok', {
           duration: 3000,
           verticalPosition: 'top'
         })
       }
-    })
+    }))
   }
 
   openDialog(serviceId, fechaCompra, PrevioMotorratoner_id) {
@@ -114,14 +120,14 @@ export class ReasignacionComponent implements OnInit {
       data: { PrevioMotorratoner_id: _PrevioMotorratoner_id, fechaCompra: _fechaCompra, serviceId: _serviceId, Mensajeros: this.Mensajeros }
     });
 
-    dialogRef.afterClosed().subscribe(res => {
+    this.subs.push(dialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.snackBar.open("Proceso Exitoso", 'Ok', {
           duration: 3000,
           verticalPosition: 'top'
         })
       }
-    })
+    }))
   }
 }
 

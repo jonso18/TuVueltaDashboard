@@ -4,7 +4,7 @@
     <div class="col-sm-offset-2 col-sm-8">
       <form [formGroup]="form" *ngIf="form">
         <mat-form-field>
-          <input matInput formControlName="Mensajero" placeholder="Ganancia mensajero">
+          <input matInput formControlName="Mensajero" placeholder="Ganancia mensajero" type="number">
           <!-- <span matPrefix>Mensajero </span> -->
           <span matSuffix>%</span>
           <mat-error *ngIf="Mensajero.hasError('required')">Campo Obligatorio</mat-error>
@@ -15,6 +15,21 @@
             <strong>mayor a 0 %</strong>
           </mat-error>
           <mat-error *ngIf="Mensajero.hasError('pattern')">El valor debe ser
+            <strong>Numerico</strong>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput formControlName="MensajeroMensajeria" placeholder="Ganancia mensajeroMensajeria" type="number">
+          <!-- <span matPrefix>MensajeroMensajeria </span> -->
+          <span matSuffix>%</span>
+          <mat-error *ngIf="MensajeroMensajeria.hasError('required')">Campo Obligatorio</mat-error>
+          <mat-error *ngIf="MensajeroMensajeria.hasError('max')">El valor debe ser
+            <strong>menor a 100 %</strong>
+          </mat-error>
+          <mat-error *ngIf="MensajeroMensajeria.hasError('min')">El valor debe ser
+            <strong>mayor a 0 %</strong>
+          </mat-error>
+          <mat-error *ngIf="MensajeroMensajeria.hasError('pattern')">El valor debe ser
             <strong>Numerico</strong>
           </mat-error>
         </mat-form-field>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DbService } from '../../../services/db/db.service';
 import { Subscription } from 'rxjs/Subscription';
 import { IEstadoServicio } from '../../../interfaces/estadoservicio.interface';
@@ -8,7 +8,7 @@ import { IEstadoServicio } from '../../../interfaces/estadoservicio.interface';
   templateUrl: './estados-domicilios.component.html',
   styleUrls: ['./estados-domicilios.component.css']
 })
-export class EstadosDomiciliosComponent implements OnInit {
+export class EstadosDomiciliosComponent implements OnInit, OnDestroy {
   private sub: Subscription;
   public Estados: IEstadoServicio[];
   constructor(
@@ -16,13 +16,15 @@ export class EstadosDomiciliosComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.loadInfo();
+    this.sub = this.loadInfo();
   }
 
-  loadInfo(): void{
-    this.sub = this.dbService.listEstadosServicioSnap().subscribe(res => {
-      this.Estados = res;
-    })
+  ngOnDestroy() {
+    this.sub.unsubscribe();
+  }
+
+  private loadInfo(): Subscription {
+    return this.dbService.listEstadosServicioSnap().subscribe(res => this.Estados = res)
   }
 
 }

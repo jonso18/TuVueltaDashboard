@@ -6,109 +6,161 @@ import { Location, LocationStrategy, PathLocationStrategy, PopStateEvent } from 
 import 'rxjs/add/operator/filter';
 import { NavbarComponent } from '../../shared/navbar/navbar.component';
 import PerfectScrollbar from 'perfect-scrollbar';
+import { AuthService } from '../../../services/auth/auth.service';
+import { ROLES } from '../../../config/Roles';
 
 declare const $: any;
 
 @Component({
-  selector: 'app-layout',
-  templateUrl: './admin-layout.component.html'
+    selector: 'app-layout',
+    templateUrl: './admin-layout.component.html'
 })
 
 export class AdminLayoutComponent implements OnInit, AfterViewInit {
+
     public navItems: NavItem[];
     private _router: Subscription;
     private lastPoppedUrl: string;
     private yScrollStack: number[] = [];
     url: string;
     location: Location;
-
+    public ROLES = ROLES
     @ViewChild('sidebar') sidebar: any;
     @ViewChild(NavbarComponent) navbar: NavbarComponent;
-    constructor( private router: Router, location: Location ) {
-      this.location = location;
+
+    customClass = {
+        'sidebar-black': this.authService.userInfo.Rol == ROLES.Administrador
+    }
+    constructor(
+        private router: Router,
+        location: Location,
+        public authService: AuthService
+    ) {
+        this.location = location;
     }
     ngOnInit() {
         const elemMainPanel = <HTMLElement>document.querySelector('.main-panel');
         const elemSidebar = <HTMLElement>document.querySelector('.sidebar .sidebar-wrapper');
-        this.location.subscribe((ev:PopStateEvent) => {
+        this.location.subscribe((ev: PopStateEvent) => {
             this.lastPoppedUrl = ev.url;
         });
-         this.router.events.subscribe((event:any) => {
+        this.router.events.subscribe((event: any) => {
             if (event instanceof NavigationStart) {
-               if (event.url != this.lastPoppedUrl)
-                   this.yScrollStack.push(window.scrollY);
-           } else if (event instanceof NavigationEnd) {
-               if (event.url == this.lastPoppedUrl) {
-                   this.lastPoppedUrl = undefined;
-                   window.scrollTo(0, this.yScrollStack.pop());
-               }
-               else
-                   window.scrollTo(0, 0);
-           }
+                if (event.url != this.lastPoppedUrl)
+                    this.yScrollStack.push(window.scrollY);
+            } else if (event instanceof NavigationEnd) {
+                if (event.url == this.lastPoppedUrl) {
+                    this.lastPoppedUrl = undefined;
+                    window.scrollTo(0, this.yScrollStack.pop());
+                }
+                else
+                    window.scrollTo(0, 0);
+            }
         });
         this._router = this.router.events.filter(event => event instanceof NavigationEnd).subscribe((event: NavigationEnd) => {
-             elemMainPanel.scrollTop = 0;
-             elemSidebar.scrollTop = 0;
+            elemMainPanel.scrollTop = 0;
+            elemSidebar.scrollTop = 0;
         });
         if (window.matchMedia(`(min-width: 960px)`).matches && !this.isMac()) {
             let ps = new PerfectScrollbar(elemMainPanel);
             ps = new PerfectScrollbar(elemSidebar);
         }
         this._router = this.router.events.filter(event => event instanceof NavigationEnd).subscribe((event: NavigationEnd) => {
-          this.navbar.sidebarClose();
+            this.navbar.sidebarClose();
         });
 
         this.navItems = [
-          { type: NavItemType.NavbarLeft, title: 'Dashboard', iconClass: 'fa fa-dashboard' },
+            { type: NavItemType.NavbarLeft, title: 'Dashboard', iconClass: 'fa fa-dashboard' },
 
-          {
-            type: NavItemType.NavbarRight,
-            title: '',
-            iconClass: 'fa fa-bell-o',
-            numNotifications: 5,
-            dropdownItems: [
-              { title: 'Notification 1' },
-              { title: 'Notification 2' },
-              { title: 'Notification 3' },
-              { title: 'Notification 4' },
-              { title: 'Another Notification' }
-            ]
-          },
-          {
-            type: NavItemType.NavbarRight,
-            title: '',
-            iconClass: 'fa fa-list',
+            {
+                type: NavItemType.NavbarRight,
+                title: '',
+                iconClass: 'fa fa-bell-o',
+                numNotifications: 5,
+                dropdownItems: [
+                    { title: 'Notification 1' },
+                    { title: 'Notification 2' },
+                    { title: 'Notification 3' },
+                    { title: 'Notification 4' },
+                    { title: 'Another Notification' }
+                ]
+            },
+            {
+                type: NavItemType.NavbarRight,
+                title: '',
+                iconClass: 'fa fa-list',
 
-            dropdownItems: [
-              { iconClass: 'pe-7s-mail', title: 'Messages' },
-              { iconClass: 'pe-7s-help1', title: 'Help Center' },
-              { iconClass: 'pe-7s-tools', title: 'Settings' },
-               'separator',
-              { iconClass: 'pe-7s-lock', title: 'Lock Screen' },
-              { iconClass: 'pe-7s-close-circle', title: 'Log Out' }
-            ]
-          },
-          { type: NavItemType.NavbarLeft, title: 'Search', iconClass: 'fa fa-search' },
+                dropdownItems: [
+                    { iconClass: 'pe-7s-mail', title: 'Messages' },
+                    { iconClass: 'pe-7s-help1', title: 'Help Center' },
+                    { iconClass: 'pe-7s-tools', title: 'Settings' },
+                    'separator',
+                    { iconClass: 'pe-7s-lock', title: 'Lock Screen' },
+                    { iconClass: 'pe-7s-close-circle', title: 'Log Out' }
+                ]
+            },
+            { type: NavItemType.NavbarLeft, title: 'Search', iconClass: 'fa fa-search' },
 
-          { type: NavItemType.NavbarLeft, title: 'Account' },
-          {
-            type: NavItemType.NavbarLeft,
-            title: 'Dropdown',
-            dropdownItems: [
-              { title: 'Action' },
-              { title: 'Another action' },
-              { title: 'Something' },
-              { title: 'Another action' },
-              { title: 'Something' },
-              'separator',
-              { title: 'Separated link' },
-            ]
-          },
-          { type: NavItemType.NavbarLeft, title: 'Log out' }
+            { type: NavItemType.NavbarLeft, title: 'Account' },
+            {
+                type: NavItemType.NavbarLeft,
+                title: 'Dropdown',
+                dropdownItems: [
+                    { title: 'Action' },
+                    { title: 'Another action' },
+                    { title: 'Something' },
+                    { title: 'Another action' },
+                    { title: 'Something' },
+                    'separator',
+                    { title: 'Separated link' },
+                ]
+            },
+            { type: NavItemType.NavbarLeft, title: 'Log out' }
         ];
     }
     ngAfterViewInit() {
         this.runOnRouteChange();
+        console.log("Iniciando admin layout")
+
+        this.settingUpColorByRol();
+    }
+
+    private settingUpColorByRol(): void {
+        const $sidebar = $('.sidebar');
+        const $sidebar_responsive = $('body > .navbar-collapse');
+        const $full_page = $('.full-page');
+
+
+        /* $sidebar.attr('data-background-color', 'red'); */
+        switch (this.authService.userInfo.Rol) {
+            case ROLES.Administrador:
+                $sidebar.attr('data-background-color', 'red');
+                $sidebar_responsive.attr('data-color', 'orange');
+                $full_page.attr('filter-color', 'orange');
+                $sidebar.attr('data-active-color', 'orange');
+                break;
+            case ROLES.Operador:
+                $sidebar.attr('data-background-color', 'red');
+                $sidebar_responsive.attr('data-color', 'orange');
+                $full_page.attr('filter-color', 'orange');
+                $sidebar.attr('data-active-color', 'orange');
+                break;
+            case ROLES.Cliente:
+                $sidebar.attr('data-background-color', 'black');
+                $sidebar_responsive.attr('data-color', 'white');
+                $full_page.attr('filter-color', 'white');
+                $sidebar.attr('data-active-color', 'white');
+                break;
+            case ROLES.Persona:
+                $sidebar.attr('data-background-color', 'white');
+                $sidebar_responsive.attr('data-color', 'blue');
+                $full_page.attr('filter-color', 'blue');
+                $sidebar.attr('data-active-color', 'blue');
+                break;
+
+            default:
+                break;
+        }
     }
     public isMap() {
         if (this.location.prepareExternalUrl(this.location.path()) === '/maps/fullscreen') {
@@ -118,13 +170,13 @@ export class AdminLayoutComponent implements OnInit, AfterViewInit {
         }
     }
     runOnRouteChange(): void {
-      if (window.matchMedia(`(min-width: 960px)`).matches && !this.isMac()) {
-        const elemSidebar = <HTMLElement>document.querySelector('.sidebar .sidebar-wrapper');
-        const elemMainPanel = <HTMLElement>document.querySelector('.main-panel');
-        let ps = new PerfectScrollbar(elemMainPanel);
-        ps = new PerfectScrollbar(elemSidebar);
-        ps.update();
-      }
+        if (window.matchMedia(`(min-width: 960px)`).matches && !this.isMac()) {
+            const elemSidebar = <HTMLElement>document.querySelector('.sidebar .sidebar-wrapper');
+            const elemMainPanel = <HTMLElement>document.querySelector('.main-panel');
+            let ps = new PerfectScrollbar(elemMainPanel);
+            ps = new PerfectScrollbar(elemSidebar);
+            ps.update();
+        }
     }
     isMac(): boolean {
         let bool = false;

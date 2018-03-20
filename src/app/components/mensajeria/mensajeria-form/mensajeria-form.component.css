@@ -1,5 +1,5 @@
 agm-map {
-    height: 245px;
+    height: 100vh;
 }
 
 :host{
@@ -24,3 +24,37 @@ mat-form-field{
     margin-top: 0.5em; 
     margin-bottom: 1.5em;
 }
+
+p.note{
+    white-space: inherit !important;
+    overflow: visible !important;
+}
+
+.total-amount {
+    background-color: #00519f;
+    color: #ffffff;
+    margin-top: 21px;
+}
+.global-container{
+    width: 100%;
+    position: relative;
+}
+.mensajeria-form{
+    
+    position: absolute;
+    top: 1em;
+    right: -70px;
+    max-width: 600px;
+}
+
+.step-container {
+    overflow: hidden;
+    
+    max-height: 90vh;
+    overflow-y: scroll;
+}
+
+mat-card{
+    padding: 0;
+}
+

@@ -1,0 +1,50 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header card-header-text" data-background-color="blue">
+        <h4 class="card-title">Terceros No Permitidos</h4>
+      </div>
+      <div class="card-content">
+
+        <div class="pull-right">
+          <button class="btn btn-success" (click)="addItem()">
+            Agregar Id
+          </button>
+        </div>
+        <div class="row">
+          <div class="col-sm-offset-1 col-sm-10">
+            <form [formGroup]="form">
+              <div formArrayName="List">
+                <ng-container *ngFor="let item of List.controls; let i=index">
+                  <mat-form-field>
+                    <input matInput type="text" [formControlName]="i" placeholder="Id {{ i + 1 }}">
+                    <button mat-icon-button matSuffix color="warn" matTooltip="Eliminar" (click)="removeItem(i)">
+                      <mat-icon>remove</mat-icon>
+                    </button>
+                    <mat-error>
+                      Campo
+                      <strong> Obligatorio </strong>
+                    </mat-error>
+                  </mat-form-field>
+                </ng-container>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div [innerHTML]="message"></div>
+        <input type="submit" class="btn btn-block btn-primary" (click)="onSubmit()" value="Actualizar">
+          
+        
+
+        <ng-template #loading>
+          <div class="text-center">
+            <mat-spinner></mat-spinner>
+          </div>
+        </ng-template>
+
+
+
+      </div>
+    </div>
+  </div>
+</div>

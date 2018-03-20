@@ -24,11 +24,8 @@ import { SeguimientoActivosComponent } from '../../components/usuarios/seguimien
 
 import { EstadodecuentaComponent } from '../../components/usuarios/estadodecuenta/estadodecuenta.component';
 import { TransaccionesComponent } from '../../components/solicitudes/transacciones/transacciones.component';
-import { MensajeriaFormDetailsComponent } from '../../components/mensajeria/mensajeria-form/mensajeria-form-details/mensajeria-form-details.component';
-import { BonosMensajeriaComponent } from '../../components/parametros/bonos-mensajeria/bonos-mensajeria.component';
-import { IdTerNoPerComponent } from '../../components/parametros/id-ter-no-per/id-ter-no-per.component';
 
-export const AdminRoutes: Routes = [
+export const OperatorRoutes: Routes = [
     {
         path: '',
         redirectTo: 'inicio',
@@ -111,14 +108,6 @@ export const AdminRoutes: Routes = [
             {
                 path: 'Reglas-activo',
                 component: ReglasActivosComponent
-            },
-            {
-                path: 'Bonos-Mensajeria',
-                component: BonosMensajeriaComponent
-            },
-            {
-                path: 'Terceros-No-Permitidos',
-                component: IdTerNoPerComponent
             }
         ]
     },
@@ -165,21 +154,6 @@ export const AdminRoutes: Routes = [
         ]
     },
     {
-        path: 'reportes',
-        component: ReportesComponent,
-        children: [
-            {
-                path: '',
-                redirectTo: 'clientes-servicios',
-                pathMatch: 'full'
-            },
-            {
-                path: 'clientes-servicios',
-                component: ReporteClientesServiciosComponent
-            }
-        ]
-    },
-    {
         path: 'mensajeria',
         component: MensajeriaComponent,
         children: [
@@ -193,9 +167,5 @@ export const AdminRoutes: Routes = [
                 component: MensajeriaFormComponent
             }
         ]
-    },
-    {
-        path: 'desarrollo',
-        component: MensajeriaFormDetailsComponent
     }
 ];

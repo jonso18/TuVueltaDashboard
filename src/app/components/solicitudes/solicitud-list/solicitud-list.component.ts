@@ -16,6 +16,7 @@ import { FormBuilder, FormControl } from '@angular/forms';
 import { MessagesService } from '../../../services/messages/messages.service';
 import { ConfirmationComponent } from '../../../dialogs/confirmation/confirmation.component';
 import { dataConfirmation } from '../../../config/dialogs.data';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-solicitud-list',
@@ -38,6 +39,8 @@ export class SolicitudListComponent implements OnInit {
   public inputFilter: FormControl;
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+
+  private subs: Subscription[] = [];
   constructor(
     public dbService: DbService,
     private router: Router,
@@ -49,42 +52,41 @@ export class SolicitudListComponent implements OnInit {
     private messages: MessagesService
   ) { }
 
+  ngOnInit() {
+    this.ROLES = ROLES;
+    this.loadInfo();
+    this.subs.push(this.loadFilter());
+  }
 
-  loadClients() {
+  private loadClients(): Subscription {
     const rol = ROLES.Cliente
-    this.dbService.listUsersByRol(rol).subscribe(res => {
+    return this.dbService.listUsersByRol(rol).subscribe(res => {
       this.Clientes = res;
     })
   }
 
-  ngOnInit() {
-    this.ROLES = ROLES;
-    this.loadInfo();
-    this.loadFilter();
-  }
-
   loadInfo() {
-    this.loadClients();
-    this.loadMensajeros();
+    this.subs.push(this.loadClients());
+    this.subs.push(this.loadMensajeros());
     const Rol = this.authService.userInfo.Rol
     if (Rol == ROLES.Cliente) {
-      this.loadSolicitudes();
+      this.subs.push(this.loadSolicitudes());
     } else if (Rol == ROLES.Administrador || Rol == ROLES.Operador) {
       this.displayedColumns.push("Acciones");
-      this.loadAllSolicitudes()
+      this.subs.push(this.loadAllSolicitudes())
     }
 
   }
 
-  loadSolicitudes() {
-    this.dbService.listSolicitudes().subscribe(res => {
+  private loadSolicitudes(): Subscription {
+    return this.dbService.listSolicitudes().subscribe(res => {
       this.solicitudes = this.allSolicitudes = res.sort((a, b) => Number(b.key) - Number(a.key));
       this.instanceTable();
     });
   }
 
-  loadAllSolicitudes() {
-    this.dbService.listAllSolicitudes()
+  private loadAllSolicitudes(): Subscription {
+    return this.dbService.listAllSolicitudes()
       .subscribe(res => {
         this.solicitudes = this.allSolicitudes = res.sort((a, b) => Number(b.key) - Number(a.key));
         this.instanceTable();
@@ -131,9 +133,8 @@ export class SolicitudListComponent implements OnInit {
     this.applyFilter();
   }
 
-  loadMensajeros() {
-    this.dbService.listMensajeros().snapshotChanges().subscribe(res => {
-
+  private loadMensajeros(): Subscription {
+    return this.dbService.listMensajeros().snapshotChanges().subscribe(res => {
       this.Mensajeros = res.reduce((o, val) => {
         o[val.key] = val.payload.val();
         return o;
@@ -146,7 +147,7 @@ export class SolicitudListComponent implements OnInit {
     const key = element.key;
     const Motorratoner_id: string = element.payload.val().Motorratoner_id;
     if (Motorratoner_id) {
-      this.dbService.listLogCreditoRetiroMensajeroByServicioId(Motorratoner_id, key)
+      this.subs.push(this.dbService.listLogCreditoRetiroMensajeroByServicioId(Motorratoner_id, key)
         .subscribe((logs: ILogCreditoRetiroMensajero[]): void => {
           const p_delete = logs.map(_log => {
             return this.dbService
@@ -159,7 +160,7 @@ export class SolicitudListComponent implements OnInit {
             console.log("Error eliminando los log de credito de retiro. ", err)
           })
 
-        })
+        }))
     } else {
       this.notifySolicitudEliminada();
     }
@@ -191,7 +192,7 @@ export class SolicitudListComponent implements OnInit {
     let dialogRef = this.dialog.open(ConfirmationComponent,
       dataConfirmation(title, question));
 
-    dialogRef.afterClosed().subscribe(res => {
+    this.subs.push(dialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.dbService.objectSolicitud(key)
           .remove()
@@ -201,7 +202,7 @@ export class SolicitudListComponent implements OnInit {
           })
 
       }
-    })
+    }))
   }
 
   /**
@@ -223,14 +224,14 @@ export class SolicitudListComponent implements OnInit {
       data: { PrevioMotorratoner_id: _PrevioMotorratoner_id, fechaCompra: _fechaCompra, serviceId: _serviceId, Mensajeros: this.Mensajeros }
     });
 
-    dialogRef.afterClosed().subscribe(res => {
+    this.subs.push(dialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.snackBar.open("Proceso Exitoso", 'Ok', {
           duration: 3000,
           verticalPosition: 'top'
         });
       }
-    });
+    }));
   }
 
   /**
@@ -282,10 +283,10 @@ export class SolicitudListComponent implements OnInit {
    * @returns {any} 
    * @memberof SolicitudListComponent
    */
-  private loadFilter(): any {
+  private loadFilter(): Subscription {
     this.inputFilter = this.formBuilder.control(null);
 
-    this.inputFilter.valueChanges
+    return this.inputFilter.valueChanges
       .debounceTime(500)
       .distinctUntilChanged()
       .subscribe((val: string) => {

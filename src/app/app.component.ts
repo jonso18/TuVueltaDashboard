@@ -43,8 +43,10 @@ export class AppComponent implements OnInit {
       } else {
         // Get user info
         this.authService.subUserInfo = this.dbService.objectUserInfo().snapshotChanges().subscribe(_userInfo => {
+          
           this.globalTasksService.stopTasks();
           const info = this.authService.userInfo = _userInfo.payload.val();
+          this.authService.userInfo.$key = _authState.uid;
           //console.log(info)
           if (info) {
             // Has user Info
@@ -53,7 +55,8 @@ export class AppComponent implements OnInit {
                 case ROLES.Administrador:
                   this.globalTasksService.startTasks();
                   this.authService.GlobalRoutes.next(administradorRoutes);
-                  this.router.navigateByUrl('/administrador/mensajeria/nuevo');
+                  
+                  this.router.navigateByUrl('/administrador/solicitud/1520374936734/transacciones');
                   break;
 
                 case ROLES.Cliente:

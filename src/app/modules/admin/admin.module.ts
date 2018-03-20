@@ -47,43 +47,14 @@ import { SharedComponentsModule } from '../shared-components/shared-components.m
     imports: [
         RouterModule.forChild(AdminRoutes),
         CommonImportsModule,
-        AgmCoreModule.forRoot({
-            apiKey: environment.google.maps
-        }),
+        AgmCoreModule,
         CommonModule,
         SharedComponentsModule
     ],
     declarations: [
-        ParametrosComponent,
-        CiudadesComponent,
-        TarifasComponent,
-        GananciasComponent,
-        EstadosDomiciliosComponent,
-        EquipamientoComponent,
-        ReglasActivosComponent,
-        DialogNewCity,
-        DialogDeleteCity,
-        DialogReasignacion,
         ReporteClientesServiciosComponent,
         ReportesComponent,
-        SolicitudFormDialog,
-        ConfigGlobalComponent,
-        UsuarioFormComponent,
-        UsuariosComponent,
-        UsuariosListComponent,
-        SeguimientoActivosComponent,
-        RelanzamientosComponent,
-        EstadodecuentaComponent,
-        RetirosComponent,
-        LogEquipamientoComponent,
-        NoRetirementCreditDialogComponent
     ],
-    entryComponents: [
-        DialogNewCity,
-        DialogDeleteCity,
-        DialogReasignacion,
-        SolicitudFormDialog,
-        NoRetirementCreditDialogComponent
-    ]
+
 })
 export class AdminModule { }

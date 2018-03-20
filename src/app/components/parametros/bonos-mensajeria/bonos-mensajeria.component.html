@@ -1,0 +1,80 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-text" data-background-color="blue">
+            <h4 class="card-title">Bonos Mensajeria</h4>
+          </div>
+          <div class="card-content">
+            <div class="text-right">
+              <button class="btn btn-success" (click)="addBonus()">Agregar Bono</button>
+            </div>
+            <form [formGroup]="form" *ngIf="form">
+              <div formArrayName="list" class="row">
+                <div *ngFor="let bonus of list.controls; let i=index" [formGroupName]="i" class="col-sm-6">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <div class="text-center">
+                        Bono
+                        <strong>{{ i + 1 }}</strong>
+                      </div>
+                    </div>
+                    <div class="panel-body">
+                      <mat-form-field>
+                        <input type="text" matInput formControlName="Nombre" placeholder="Nombre">
+                        <mat-error *ngIf="list.at(i).get('Nombre').invalid" [innerHTML]="getErrorMessage(list.at(i).get('Nombre'))"></mat-error>
+                      </mat-form-field>
+
+                      <mat-form-field>
+                        <input type="text" matInput formControlName="Clave" placeholder="Clave">
+                        <mat-error *ngIf="list.at(i).get('Clave').invalid" [innerHTML]="getErrorMessage(list.at(i).get('Clave'))"></mat-error>
+                      </mat-form-field>
+
+                      <mat-form-field>
+                        <input type="number" matInput formControlName="Descuento" placeholder="Descuento">
+                        <mat-error *ngIf="list.at(i).get('Descuento').invalid" [innerHTML]="getErrorMessage(list.at(i).get('Descuento'))"></mat-error>
+                      </mat-form-field>
+
+                      <p>
+                        <mat-form-field>
+                          <input matInput formControlName="InicioDate" (dateChange)="onDateChange($event, i, 'Inicio')" [matDatepicker]="dpInicio"
+                            placeholder="Fecha Inicio" readonly>
+                          <mat-datepicker-toggle matSuffix [for]="dpInicio"></mat-datepicker-toggle>
+                          <mat-datepicker #dpInicio readonly="false"></mat-datepicker>
+                        </mat-form-field>
+                      </p>
+                      <p>
+                        <mat-form-field>
+                          <input matInput formControlName="FinDate" (dateChange)="onDateChange($event, i, 'Fin')" [matDatepicker]="dpFin" placeholder="Fecha Fin"
+                            readonly>
+                          <mat-datepicker-toggle matSuffix [for]="dpFin"></mat-datepicker-toggle>
+                          <mat-datepicker #dpFin readonly="false"></mat-datepicker>
+                        </mat-form-field>
+                      </p>
+                      <div class="text-center">
+                        <a class="btn btn-danger" (click)="removeBonus(i)">
+                          Eliminar
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="message.length > 0" [innerHTML]="message"></div>
+              <button class="btn btn-primary btn-block" type="submit" [disabled]="!noDuplicated.value" (click)="onSubmit()">Guardar Cambios</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<img class="loading" *ngIf="loading$ | async" src="assets/img/flags/loading.gif" alt="">
+
+<!-- <pre *ngIf="form" class="code-panel">
+  {{ form.valid }}
+  {{ form.value | json }}
+</pre> -->

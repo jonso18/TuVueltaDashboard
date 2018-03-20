@@ -3,3 +3,26 @@
 .text-center mat-spinner{
     margin:0 auto;
 }
+
+.code-panel{
+    position: fixed;
+    width: 323px;
+    height: auto;
+    background: rgba(77, 206, 107, 0.63);
+    right: 237px;
+    z-index: 100;
+    color: black;
+    top: 20px;
+}
+
+.sidebar-black{
+    background: red
+}
+
+img.loading{
+    position: fixed;
+    transform: translate(-50%, 0);
+    left: 50%;
+    top: 2em;
+    height: 11em;
+}

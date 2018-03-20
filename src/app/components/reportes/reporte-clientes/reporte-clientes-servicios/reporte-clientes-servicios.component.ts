@@ -1,17 +1,19 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material';
 import { DbService } from '../../../../services/db/db.service';
 import { ROLES } from '../../../../config/Roles';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { environment } from '../../../../../environments/environment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-reporte-clientes-servicios',
   templateUrl: './reporte-clientes-servicios.component.html',
   styleUrls: ['./reporte-clientes-servicios.component.css']
 })
-export class ReporteClientesServiciosComponent implements OnInit {
+export class ReporteClientesServiciosComponent implements OnInit, OnDestroy {
+
   events: string[] = [];
   public dateStart;
   public dateEnd;
@@ -21,6 +23,8 @@ export class ReporteClientesServiciosComponent implements OnInit {
   public clientSelected = null;
   public reporteHTML = '';
   public canSend: boolean;
+  private subs: Subscription[] = [];
+  public Mensajeros;
   @ViewChild('picker') public _picker;
   constructor(
     private dbService: DbService,
@@ -29,22 +33,25 @@ export class ReporteClientesServiciosComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.loadSolicitudes();
-    this.loadLogsSolicitud();
-    this.loadClientes();
-    this.loadMensajeros();
+    this.subs.push(this.loadSolicitudes());
+    this.subs.push(this.loadLogsSolicitud());
+    this.subs.push(this.loadClientes());
+    this.subs.push(this.loadMensajeros());
   }
 
-  loadClientes(){
+  ngOnDestroy(): void {
+    this.subs.forEach(sub => sub.unsubscribe());
+  }
+
+  private loadClientes(): Subscription {
     const cliente = ROLES.Cliente
-    this.dbService.listUsersByRol(cliente).subscribe(res => {
-      
-      this.Clientes = res;
-    })
+    return this.dbService.listUsersByRol(cliente)
+      .subscribe(res => this.Clientes = res)
   }
 
-  loadLogsSolicitud() {
-    this.dbService.listLogSolicitud().snapshotChanges()
+  private loadLogsSolicitud(): Subscription {
+    return this.dbService.listLogSolicitud()
+      .snapshotChanges()
       .map(changes =>
         changes
           .map(item =>
@@ -60,24 +67,21 @@ export class ReporteClientesServiciosComponent implements OnInit {
             }
           });
         })
-        console.log(data)
         this.logsSolicitudes = data;
       })
   }
 
-  loadSolicitudes() {
-    this.dbService.listSolicitudFinalizadas().snapshotChanges().subscribe(res => {
-      this.solicitudes = res;
-      console.log(this.solicitudes)
-    })
+  private loadSolicitudes(): Subscription {
+    return this.dbService.listSolicitudFinalizadas()
+      .snapshotChanges()
+      .subscribe(res => this.solicitudes = res);
   }
-  pickerStart(type: string, event: MatDatepickerInputEvent<Date>) {
-    console.log(new Date(event.value))
+
+  public pickerStart(type: string, event: MatDatepickerInputEvent<Date>): void {
     this.dateStart = new Date(event.value).getTime();
   }
 
-  pickerEnd(type: string, event: MatDatepickerInputEvent<Date>) {
-    console.log(new Date(event.value))
+  public pickerEnd(type: string, event: MatDatepickerInputEvent<Date>): void {
     this.dateEnd = new Date(event.value).getTime();
   }
 
@@ -90,7 +94,7 @@ export class ReporteClientesServiciosComponent implements OnInit {
     let fechachaDespachado;
     let FechaFinalizado;
     this.reporteHTML = '';
-    this.reporteHTML+=`
+    this.reporteHTML += `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml"> 
      <head> 
@@ -148,35 +152,35 @@ export class ReporteClientesServiciosComponent implements OnInit {
         ` ;
 
     const s_finalizadas = this.solicitudes.filter(item => {
-      if (item.key > this.dateStart && item.key < this.dateEnd && this.clientSelected.$key == item.payload.val().user_id){
+      if (item.key > this.dateStart && item.key < this.dateEnd && this.clientSelected.$key == item.payload.val().user_id) {
         item['logs'] = this.logsSolicitudes[item.key]
         return item
       }
     })
-    console.log("Finalizados:",s_finalizadas)
+    console.log("Finalizados:", s_finalizadas)
     totalpedidos = s_finalizadas.length;
-    this.reporteHTML = this.reporteHTML.replace('{totalpedidos}', (totalpedidos+''));
+    this.reporteHTML = this.reporteHTML.replace('{totalpedidos}', (totalpedidos + ''));
     s_finalizadas.forEach(element => {
       let logs = '';
-      console.log("datos",element);
+      console.log("datos", element);
 
-      ValorDeDomicilios =  Number(ValorDeDomicilios) + Number(element.payload.val().TotalAPagar) ;
+      ValorDeDomicilios = Number(ValorDeDomicilios) + Number(element.payload.val().TotalAPagar);
       //console.log("Total a pagar: "+element.payload.val().TotalAPagar)
       element.logs.forEach(log => {
-        
-        if(log.value.Estado === "EnProceso"){
+
+        if (log.value.Estado === "EnProceso") {
           fechaproceso = new Date(Number(log.key));
         }
-       
-        
-        if(log.value.Estado === "Despachado"){
+
+
+        if (log.value.Estado === "Despachado") {
           fechachaDespachado = new Date(Number(log.key));
         }
-        
-        if(log.value.Estado === "Finalizado"){
+
+        if (log.value.Estado === "Finalizado") {
           FechaFinalizado = new Date(Number(log.key));
         }
-        
+
 
 
         //const date = new Date(Number(log.key));
@@ -186,31 +190,31 @@ export class ReporteClientesServiciosComponent implements OnInit {
         //logs+=`<li><strong>Fecha:  </strong> ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</li>`
         //logs+=`<li><strong>Estado:  </strong>${log.value.Estado}</li>`
         //logs+=`<li><strong>Mensajero Id: </strong> ${log.value.Motorratoner_id}</li>`
-        
-        
+
+
       });
       const date = new Date(Number(element.key));
-        
-        let diasDifdespacho;
-        let diasDiffFinalizado;
 
-        if (fechachaDespachado && fechaproceso) {
-          diasDifdespacho =  fechachaDespachado.getTime() - fechaproceso.getTime();
-        } else { diasDifdespacho = 0; }
+      let diasDifdespacho;
+      let diasDiffFinalizado;
 
-        if (FechaFinalizado && fechachaDespachado) {
-          diasDiffFinalizado =  FechaFinalizado.getTime() - fechachaDespachado.getTime();
-        } else { diasDiffFinalizado = 0; }
+      if (fechachaDespachado && fechaproceso) {
+        diasDifdespacho = fechachaDespachado.getTime() - fechaproceso.getTime();
+      } else { diasDifdespacho = 0; }
 
-       //var diasDiffFinalizado=  FechaFinalizado.getTime() - fechachaDespachado.getTime();
-       let totaltiempodespacho = Math.round(diasDifdespacho/(60*24*60));
-      var totaltiempoFinalizado = Math.round(diasDiffFinalizado/(60*24*60));
-      var sumatiempo = totaltiempodespacho+totaltiempoFinalizado;
+      if (FechaFinalizado && fechachaDespachado) {
+        diasDiffFinalizado = FechaFinalizado.getTime() - fechachaDespachado.getTime();
+      } else { diasDiffFinalizado = 0; }
 
-      this.reporteHTML+=`
+      //var diasDiffFinalizado=  FechaFinalizado.getTime() - fechachaDespachado.getTime();
+      let totaltiempodespacho = Math.round(diasDifdespacho / (60 * 24 * 60));
+      var totaltiempoFinalizado = Math.round(diasDiffFinalizado / (60 * 24 * 60));
+      var sumatiempo = totaltiempodespacho + totaltiempoFinalizado;
+
+      this.reporteHTML += `
           <tbody>
             <td >${element.key}</td>
-            <td > ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</td>
+            <td > ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}</td>
             <td >${element.payload.val().Nombres} ${element.payload.val().Apellidos}</td>
             <td class="text-center">${totaltiempodespacho} Minutos</td>
             <td class="text-center">${totaltiempoFinalizado} Minutos</td>
@@ -222,7 +226,7 @@ export class ReporteClientesServiciosComponent implements OnInit {
          `
     });
 
-    this.reporteHTML+=`
+    this.reporteHTML += `
     </table>
     </div>
 </td>
@@ -238,45 +242,43 @@ export class ReporteClientesServiciosComponent implements OnInit {
 <br/>
     `
 
-    this.reporteHTML = this.reporteHTML.replace('TakeTarakeTake',  (' $ '+ ValorDeDomicilios + ''));
-    this.reporteHTML = this.reporteHTML.replace('fechainicio',  (' '+  fechainicio + ''));
-    this.reporteHTML = this.reporteHTML.replace('fechafin',  (' '+ fechafin  + ''));
-    
-    console.log(ValorDeDomicilios)
+    this.reporteHTML = this.reporteHTML.replace('TakeTarakeTake', (' $ ' + ValorDeDomicilios + ''));
+    this.reporteHTML = this.reporteHTML.replace('fechainicio', (' ' + fechainicio + ''));
+    this.reporteHTML = this.reporteHTML.replace('fechafin', (' ' + fechafin + ''));
     this.canSend = true;
   }
-  public Mensajeros;
-  loadMensajeros(){
+
+  private loadMensajeros(): Subscription {
     const Mensajero = ROLES.Mensajero;
-    this.dbService.listUsersByRol(Mensajero).subscribe(_mensajeros => {
-      this.Mensajeros = _mensajeros.reduce((o,val)=> {
-        o[val.$key] = val
-        return o;
-      }, {})
-      console.log(this.Mensajeros);
-    })
+    return this.dbService.listUsersByRol(Mensajero)
+      .subscribe(_mensajeros => {
+        this.Mensajeros = _mensajeros.reduce((o, val) => {
+          o[val.$key] = val
+          return o;
+        }, {})
+
+      })
   }
-  
-  sendEmal(){
-    console.log("sending email ...")
+
+  sendEmal() {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
       })
     };
-    console.log(this.clientSelected)
-    if (this.clientSelected.Correo){
+
+    if (this.clientSelected.Correo) {
       const url = 'https://us-central1-tuvuelta-produccion.cloudfunctions.net/api/reportes/enviar-mail';
-    const body = {
-      to: this.clientSelected.Correo,
-      text: this.reporteHTML,
-      subject: 'Reporte  de servicios TuVuelta.co'
-    }
-    const p = this.http.post(url, body, httpOptions).toPromise()
-    }else {
+      const body = {
+        to: this.clientSelected.Correo,
+        text: this.reporteHTML,
+        subject: 'Reporte  de servicios TuVuelta.co'
+      }
+      const p = this.http.post(url, body, httpOptions).toPromise()
+    } else {
       alert("El Cliente seleccionado no tiene correo registrado")
     }
-    
-    
+
+
   }
 }
