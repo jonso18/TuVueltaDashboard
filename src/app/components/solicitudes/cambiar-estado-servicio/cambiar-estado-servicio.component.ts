@@ -3,13 +3,14 @@ import { IEstadoServicio } from '../../../interfaces/estadoservicio.interface';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { DbService } from '../../../services/db/db.service';
 import { MessagesService } from '../../../services/messages/messages.service';
-import { MatDialog, MatSnackBar } from '@angular/material';
+import { MatDialog, MatSnackBar, MatTableDataSource } from '@angular/material';
 import { ConfirmationComponent } from '../../../dialogs/confirmation/confirmation.component';
 import { dataConfirmation } from '../../../config/dialogs.data';
 import { ISolicitud } from '../../../interfaces/solicitud.interface';
 import { ESTADOS_SERVICIO } from '../../../config/EstadosServicio';
 import { AuthService } from '../../../services/auth/auth.service';
 import { Subscription } from 'rxjs';
+import { ROLES } from '../../../config/Roles';
 
 @Component({
   selector: 'app-cambiar-estado-servicio',
@@ -19,10 +20,16 @@ import { Subscription } from 'rxjs';
 export class CambiarEstadoServicioComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public ESTADOS_SERVICIO = ESTADOS_SERVICIO;
+  public LogEstadosSolicitud;
+  private Mensajeros;
+  private dataSource: MatTableDataSource<any>;
+  displayedColumns = ['$key', 'Estado', 'Motorratoner_id'];
+  
   @Input() Id: string;
   @Input() Estados: IEstadoServicio[];
   @Input() Solicitud: ISolicitud;
-private subs: Subscription[] = [];
+
+  private subs: Subscription[] = [];
   constructor(
     private formBuilder: FormBuilder,
     private dbService: DbService,
@@ -34,6 +41,9 @@ private subs: Subscription[] = [];
 
   ngOnInit() {
     this.buildForm();
+    this.dataSource = new MatTableDataSource([]);
+    this.subs.push(this.loadMensajeros());
+    this.subs.push(this.loadLogSolicitud());
   }
 
   ngOnDestroy() {
@@ -124,8 +134,36 @@ private subs: Subscription[] = [];
         duration: 3000
       })
     })
+  }
 
+  private loadLogSolicitud(): Subscription {
+    const key: string = this.Solicitud.$key;
+    return this.dbService.objectLogSolicitud(key)
+      .valueChanges()
+      
+      .subscribe(res => {
+        
+        const data = Object.keys(res).map(key => {
+          let data = res[key]
+          data.$key = key
+          return data
+        });
+        this.LogEstadosSolicitud = data.sort((a, b) => b - a);
+        
+        this.dataSource.data = this.LogEstadosSolicitud;
+      })
+  }
 
+  private loadMensajeros(): Subscription {
+    return this.dbService.listUsersByRol(ROLES.Mensajero)
+      .subscribe(res => {
+        const data = res.reduce((o, val) => {
+          o[val.$key] = val;
+          return o;
+        },{})
+        this.Mensajeros = data;
+        console.log(this.Mensajeros);
+      })
   }
 
   get Fecha() { return this.form.get('Fecha'); }

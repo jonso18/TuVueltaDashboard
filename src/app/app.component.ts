@@ -56,7 +56,7 @@ export class AppComponent implements OnInit {
                   this.globalTasksService.startTasks();
                   this.authService.GlobalRoutes.next(administradorRoutes);
                   
-                  this.router.navigateByUrl('/administrador/parametros/Terceros-No-Permitidos');
+                  this.router.navigateByUrl('/administrador/solicitud/1520374936734/transacciones');
                   break;
 
                 case ROLES.Cliente:
